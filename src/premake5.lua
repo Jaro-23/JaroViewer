@@ -1,57 +1,47 @@
-workspace "JaroViewerBasicExample"
-    location "Generated"
-    language "C++"
-    architecture "x86_64"
+workspace "JaroViewer Basic Example"
+   location "Generated"
+   language "C++"
+   architecture "x86_64"
 
-    configurations { "Debug", "Release" }
-    filter { "configurations:Debug" }
-        symbols "On"
+   configurations { "Debug", "Release" }
+   
+   filter "configurations:Debug"
+      symbols "On"
 
-    filter { "configurations:Release" }
-        optimize "On"
+   filter "configurations:Release"
+      optimize "On"
 
-    filter {}
+   filter { }
+      
+   targetdir "Build/Bin/%{prj.name}/%{cfg.buildcfg}"
+   objdir "Build/Obj/%{prj.name}/%{cfg.buildcfg}"
 
-    targetdir ("Build/Bin/%{prj.name}/%{cfg.longname}")
-	objdir ("Build/Obj/%{prj.name}/%{cfg.longname}")
+-- Custom functions
+function includeJaroViewer()
+	includedirs "Projects/JaroViewer/header"
+	links "JaroViewer"
 
--- Custom functions for easy use
-function includeGLFW()
-    includedirs "Libraries/GLFW/Include"
+	libdirs "Libraries/Lib"
+	links "glfw3"
 end
 
-function linkGLFW()
-    libdirs "Libraries/GLFW/Lib"
-
-    filter "kind:not StaticLib"
-        links "glfw3"
-    filter {}
-end
-
-function includeGLAD()
-    includedirs "Libraries/GLAD/Include"
-end
-
-function useJaroViewer()
-    includedirs "Projects/JaroViewer/header"
-    links "JaroViewer"
-    linkGLFW()
-end
-
--- Projects
+-- Create the different projects
 project "JaroViewer"
-    kind "StaticLib"
-    files "Projects/JaroViewer/**"
-    includeGLFW()
+   kind "StaticLib"
+
+   files "Projects/JaroViewer/**"
+   includedirs "Libraries/Include"
 
 project "App"
-    kind "WindowedApp"
-    files "Projects/App/**"
+	kind "ConsoleApp"
+	files "Projects/App/**"
+   files { "Projects/App/src/glad.c" }
 
-    useJaroViewer()
+	includeJaroViewer()
+   includedirs "Libraries/Include"
 
-    filter { "system:windows" }
-        links { "OpenGL32" }
-
-    filter { "system:not windows" }
-        links { "GL" }
+	filter { "system:windows" }
+		links { "OpenGL32" }
+		
+	filter { "system:not windows" }
+		links { "GL" }

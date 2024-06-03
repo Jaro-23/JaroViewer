@@ -1,17 +1,23 @@
 workspace "HelloWorld"
-   configurations { "Debug", "Release" }
-
-project "HelloWorld"
-   kind "ConsoleApp"
+   location "Generated"
    language "C++"
-   targetdir "bin/%{cfg.buildcfg}"
+   architecture "x86_64"
 
-   files { "**.h", "**.cpp" }
-
+   configurations { "Debug", "Release" }
+   
    filter "configurations:Debug"
-      defines { "DEBUG" }
       symbols "On"
 
    filter "configurations:Release"
-      defines { "NDEBUG" }
       optimize "On"
+
+   filter { }
+      
+   targetdir "Build/Bin/%{prj.name}/%{cfg.buildcfg}"
+   objdir "Build/Obj/%{prj.name}/%{cfg.buildcfg}"
+
+project "HelloWorld"
+   kind "ConsoleApp"
+
+   files "Projects/HelloWorld/**"
+   includedirs "Libraries/HelloWorld/Include/*"

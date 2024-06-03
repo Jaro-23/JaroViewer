@@ -1,8 +1,7 @@
-#include <Engine.hpp>
+#include <Engine2D.h>
 #include <iostream>
 
 int main() {
-    std::cout << "Entered main" << std::endl;
-    Engine engine = Engine();
-    engine.test();
+    Engine2D engine = Engine2D(3, 600, 450, "Basic example");
+    engine.start();
 }
