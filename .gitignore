@@ -3,7 +3,6 @@ obj/
 
 Build/
 Generated/
-Libraries/
 
 *.make
 Makefile
