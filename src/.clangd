@@ -1,0 +1,4 @@
+CompileFlags:
+    CompilationDatabase: "Generated/compile_commands"
+    Add:
+      - "-I/Libraries/Include"
