@@ -19,5 +19,6 @@ workspace "HelloWorld"
 project "HelloWorld"
    kind "ConsoleApp"
 
+   links { "OpenGL" }
    files "Projects/HelloWorld/**"
    includedirs "Libraries/HelloWorld/Include/*"
