@@ -26,7 +26,7 @@ function includeJaroViewer()
 	links "JaroViewer"
 
 	libdirs "Libraries/Lib"
-	filter "kind:not StaticLib"
+	filter { "kind:not StaticLib" }
 		links "glfw3"
 
 	filter {}
@@ -44,9 +44,9 @@ project "App"
 	kind "ConsoleApp"
 	files "Projects/App/**"
 
-   includedirs "Libraries/Include"
+	includedirs "Libraries/Include"
 	includeJaroViewer()
-	
+
 	filter { "system:windows" }
 		links { "OpenGL" }
 

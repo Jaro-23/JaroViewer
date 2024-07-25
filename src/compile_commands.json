@@ -1,0 +1,18 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-I../Libraries/Include",
+      "-I../Projects/JaroViewer/header",
+      "-m64",
+      "-g",
+      "-c",
+      "-o",
+      "../Build/Obj/App/Debug/main.o",
+      "../Projects/App/src/main.cpp"
+    ],
+    "directory": "/mnt/c/Users/robbe/dev/JaroViewer/src/Generated",
+    "file": "/mnt/c/Users/robbe/dev/JaroViewer/src/Projects/App/src/main.cpp",
+    "output": "/mnt/c/Users/robbe/dev/JaroViewer/src/Build/Obj/App/Debug/main.o"
+  }
+]
