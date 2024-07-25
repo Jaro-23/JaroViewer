@@ -47,6 +47,6 @@ namespace JaroViewer {
 			float mMouseY = 0.0f;
 			bool mFirstMove = true;
 
-			float mSensitivity = 0.07f;
+			float mSensitivity = 0.007f;
 	};
 }

@@ -9,7 +9,6 @@ void Camera::setupCallback(GLFWwindow *window, Camera *camera) {
 	glfwSetWindowUserPointer(window, camera);
 	auto func = [](GLFWwindow *window, double xpos, double ypos) {
 		Camera *camObj = static_cast<Camera*>(glfwGetWindowUserPointer(window));
-		std::cout << "Hello" << camObj << std::endl;
 		if (!camObj) return;
 		if (camObj->getFirstMove()) {
 			camObj->setMouseX(xpos);
@@ -18,12 +17,18 @@ void Camera::setupCallback(GLFWwindow *window, Camera *camera) {
 			return;
 		}
 
-		camObj->updateDirection((xpos - camObj->getMouseX()) * camObj->getSensitivity(), (camObj->getMouseY() - ypos) * camObj->getSensitivity());
+		float xoffset = xpos - camObj->getMouseX();
+		float yoffset = camObj->getMouseY() - ypos;
 		camObj->setMouseX(xpos);
 		camObj->setMouseY(ypos);
+
+		xoffset *= camObj->getSensitivity();
+		yoffset *= camObj->getSensitivity();
+
+		camObj->updateDirection(xoffset, yoffset);
 	};
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	glfwSetCursorPosCallback(window, [](GLFWwindow *window, double xpos, double ypos) { std::cout << "Callback called" << std::endl; });
+	glfwSetCursorPosCallback(window, func);
 }
 
 Camera::Camera(glm::vec3 pos, glm::vec3 up) {
