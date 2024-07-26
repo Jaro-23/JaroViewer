@@ -1,2 +1,2 @@
 make -C Generated/
-./Build/Bin/App/Debug/App.exe
+./Build/Bin/App/Debug/App

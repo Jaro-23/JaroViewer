@@ -5,7 +5,7 @@
 #include <map>
 #include <vector>
 
-#include <glm/glm.hpp>
+#include <GLM/glm.hpp>
 #include <GLM/gtc/matrix_transform.hpp>
 
 #include "Component3D.h"
@@ -28,13 +28,13 @@ namespace JaroViewer {
 			int mWidth;
 			int mHeight;
 
-			float mLastFrame;
 			std::map<int, JaroViewer::Component3D*> mComponents;
 			int mComponentsLength;
 			std::vector<int> mOpenSlots;
 
 			GLFWwindow *mWindow;
 			Camera* mCamera;
+			unsigned int mUboBuffer;
 	};
 };
 

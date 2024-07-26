@@ -17,6 +17,7 @@ namespace JaroViewer {
 			
 			void setBool(const std::string &name, bool value) const;
 			void setInt(const std::string &name, int value) const;
+			void setUniformBuffer(const std::string &name, int position) const;
 
 			void setFloat1(const std::string &name, float x) const;
 			void setFloat2(const std::string &name, float x, float y) const;

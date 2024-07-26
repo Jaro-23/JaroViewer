@@ -37,6 +37,10 @@ Shader::Shader(const std::vector<std::string> &vertexPaths, const std::vector<st
 void Shader::use() { glUseProgram(mProgramID); }
 void Shader::setBool(const std::string &name, bool value) const { glUniform1i(getLocation(name), value); }
 void Shader::setInt(const std::string &name, int value) const { glUniform1i(getLocation(name), value); }
+void Shader::setUniformBuffer(const std::string &name, int position) const {
+	unsigned int id = glGetUniformBlockIndex(mProgramID, name.c_str());
+	glUniformBlockBinding(mProgramID, id, position);
+}
 
 void Shader::setFloat1(const std::string &name, float x) const { return glUniform1f(getLocation(name), x); }
 void Shader::setFloat2(const std::string &name, float x, float y) const { return glUniform2f(getLocation(name), x, y); }

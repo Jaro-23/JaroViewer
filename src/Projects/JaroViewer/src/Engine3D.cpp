@@ -11,7 +11,6 @@ using namespace JaroViewer;
 Engine3D::Engine3D(int glfwVersion, int width, int height, const char* title, Camera* camera) :
 	mWidth{width},
 	mHeight{height},
-	mLastFrame{0.0f},
 	mComponents{},
 	mComponentsLength{0},
 	mOpenSlots{},
@@ -49,8 +48,13 @@ Engine3D::Engine3D(int glfwVersion, int width, int height, const char* title, Ca
  */
 void Engine3D::start() {
 	// TODO: do the setup
+	// Setup the ubo
+	glGenBuffers(1, &mUboBuffer);
+	glBindBuffer(GL_UNIFORM_BUFFER, mUboBuffer);
+	glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), NULL, GL_STATIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	glBindBufferRange(GL_UNIFORM_BUFFER, 0, mUboBuffer, 0, 2 * sizeof(glm::mat4));
 
-	mLastFrame = 0.0f;
 	render();
 	glfwTerminate();
 }
@@ -98,10 +102,11 @@ void Engine3D::removeComponent(unsigned int id) {
  * Contains the main rendering loop 
  */
 void Engine3D::render() {
+	float lastFrame = 0.0f;
 	float deltaTime = 0.0f;
 	while (!glfwWindowShouldClose(mWindow)) {
-		deltaTime = glfwGetTime() - mLastFrame;
-		mLastFrame = deltaTime;
+		deltaTime = glfwGetTime() - lastFrame;
+		lastFrame = deltaTime;
 
 		int width, height;
 		glfwGetWindowSize(mWindow, &width, &height);
