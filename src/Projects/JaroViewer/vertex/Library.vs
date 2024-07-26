@@ -1,6 +1,6 @@
 #version 330 core
 
-layout (std140) uniform Matrices {
+layout(std140) uniform Matrices {
 	mat4 projection;
 	mat4 view;
 };

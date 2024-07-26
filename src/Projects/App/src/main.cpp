@@ -7,7 +7,8 @@ int main() {
 	camera.setSpeed(0.1f);
 	JaroViewer::Engine3D engine = JaroViewer::Engine3D(3, 600, 450, "Basic example", &camera);
 
-	JaroViewer::Shader shader{{"/vertex/Transform.vs", "/vertex/Wireframe.vs"}, {"/fragment/Wireframe.fs"}};
+	JaroViewer::Shader shader{{"/vertex/Library.vs", "/vertex/Wireframe.vs"}, {"/fragment/Wireframe.fs"}};
+	shader.setUniformBuffer("Matrices", 0);
 	JaroViewer::BoxComponent box{shader};
 	box.setWireframeMode(true);
 	engine.addComponent(&box);

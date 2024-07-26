@@ -13,7 +13,7 @@
 
 namespace JaroViewer {
 		class Engine3D {
-		public:
+		public:			
 			Engine3D(int glfwVersion, int width, int height, const char* title, Camera* camera);
 
 			void start();
@@ -24,6 +24,11 @@ namespace JaroViewer {
 		private:
 			void render();
 			void processInput(GLFWwindow *window, float deltaTime);
+
+			struct UniformMatrices {
+				glm::mat4 projection;
+				glm::mat4 view;
+			};
 
 			int mWidth;
 			int mHeight;

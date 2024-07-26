@@ -6,6 +6,8 @@
 #include <algorithm>
 #include <iostream>
 
+#include <GLM/gtx/string_cast.hpp>
+
 using namespace JaroViewer;
 
 Engine3D::Engine3D(int glfwVersion, int width, int height, const char* title, Camera* camera) :
@@ -51,9 +53,9 @@ void Engine3D::start() {
 	// Setup the ubo
 	glGenBuffers(1, &mUboBuffer);
 	glBindBuffer(GL_UNIFORM_BUFFER, mUboBuffer);
-	glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), NULL, GL_STATIC_DRAW);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(UniformMatrices), NULL, GL_STATIC_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-	glBindBufferRange(GL_UNIFORM_BUFFER, 0, mUboBuffer, 0, 2 * sizeof(glm::mat4));
+	glBindBufferRange(GL_UNIFORM_BUFFER, 0, mUboBuffer, 0, sizeof(UniformMatrices));
 
 	render();
 	glfwTerminate();
@@ -104,6 +106,10 @@ void Engine3D::removeComponent(unsigned int id) {
 void Engine3D::render() {
 	float lastFrame = 0.0f;
 	float deltaTime = 0.0f;
+	UniformMatrices uniformData {
+		glm::perspective(glm::radians(45.0f), (float)mWidth / (float)mHeight, 0.1f, 100.0f),
+		mCamera->getView()
+	};
 	while (!glfwWindowShouldClose(mWindow)) {
 		deltaTime = glfwGetTime() - lastFrame;
 		lastFrame = deltaTime;
@@ -116,10 +122,13 @@ void Engine3D::render() {
 			glViewport(0, 0, width, height);
 		}
 
+		uniformData.view = mCamera->getView();
+		glBindBuffer(GL_UNIFORM_BUFFER, mUboBuffer);
+		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(UniformMatrices), &uniformData);
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
 		Component3D::RenderData data{
 			glm::mat4(1.0f),
-			mCamera->getView(),
-			glm::perspective(glm::radians(45.0f), (float)mWidth / (float)mHeight, 0.1f, 100.0f)
 		};
 
 		processInput(mWindow, deltaTime);
