@@ -25,6 +25,7 @@ namespace JaroViewer {
 			void setFloat4(const std::string &name, float x, float y, float z, float w) const;
 
 			void setVec3(const std::string &name, glm::vec3 vec) const;
+			void setMat3(const std::string &name, glm::mat3 mat) const;
 			void setMat4(const std::string &name, glm::mat4 mat) const;
 
 		private:

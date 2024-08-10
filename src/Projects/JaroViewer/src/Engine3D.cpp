@@ -1,61 +1,33 @@
 #include "../header/Engine3D.h"
+#include "../header/Tools.h"
+#include "../header/Timer.h"
 
 #include <GLAD/glad.h>
 #include <GLFW/glfw3.h>
 
-#include <algorithm>
-#include <iostream>
-
 #include <GLM/gtx/string_cast.hpp>
+#include <algorithm>
+#include <memory>
 
 using namespace JaroViewer;
 
-Engine3D::Engine3D(int glfwVersion, int width, int height, const char* title, Camera* camera) :
-	mWidth{width},
-	mHeight{height},
+Engine3D::Engine3D(const Window &window, Camera* camera) :
 	mComponents{},
 	mComponentsLength{0},
 	mOpenSlots{},
-	mCamera{camera}
+	mWindow{window},
+	mCamera{camera},
+	mLightSet{nullptr}
 {
-	// Start up GLFW
-	glfwInit();
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, glfwVersion);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, glfwVersion);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-	// Create the needed window
-	mWindow = glfwCreateWindow(mWidth, mHeight, title, NULL, NULL);
-	if (mWindow == NULL) {
-		glfwTerminate();
-		std::cerr << "[Engine 2D] Failed to create a GLFW window" << std::endl;
-		return;
-	}
-	glfwMakeContextCurrent(mWindow);
-
-	// Initialize GLAD
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-		std::cerr << "[Engine 2D] Failed to initialize GLAD" << std::endl;
-		return;
-	}
-
-	// Setting up the viewport
-	glViewport(0, 0, mWidth, mHeight);
-	glEnable(GL_DEPTH_TEST);
-	Camera::setupCallback(mWindow, mCamera);
+	Camera::setupCallback(window.getPointer(), mCamera);
 }
 
 /**
  * Starts the engine and opens the window
  */
 void Engine3D::start() {
-	// TODO: do the setup
 	// Setup the ubo
-	glGenBuffers(1, &mUboBuffer);
-	glBindBuffer(GL_UNIFORM_BUFFER, mUboBuffer);
-	glBufferData(GL_UNIFORM_BUFFER, sizeof(UniformMatrices), NULL, GL_STATIC_DRAW);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-	glBindBufferRange(GL_UNIFORM_BUFFER, 0, mUboBuffer, 0, sizeof(UniformMatrices));
+	mTransformationUBO = Tools::generateUniformBuffer(0, sizeof(UniformTransformation), GL_STATIC_DRAW);
 
 	render();
 	glfwTerminate();
@@ -66,8 +38,8 @@ void Engine3D::start() {
  * @param component The component that is to be added
  * @return The id of where the component is stored
  */
-unsigned int Engine3D::addComponent(JaroViewer::Component3D* component) {
-	int index = 0;
+unsigned int Engine3D::addComponent(std::shared_ptr<JaroViewer::Component3D> component) {
+	int index;
 	if (mOpenSlots.empty()) {
 		mComponents.insert({mComponentsLength, component});
 		index = mComponentsLength++;
@@ -85,7 +57,7 @@ unsigned int Engine3D::addComponent(JaroViewer::Component3D* component) {
  * @param id The id of the component to be retreived
  * @return A pointer to the component
  */
-Component3D* Engine3D::getComponent(unsigned int id) {
+std::shared_ptr<JaroViewer::Component3D> Engine3D::getComponent(unsigned int id) {
 	if (id >= mComponentsLength || 0 < std::count(mOpenSlots.begin(), mOpenSlots.end(), id)) return nullptr;
 	return mComponents.at(id);
 }
@@ -100,59 +72,66 @@ void Engine3D::removeComponent(unsigned int id) {
 	mComponents.erase(id);	
 }
 
+void Engine3D::setLightSet(LightSet* lightSet) { 
+	mLightSet = lightSet; 
+	mLightSetUBO = Tools::generateUniformBuffer(1, sizeof(LightSet::LightSetStruct), GL_STATIC_DRAW);
+}
+
 /**
  * Contains the main rendering loop 
  */
 void Engine3D::render() {
-	float lastFrame = 0.0f;
-	float deltaTime = 0.0f;
-	UniformMatrices uniformData {
-		glm::perspective(glm::radians(45.0f), (float)mWidth / (float)mHeight, 0.1f, 100.0f),
+	UniformTransformation uniformData {
+		mWindow.getProjection(),
 		mCamera->getView()
 	};
-	while (!glfwWindowShouldClose(mWindow)) {
-		deltaTime = glfwGetTime() - lastFrame;
-		lastFrame = deltaTime;
 
-		int width, height;
-		glfwGetWindowSize(mWindow, &width, &height);
-		if (mWidth != width || mHeight != height) {
-			mWidth = width;
-			mHeight = height;
-			glViewport(0, 0, width, height);
-		}
-
-		uniformData.view = mCamera->getView();
-		glBindBuffer(GL_UNIFORM_BUFFER, mUboBuffer);
-		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(UniformMatrices), &uniformData);
-		glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
+	// Start the main loop
+	Timer timer{};
+	while (!mWindow.shouldClose()) {
 		Component3D::RenderData data{
-			glm::mat4(1.0f),
+			mCamera->getPosition(),
+			timer.getDeltaTime()	
 		};
+		
+		uniformData.view = mCamera->getView();
+		Tools::updateUniformBufferData(mTransformationUBO, &uniformData, sizeof(uniformData));
+		LightSet::LightSetStruct lightStruct = mLightSet->getStruct();
+		Tools::updateUniformBufferData(mLightSetUBO, &lightStruct, sizeof(lightStruct));
 
-		processInput(mWindow, deltaTime);
+		if (mWindow.updateView())
+			uniformData.projection = mWindow.getProjection();
 
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		std::map<int, JaroViewer::Component3D*>::iterator it;
-		for (it = mComponents.begin(); it != mComponents.end(); it++) {
-			it->second->render(data);
-		}
-
-		glfwSwapBuffers(mWindow);
-		glfwPollEvents();
+		processInput(data.deltaTime);
+		updateFrame(data);		
 	}
 }
 
-void Engine3D::processInput(GLFWwindow *window, float deltaTime) {
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-		glfwSetWindowShouldClose(window, true);
+/**
+ * Reads and act on input queues
+ * @param deltaTime The time since the last frame
+ */
+void Engine3D::processInput(float deltaTime) {
+	if (mWindow.isKeyPressed(GLFW_KEY_ESCAPE)) mWindow.setShouldClose(true);
 
 	if (mCamera) {
-		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) mCamera->goForward(deltaTime);
-		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) mCamera->goBack(deltaTime);
-		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) mCamera->goLeft(deltaTime);
-		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) mCamera->goRight(deltaTime);
+		if (mWindow.isKeyPressed(GLFW_KEY_W)) mCamera->goForward(deltaTime);
+		if (mWindow.isKeyPressed(GLFW_KEY_S)) mCamera->goBack(deltaTime);
+		if (mWindow.isKeyPressed(GLFW_KEY_A)) mCamera->goLeft(deltaTime);
+		if (mWindow.isKeyPressed(GLFW_KEY_D)) mCamera->goRight(deltaTime);
 	}
+}
+
+
+/**
+ * Updates the frame
+ * @param data The data that will be given to each component
+ */
+void Engine3D::updateFrame(const Component3D::RenderData &data) {
+	mWindow.clearWindow();
+
+	std::map<int, std::shared_ptr<JaroViewer::Component3D>>::iterator it;
+	for (it = mComponents.begin(); it != mComponents.end(); it++) it->second->render(data);
+
+	mWindow.update();
 }

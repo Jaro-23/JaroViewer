@@ -7,11 +7,72 @@
       "-g",
       "-c",
       "-o",
+      "../Build/Obj/JaroViewer/Debug/BoxComponent.o",
+      "../Projects/JaroViewer/src/BoxComponent.cpp"
+    ],
+    "directory": "/home/robbe/dev/JaroViewer/src/Generated",
+    "file": "/home/robbe/dev/JaroViewer/src/Projects/JaroViewer/src/BoxComponent.cpp",
+    "output": "/home/robbe/dev/JaroViewer/src/Build/Obj/JaroViewer/Debug/BoxComponent.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-I../Libraries/Include",
+      "-m64",
+      "-g",
+      "-c",
+      "-o",
+      "../Build/Obj/JaroViewer/Debug/Component3D.o",
+      "../Projects/JaroViewer/src/Component3D.cpp"
+    ],
+    "directory": "/home/robbe/dev/JaroViewer/src/Generated",
+    "file": "/home/robbe/dev/JaroViewer/src/Projects/JaroViewer/src/Component3D.cpp",
+    "output": "/home/robbe/dev/JaroViewer/src/Build/Obj/JaroViewer/Debug/Component3D.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-I../Libraries/Include",
+      "-m64",
+      "-g",
+      "-c",
+      "-o",
       "../Build/Obj/JaroViewer/Debug/Engine3D.o",
       "../Projects/JaroViewer/src/Engine3D.cpp"
     ],
     "directory": "/home/robbe/dev/JaroViewer/src/Generated",
     "file": "/home/robbe/dev/JaroViewer/src/Projects/JaroViewer/src/Engine3D.cpp",
     "output": "/home/robbe/dev/JaroViewer/src/Build/Obj/JaroViewer/Debug/Engine3D.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-I../Libraries/Include",
+      "-m64",
+      "-g",
+      "-c",
+      "-o",
+      "../Build/Obj/JaroViewer/Debug/PointLight.o",
+      "../Projects/JaroViewer/src/PointLight.cpp"
+    ],
+    "directory": "/home/robbe/dev/JaroViewer/src/Generated",
+    "file": "/home/robbe/dev/JaroViewer/src/Projects/JaroViewer/src/PointLight.cpp",
+    "output": "/home/robbe/dev/JaroViewer/src/Build/Obj/JaroViewer/Debug/PointLight.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-I../Libraries/Include",
+      "-I../Projects/JaroViewer/header",
+      "-m64",
+      "-g",
+      "-c",
+      "-o",
+      "../Build/Obj/App/Debug/main.o",
+      "../Projects/App/src/main.cpp"
+    ],
+    "directory": "/home/robbe/dev/JaroViewer/src/Generated",
+    "file": "/home/robbe/dev/JaroViewer/src/Projects/App/src/main.cpp",
+    "output": "/home/robbe/dev/JaroViewer/src/Build/Obj/App/Debug/main.o"
   }
 ]

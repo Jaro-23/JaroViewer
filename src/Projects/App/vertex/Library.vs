@@ -1,6 +1,6 @@
-#version 330 core
+#version 420 core
 
-layout(std140) uniform Matrices {
+layout(std140, binding = 0) uniform Transformation {
 	mat4 projection;
 	mat4 view;
 };

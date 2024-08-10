@@ -1,14 +1,31 @@
-#include "../header/BoxComponent.h"
-#include "../header/Tools.h"
-#include <GLM/gtx/string_cast.hpp>
+#include "../header/PointLight.h"
 
 using namespace JaroViewer;
 
-BoxComponent::BoxComponent(const Shader &shader, const Shader &wireframeShader) :
-	Component3D(shader, wireframeShader)
-{}
+PointLight::PointLight(const Shader &shader, const Shader &wireframeShader, Tools::LightColor lightColor, float constant, float linear, float quadratic) :
+	Component3D{shader, wireframeShader},
+	mLightColor{lightColor},
+	mConstant{constant},
+	mLinear{linear},
+	mQuadratic{quadratic}
+{
 
-void BoxComponent::load() {
+}
+
+PointLight::PointLightStruct PointLight::getStruct() const {
+	return PointLightStruct{
+		getPosition(),
+		0,
+		mLightColor.ambient,
+		mConstant,
+		mLightColor.diffuse,
+		mLinear,
+		mLightColor.specular,
+		mQuadratic
+	};
+}
+
+void PointLight::load() {
 	mNumLines = 36;
 	setUseIndices(false);
 
@@ -55,6 +72,8 @@ void BoxComponent::load() {
 		-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
 		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
 	};
+
+	setScale(0.2f);
 
 	// Create the VAO
 	glGenVertexArrays(1, &mVaoBuffer);

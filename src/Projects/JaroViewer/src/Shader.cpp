@@ -1,5 +1,4 @@
 #include "../header/Shader.h"
-#include "../header/Config.h"
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
@@ -26,7 +25,7 @@ Shader::Shader(const std::vector<std::string> &vertexPaths, const std::vector<st
  * @param fragmentPaths The paths to all fragment files to be merged in the shader
  * @param geometryPaths The paths to all geometry files to be merged in the shader
  */
-Shader::Shader(const std::vector<std::string> &vertexPaths, const std::vector<std::string> &fragmentPaths, const std::vector<std::string> &geometryPaths) {
+Shader::Shader(const std::vector<std::string> &vertexPaths, const std::vector<std::string> &geometryPaths, const std::vector<std::string> &fragmentPaths) {
 	unsigned int vertex = createShader(GL_VERTEX_SHADER, &vertexPaths, "VERTEX");
 	unsigned int geometry = createShader(GL_GEOMETRY_SHADER, &geometryPaths, "GEOMETRY");
 	unsigned int fragment = createShader(GL_FRAGMENT_SHADER, &fragmentPaths, "FRAGMENT");
@@ -48,6 +47,7 @@ void Shader::setFloat3(const std::string &name, float x, float y, float z) const
 void Shader::setFloat4(const std::string &name, float x, float y, float z, float w) const { return glUniform4f(getLocation(name), x, y, z, w); }
 
 void Shader::setVec3(const std::string &name, glm::vec3 vec) const { glUniform3fv(getLocation(name), 1, glm::value_ptr(vec)); }
+void Shader::setMat3(const std::string &name, glm::mat3 mat) const { glUniformMatrix3fv(getLocation(name), 1, GL_FALSE, glm::value_ptr(mat)); }
 void Shader::setMat4(const std::string &name, glm::mat4 mat) const { glUniformMatrix4fv(getLocation(name), 1, GL_FALSE, glm::value_ptr(mat)); }
 
 /**
@@ -60,7 +60,7 @@ void Shader::readFile(const std::string &filePath, std::string *out) const {
 	fileStream.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 
 	try {
-		fileStream.open(JAROVIEWER_PATH + "/" + filePath);
+		fileStream.open(filePath);
 		std::stringstream stringStream;
 		stringStream << fileStream.rdbuf();
 		fileStream.close();
