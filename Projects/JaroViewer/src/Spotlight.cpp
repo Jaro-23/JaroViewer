@@ -1,12 +1,12 @@
 #include "../header/Spotlight.h"
 #include "GLM/trigonometric.hpp"
-#include <iostream>
 
 using namespace JaroViewer;
 
 Spotlight::Spotlight(const Shader &shader, const Shader &wireframeShader, glm::vec3 direction, Tools::LightColor lightColor, Tools::AttenuationParams params, float innerAngle, float outerAngle) :
 	Component3D{shader, wireframeShader},
 	mLightColor{lightColor},
+	mEnable{true},
 	mDirection{direction},
 	mCutOff{glm::cos(glm::radians(innerAngle))},
 	mOuterCutOff{glm::cos(glm::radians(outerAngle))},
@@ -14,8 +14,10 @@ Spotlight::Spotlight(const Shader &shader, const Shader &wireframeShader, glm::v
 	mLinear{params.linear},
 	mQuadratic{params.quadratic}
 {
-	std::cout << mCutOff << " " << mOuterCutOff << std::endl;
+
 }
+
+void Spotlight::enable(bool enable) { mEnable = enable; }
 
 Spotlight::SpotlightStruct Spotlight::getStruct() const {
 	return SpotlightStruct{
@@ -28,7 +30,8 @@ Spotlight::SpotlightStruct Spotlight::getStruct() const {
 		mLightColor.diffuse,
 		mLinear,
 		mLightColor.specular,
-		mQuadratic
+		mQuadratic,
+		mEnable
 	};
 }
 

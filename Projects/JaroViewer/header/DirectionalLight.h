@@ -8,7 +8,7 @@ namespace JaroViewer {
 		public:
 			struct DirectionalLightStruct {
 				glm::vec3 direction;
-				float pad0;
+				bool enable;
 				glm::vec3 ambient;
 				float pad1;
 				glm::vec3 diffuse;
@@ -19,10 +19,12 @@ namespace JaroViewer {
 
 			DirectionalLight(glm::vec3 direction, Tools::LightColor lightColor);
 
+			void enable(bool enable);
 			DirectionalLightStruct getStruct() const;
 
 		private:
 			glm::vec3 mDirection;
 			Tools::LightColor mLightColor;	
+			bool mEnable;
 	};
 }

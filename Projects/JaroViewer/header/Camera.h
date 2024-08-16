@@ -36,6 +36,7 @@ namespace JaroViewer {
 
 		private:
 			std::shared_ptr<JaroViewer::Spotlight> mFlashlight;
+			bool mEnableFlashlight;
 
 			// Lateral freedom
 			glm::vec3 mPos;

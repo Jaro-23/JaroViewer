@@ -11,10 +11,17 @@ using namespace JaroViewer;
  */
 DirectionalLight::DirectionalLight(glm::vec3 direction, Tools::LightColor lightColor) : 
 	mDirection{direction},
-	mLightColor{lightColor}
+	mLightColor{lightColor},
+	mEnable{true}
 {
 
 }
+
+/**
+ * Enables or disables the light
+ * @param enable New enable state of the light
+ */
+void DirectionalLight::enable(bool enable) { mEnable = enable; }
 
 /**
  * Returns a struct with all data
@@ -23,7 +30,7 @@ DirectionalLight::DirectionalLight(glm::vec3 direction, Tools::LightColor lightC
 DirectionalLight::DirectionalLightStruct DirectionalLight::getStruct() const {
 	return DirectionalLightStruct{
 		mDirection,
-		0,
+		mEnable,
 		mLightColor.ambient,
 		0,
 		mLightColor.diffuse,

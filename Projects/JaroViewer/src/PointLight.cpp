@@ -5,6 +5,7 @@ using namespace JaroViewer;
 PointLight::PointLight(const Shader &shader, const Shader &wireframeShader, Tools::LightColor lightColor, Tools::AttenuationParams params) :
 	Component3D{shader, wireframeShader},
 	mLightColor{lightColor},
+	mEnable{true},
 	mConstant{params.constant},
 	mLinear{params.linear},
 	mQuadratic{params.quadratic}
@@ -12,10 +13,12 @@ PointLight::PointLight(const Shader &shader, const Shader &wireframeShader, Tool
 
 }
 
+void PointLight::enable(bool enable) { mEnable = enable; }
+
 PointLight::PointLightStruct PointLight::getStruct() const {
 	return PointLightStruct{
 		getPosition(),
-		0,
+		mEnable,
 		mLightColor.ambient,
 		mConstant,
 		mLightColor.diffuse,

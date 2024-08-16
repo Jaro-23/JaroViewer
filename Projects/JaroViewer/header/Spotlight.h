@@ -18,10 +18,15 @@ namespace JaroViewer {
 				float linear;
 				glm::vec3 specular;
 				float quadratic;
+				bool enable;
+				float pad0;
+				float pad1;
+				float pad2;
 			};
 
 			Spotlight(const Shader &shader, const Shader &wireframeShader, glm::vec3 direction, Tools::LightColor lightColor, Tools::AttenuationParams params, float innerAngle, float outerAngle);
 
+			void enable(bool enable);
 			SpotlightStruct getStruct() const;
 			void load() override;
 
@@ -30,6 +35,7 @@ namespace JaroViewer {
 
 		private:
 			Tools::LightColor mLightColor;	
+			bool mEnable;
 
 			glm::vec3 mDirection;
 			float mCutOff;

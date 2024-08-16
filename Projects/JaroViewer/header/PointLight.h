@@ -8,8 +8,8 @@ namespace JaroViewer {
 	class PointLight : public JaroViewer::Component3D {
 		public:
 			struct PointLightStruct{
-				glm::vec3 direction;
-				float pad0;
+				glm::vec3 position;
+				bool enable;
 				glm::vec3 ambient;
 				float constant;
 				glm::vec3 diffuse;
@@ -20,11 +20,13 @@ namespace JaroViewer {
 
 			PointLight(const Shader &shader, const Shader &wireframeShader, Tools::LightColor lightColor, Tools::AttenuationParams params);
 
+			void enable(bool enable);
 			PointLightStruct getStruct() const;
 			void load() override;
 
 		private:
 			Tools::LightColor mLightColor;	
+			bool mEnable;
 
 			float mConstant;
 			float mLinear;

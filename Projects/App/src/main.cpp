@@ -20,7 +20,7 @@ int main() {
 	Shader shader{{basePath + "vertex/Library.vs", basePath + "vertex/Basic.vs"}, {basePath + "fragment/Library.fs", basePath + "fragment/Basic.fs"}};
 	Shader fullWhiteShader{{basePath + "vertex/Library.vs", basePath + "vertex/FullWhite.vs"}, {basePath + "fragment/FullWhite.fs"}};
 	Shader wireframeShader{{basePath + "vertex/Wireframe.vs"}, {basePath + "geometry/Wireframe.gs"}, {basePath + "fragment/Wireframe.fs"}};
-	Material crate{basePath + "textures/crate.jpg", basePath + "textures/crate_specular.jpg", 11.0f};
+	Material crate{basePath + "textures/crate.jpg", basePath + "textures/crate_specular.jpg", 32.0f};
 	Tools::LightColor lightColor{glm::vec3(0.05f), glm::vec3(0.55f), glm::vec3(1.00f)};
 	Tools::AttenuationParams attenParams{ 1.0f, 0.09f, 0.032f };
 

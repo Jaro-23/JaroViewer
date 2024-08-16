@@ -18,6 +18,7 @@ struct LightPosSet {
 
 struct DirectionalLight {
 	vec3 direction;
+	bool enable;
 	vec3 ambient;
 	vec3 diffuse;
 	vec3 specular;
@@ -25,6 +26,7 @@ struct DirectionalLight {
 
 struct PointLight{
 	vec3 position;
+	bool enable;
 	vec3 ambient;
 	float constant;
 	vec3 diffuse;
@@ -44,6 +46,7 @@ struct Spotlight{
 	float linear;
 	vec3 specular;
 	float quadratic;
+	bool enable;
 };
 
 layout(std140, binding = 1) uniform LightSet {
@@ -65,12 +68,13 @@ vec3 calculateDiffuse(vec3 diffLight, vec3 fragColor, vec3 normal, vec3 lightDir
 }
 
 vec3 calculateSpecular(vec3 specLight, vec3 fragColor, float shininess, vec3 normal, vec3 lightDir, vec3 viewDir) {
-	vec3 reflectDir = reflect(-lightDir, normal);
-	float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
+	vec3 halfwayDir = normalize(lightDir + viewDir);
+	float spec = pow(max(dot(normal, halfwayDir), 0.0), shininess);
 	return specLight * (spec * fragColor);
 }
 
 vec3 calculateDirectionLight(DirectionalLight light, Material mat, vec2 texCoords, LightPosSet posSet) {
+
 	vec3 norm = normalize(posSet.normal);
 	vec3 lightDir = normalize(light.direction);
 	vec3 viewDir = normalize(posSet.viewPos - posSet.fragPos);
@@ -86,6 +90,9 @@ vec3 calculateDirectionLight(DirectionalLight light, Material mat, vec2 texCoord
 }
 
 vec3 calculatePointLight(PointLight light, Material mat, vec2 texCoords, LightPosSet posSet) {
+	if (!light.enable)
+		return vec3(0.0);
+
 	vec3 norm = normalize(posSet.normal);
 	vec3 lightDir = normalize(light.position - posSet.fragPos);
 	vec3 viewDir = normalize(posSet.viewPos - posSet.fragPos);
@@ -104,6 +111,9 @@ vec3 calculatePointLight(PointLight light, Material mat, vec2 texCoords, LightPo
 }
 
 vec3 calculateSpotlight(Spotlight light, Material mat, vec2 texCoords, LightPosSet posSet) {
+	if (!light.enable)
+		return vec3(0.0);
+
 	vec3 norm = normalize(posSet.normal);
 	vec3 lightDir = normalize(light.position - posSet.fragPos);
 	vec3 viewDir = normalize(posSet.viewPos - posSet.fragPos);
