@@ -57,5 +57,11 @@ namespace JaroViewer {
 				glm::vec3 diffuse;
 				glm::vec3 specular;
 			};
+
+			struct AttenuationParams{
+				float constant;
+				float linear;
+				float quadratic;
+			};
 	};
 }

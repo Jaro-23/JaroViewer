@@ -1,3 +1,4 @@
+#include "GLM/trigonometric.hpp"
 #include "PointLight.h"
 #include <Shader.h>
 #include <Engine3D.h>
@@ -20,20 +21,23 @@ int main() {
 	Shader fullWhiteShader{{basePath + "vertex/Library.vs", basePath + "vertex/FullWhite.vs"}, {basePath + "fragment/FullWhite.fs"}};
 	Shader wireframeShader{{basePath + "vertex/Wireframe.vs"}, {basePath + "geometry/Wireframe.gs"}, {basePath + "fragment/Wireframe.fs"}};
 	Material crate{basePath + "textures/crate.jpg", basePath + "textures/crate_specular.jpg", 11.0f};
-	Tools::LightColor lightColor{glm::vec3(0.25f), glm::vec3(0.55f), glm::vec3(1.00f)};
+	Tools::LightColor lightColor{glm::vec3(0.05f), glm::vec3(0.55f), glm::vec3(1.00f)};
+	Tools::AttenuationParams attenParams{ 1.0f, 0.09f, 0.032f };
 
 	// Create the lightset and add it
 	std::shared_ptr<DirectionalLight> dir{ new DirectionalLight{ glm::vec3(-0.2f, -1.0f, -0.3f), lightColor} };
-	std::shared_ptr<PointLight> pointLight{ new PointLight{ fullWhiteShader, wireframeShader, lightColor, 1.0f, 0.09f, 0.032f } };
+	std::shared_ptr<PointLight> pointLight{ new PointLight{ fullWhiteShader, wireframeShader, lightColor, attenParams } };
 	pointLight->setTranslation(glm::vec3(-2.0f, 0.3f, 1.0f));
-	std::shared_ptr<PointLight> pointLight2{ new PointLight{ fullWhiteShader, wireframeShader, lightColor, 1.0f, 0.09f, 0.032f } };
+	std::shared_ptr<PointLight> pointLight2{ new PointLight{ fullWhiteShader, wireframeShader, lightColor, attenParams } };
 	pointLight2->setTranslation(glm::vec3(0.5f, 1.2f, -9.0f));
+	std::shared_ptr<Spotlight> flashlight{ new Spotlight{ fullWhiteShader, wireframeShader, glm::vec3{1.0f}, lightColor, attenParams, 12.5f, 17.5f } };
+	camera.setFlashlight(flashlight);
 
-	LightSet light{
-		dir
-	};
+	LightSet light{};
+	light.addDirLight(dir);
 	light.addPointLight(pointLight);
 	light.addPointLight(pointLight2);
+	light.addSpotlight(flashlight);
 
 	engine.setLightSet(&light);
 	engine.addComponent(pointLight);

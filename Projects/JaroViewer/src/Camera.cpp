@@ -1,7 +1,7 @@
 #include "../header/Camera.h"
 
 #include <cmath>
-#include <iostream>
+#include <memory>
 
 using namespace JaroViewer;
 
@@ -31,16 +31,40 @@ void Camera::setupCallback(GLFWwindow *window, Camera *camera) {
 	glfwSetCursorPosCallback(window, func);
 }
 
-Camera::Camera(glm::vec3 pos, glm::vec3 up) {
-	mPos = pos;
-	mUp = up;
+Camera::Camera(glm::vec3 pos, glm::vec3 up) :
+	mPos{pos},
+	mUp{up},
+	mFlashlight{std::shared_ptr<Spotlight>(nullptr)}
+{
 	updateDirection(0.0f, 0.0f);
 }
 
-void Camera::goForward(float deltaTime) { mPos += mFront * mSpeed * deltaTime; }
-void Camera::goBack(float deltaTime) { mPos -= mFront * mSpeed * deltaTime; }
-void Camera::goLeft(float deltaTime) { mPos -= glm::normalize(glm::cross(mFront, mUp)) * mSpeed * deltaTime; }
-void Camera::goRight(float deltaTime) { mPos += glm::normalize(glm::cross(mFront, mUp)) * mSpeed * deltaTime; }
+void Camera::setFlashlight(const std::shared_ptr<Spotlight> flashlight) { 
+	mFlashlight = flashlight; 
+	mFlashlight->setTranslation(mPos);
+	mFlashlight->setDirection(mFront);
+}
+
+void Camera::goForward(float deltaTime) { 
+	mPos += mFront * mSpeed * deltaTime; 
+	if (mFlashlight) mFlashlight->setTranslation(mPos);
+}
+
+void Camera::goBack(float deltaTime) {
+	mPos -= mFront * mSpeed * deltaTime; 
+	if (mFlashlight) mFlashlight->setTranslation(mPos);
+}
+
+void Camera::goLeft(float deltaTime) {
+	mPos -= glm::normalize(glm::cross(mFront, mUp)) * mSpeed * deltaTime; 
+	if (mFlashlight) mFlashlight->setTranslation(mPos);
+}
+
+void Camera::goRight(float deltaTime) {
+	mPos += glm::normalize(glm::cross(mFront, mUp)) * mSpeed * deltaTime; 
+	if (mFlashlight) mFlashlight->setTranslation(mPos);
+}
+
 void Camera::updateDirection(float yaw, float pitch) {
 	mYaw += yaw;
 	mPitch += pitch;
@@ -52,6 +76,7 @@ void Camera::updateDirection(float yaw, float pitch) {
 	mFront.y = sin(glm::radians(mPitch));
 	mFront.z = sin(glm::radians(mYaw)) * cos(glm::radians(mPitch));
 	mFront = glm::normalize(mFront);
+	if (mFlashlight) mFlashlight->setDirection(mFront);
 }
 
 void Camera::setSpeed(float speed) { mSpeed = speed; }

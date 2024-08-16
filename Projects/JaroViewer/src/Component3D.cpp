@@ -27,25 +27,66 @@ Component3D::Component3D(const Shader &shader, const Shader &wireframeShader) :
 
 void Component3D::setWireframeMode(bool enable) { mWireframeMode = enable; }
 
-void Component3D::addTranslation(const glm::vec3 &translation) { mTranslation += translation; }
+void Component3D::addTranslation(const glm::vec3 &translation) { 
+	mTranslation += translation; 
+	for (int i = 0; i < mChildren.size(); i++)
+		mChildren.at(i)->addTranslation(translation);
+}
+
 void Component3D::addRotation(float angleX, float angleY, float angleZ) {
 	mAngleY += angleX;
 	mAngleY += angleY;
 	mAngleZ += angleZ;
 	normalizeAngles();
+	for (int i = 0; i < mChildren.size(); i++)
+		mChildren.at(i)->addRotation(angleX, angleY, angleZ);
 }
-void Component3D::addScale(const glm::vec3 &scale) { mScale += scale; }
-void Component3D::addScale(float scale) { mScale += glm::vec3(scale); }
 
-void Component3D::setTranslation(const glm::vec3 &translation) { mTranslation = translation; }
+void Component3D::addScale(const glm::vec3 &scale) { 
+	mScale += scale; 
+	for (int i = 0; i < mChildren.size(); i++)
+		mChildren.at(i)->addScale(scale);
+}
+
+void Component3D::addScale(float scale) { 
+	mScale += glm::vec3(scale); 
+	for (int i = 0; i < mChildren.size(); i++)
+		mChildren.at(i)->addScale(scale);
+}
+
+void Component3D::setTranslation(const glm::vec3 &translation) {
+	glm::vec3 offset = translation - mTranslation;
+	mTranslation = translation; 
+	for (int i = 0; i < mChildren.size(); i++)
+		mChildren.at(i)->addTranslation(offset);
+}
+
 void Component3D::setRotation(float angleX, float angleY, float angleZ) {
+	float offsetX = angleX - mAngleX;
+	float offsetY = angleY - mAngleY;
+	float offsetZ = angleZ - mAngleZ;
+
 	mAngleX = angleX;
 	mAngleY = angleY;
 	mAngleZ = angleZ;
 	normalizeAngles();
+
+	for (int i = 0; i < mChildren.size(); i++)
+		mChildren.at(i)->addRotation(offsetX, offsetY, offsetZ);
 }
-void Component3D::setScale(const glm::vec3 &scale) { mScale = scale; }
-void Component3D::setScale(float scale) { mScale = glm::vec3(scale); }
+void Component3D::setScale(const glm::vec3 &scale) { 
+	glm::vec3 offset = scale - mScale;
+	mScale = scale;
+	for (int i = 0; i < mChildren.size(); i++)
+		mChildren.at(i)->addScale(offset);
+}
+
+void Component3D::setScale(float scale) { 
+	glm::vec3 offset = glm::vec3(scale) - mScale;
+	mScale = glm::vec3(scale);
+	for (int i = 0; i < mChildren.size(); i++)
+		mChildren.at(i)->addScale(offset);
+}
 
 void Component3D::addComponent(std::shared_ptr<Component3D> &component) {
 	mChildren.push_back(component);

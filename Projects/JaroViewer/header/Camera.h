@@ -1,3 +1,4 @@
+#include "Spotlight.h"
 #include <GLAD/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -6,6 +7,7 @@
 #include <GLM/gtc/type_ptr.hpp>
 
 #include <cmath>
+#include <memory>
 
 namespace JaroViewer {
 	class Camera {
@@ -13,6 +15,7 @@ namespace JaroViewer {
 			static void setupCallback(GLFWwindow *window, Camera *camera);
 
 			Camera(glm::vec3 pos, glm::vec3 up);
+			void setFlashlight(const std::shared_ptr<JaroViewer::Spotlight> flashlight);
 
 			void goForward(float deltaTime);
 			void goBack(float deltaTime);
@@ -32,6 +35,8 @@ namespace JaroViewer {
 			float getSensitivity() const;
 
 		private:
+			std::shared_ptr<JaroViewer::Spotlight> mFlashlight;
+
 			// Lateral freedom
 			glm::vec3 mPos;
 			glm::vec3 mFront;

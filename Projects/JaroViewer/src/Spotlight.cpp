@@ -1,21 +1,28 @@
-#include "../header/PointLight.h"
+#include "../header/Spotlight.h"
+#include "GLM/trigonometric.hpp"
+#include <iostream>
 
 using namespace JaroViewer;
 
-PointLight::PointLight(const Shader &shader, const Shader &wireframeShader, Tools::LightColor lightColor, Tools::AttenuationParams params) :
+Spotlight::Spotlight(const Shader &shader, const Shader &wireframeShader, glm::vec3 direction, Tools::LightColor lightColor, Tools::AttenuationParams params, float innerAngle, float outerAngle) :
 	Component3D{shader, wireframeShader},
 	mLightColor{lightColor},
+	mDirection{direction},
+	mCutOff{glm::cos(glm::radians(innerAngle))},
+	mOuterCutOff{glm::cos(glm::radians(outerAngle))},
 	mConstant{params.constant},
 	mLinear{params.linear},
 	mQuadratic{params.quadratic}
 {
-
+	std::cout << mCutOff << " " << mOuterCutOff << std::endl;
 }
 
-PointLight::PointLightStruct PointLight::getStruct() const {
-	return PointLightStruct{
+Spotlight::SpotlightStruct Spotlight::getStruct() const {
+	return SpotlightStruct{
 		getPosition(),
-		0,
+		mCutOff,
+		mDirection,
+		mOuterCutOff,
 		mLightColor.ambient,
 		mConstant,
 		mLightColor.diffuse,
@@ -25,7 +32,7 @@ PointLight::PointLightStruct PointLight::getStruct() const {
 	};
 }
 
-void PointLight::load() {
+void Spotlight::load() {
 	mNumLines = 36;
 	setUseIndices(false);
 
@@ -90,3 +97,6 @@ void PointLight::load() {
 
 	glBindVertexArray(0);
 }
+
+void Spotlight::setDirection(const glm::vec3 &direction) { mDirection = direction; }
+glm::vec3 Spotlight::getDirection() const { return mDirection; }
