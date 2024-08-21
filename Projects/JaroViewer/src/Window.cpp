@@ -110,3 +110,13 @@ glm::mat4 Window::getProjection() const {
 bool Window::isKeyPressed(int key) const {
 	return glfwGetKey(mWindow, key) == GLFW_PRESS;
 }
+
+/**
+ * Returns if a key is released on the window
+ * @return True if the key is pressed otherwise false
+ */
+bool Window::isKeyReleased(int key) const {
+	return glfwGetKey(mWindow, key) == GLFW_RELEASE;
+}
+
+void Window::setKeyCallback(GLFWkeyfun callback) { glfwSetKeyCallback(mWindow, callback); } 

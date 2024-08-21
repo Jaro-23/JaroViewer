@@ -45,6 +45,8 @@ void Camera::setFlashlight(const std::shared_ptr<Spotlight> flashlight) {
 	mFlashlight->setDirection(mFront);
 }
 
+void Camera::toggleFlashlight() { if (mFlashlight) mFlashlight->enable(!mFlashlight->getState()); }
+
 void Camera::goForward(float deltaTime) { 
 	mPos += mFront * mSpeed * deltaTime; 
 	if (mFlashlight) mFlashlight->setTranslation(mPos);

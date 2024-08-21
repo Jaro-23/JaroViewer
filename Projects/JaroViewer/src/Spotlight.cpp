@@ -18,6 +18,7 @@ Spotlight::Spotlight(const Shader &shader, const Shader &wireframeShader, glm::v
 }
 
 void Spotlight::enable(bool enable) { mEnable = enable; }
+bool Spotlight::getState() const { return mEnable; }
 
 Spotlight::SpotlightStruct Spotlight::getStruct() const {
 	return SpotlightStruct{

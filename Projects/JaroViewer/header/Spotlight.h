@@ -27,6 +27,7 @@ namespace JaroViewer {
 			Spotlight(const Shader &shader, const Shader &wireframeShader, glm::vec3 direction, Tools::LightColor lightColor, Tools::AttenuationParams params, float innerAngle, float outerAngle);
 
 			void enable(bool enable);
+			bool getState() const;
 			SpotlightStruct getStruct() const;
 			void load() override;
 

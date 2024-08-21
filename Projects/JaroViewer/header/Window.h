@@ -21,6 +21,9 @@ namespace JaroViewer {
 			GLFWwindow* getPointer() const;
 			glm::mat4 getProjection() const;
 			bool isKeyPressed(int key) const;
+			bool isKeyReleased(int key) const;
+
+			void setKeyCallback(GLFWkeyfun callback);
 
 		private:
 			GLFWwindow *mWindow;

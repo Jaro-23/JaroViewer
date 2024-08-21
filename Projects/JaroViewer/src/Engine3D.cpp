@@ -119,6 +119,7 @@ void Engine3D::processInput(float deltaTime) {
 		if (mWindow.isKeyPressed(GLFW_KEY_S)) mCamera->goBack(deltaTime);
 		if (mWindow.isKeyPressed(GLFW_KEY_A)) mCamera->goLeft(deltaTime);
 		if (mWindow.isKeyPressed(GLFW_KEY_D)) mCamera->goRight(deltaTime);
+		if (mWindow.isKeyPressed(GLFW_KEY_F)) mCamera->toggleFlashlight();
 	}
 }
 

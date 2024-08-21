@@ -9,3 +9,5 @@ Generated/
 Makefile
 
 compile_commands.json
+debug.sh
+setup.sh

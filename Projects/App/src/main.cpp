@@ -1,4 +1,3 @@
-#include "GLM/trigonometric.hpp"
 #include "PointLight.h"
 #include <Shader.h>
 #include <Engine3D.h>
@@ -13,7 +12,8 @@ int main() {
 	// Always create engine first because it will start glfw etc..
 	Camera camera = Camera(glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	camera.setSpeed(3.5f);
-	Engine3D engine = Engine3D(Window(3, 600, 450, "Basic example"), &camera);
+	Window window{3, 600, 450, "Basic example"};
+	Engine3D engine = Engine3D(window, &camera);
 	
 	// Create some shaders and textures
 	const std::string basePath = "./Projects/App/";
@@ -23,7 +23,6 @@ int main() {
 	Material crate{basePath + "textures/crate.jpg", basePath + "textures/crate_specular.jpg", 32.0f};
 	Tools::LightColor lightColor{glm::vec3(0.05f), glm::vec3(0.55f), glm::vec3(1.00f)};
 	Tools::AttenuationParams attenParams{ 1.0f, 0.09f, 0.032f };
-
 	// Create the lightset and add it
 	std::shared_ptr<DirectionalLight> dir{ new DirectionalLight{ glm::vec3(-0.2f, -1.0f, -0.3f), lightColor} };
 	std::shared_ptr<PointLight> pointLight{ new PointLight{ fullWhiteShader, wireframeShader, lightColor, attenParams } };
