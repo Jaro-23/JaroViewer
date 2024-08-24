@@ -27,7 +27,7 @@ function includeJaroViewer()
 
 	libdirs "Libraries/Lib"
 	filter { "kind:not StaticLib" }
-		links "glfw3"
+		links { "glfw3", "assimp", "z" }
 
 	filter {}
 end

@@ -78,7 +78,7 @@ void Texture2D::loadImageToTexture(const char *filepath, bool flip) {
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 	else {
-		std::cout << "ERROR::TEXTURE::UNABLE_TO_LOAD_IMAGE" << std::endl;
+		std::cout << "ERROR::TEXTURE::UNABLE_TO_LOAD_IMAGE::" << filepath << std::endl;
 		std::cout << stbi_failure_reason() << std::endl;
 	}
 	stbi_image_free(imageData);

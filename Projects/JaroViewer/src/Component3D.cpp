@@ -4,8 +4,6 @@
 #include "GLM/fwd.hpp"
 #include "GLM/matrix.hpp"
 
-#include <GLAD/glad.h>
-#include <GLFW/glfw3.h>
 #include <iostream>
 #include <memory>
 #include <vector>
@@ -91,7 +89,7 @@ void Component3D::setScale(float scale) {
 		mChildren.at(i)->addScale(offset);
 }
 
-void Component3D::addComponent(std::shared_ptr<Component3D> &component) {
+void Component3D::addComponent(const std::shared_ptr<Component3D> &component) {
 	mChildren.push_back(component);
 	component->setTranslation(mTranslation);
 	component->setRotation(mAngleX, mAngleY, mAngleZ);
@@ -124,11 +122,6 @@ void Component3D::render(const RenderData &data) {
 	else
 		defaultRender(data);
 
-	if (mUseIndices)
-		glDrawElements(GL_TRIANGLES, mNumLines, GL_UNSIGNED_INT, 0);
-	else
-		glDrawArrays(GL_TRIANGLES, 0, mNumLines);
-
 	for (int i = 0; i < mChildren.size(); i++) mChildren.at(i)->render(data);
 }
 
@@ -149,23 +142,16 @@ glm::mat3 Component3D::getNormalModelMatrix(const glm::mat4 &model) const {
 	return glm::mat3(glm::transpose(glm::inverse(model)));
 };
 
-glm::vec3 Component3D::getPosition() const {
-	return mTranslation;
-}
+glm::vec3 Component3D::getPosition() const { return mTranslation; }
 
-void Component3D::setUseIndices(bool use) {
-	mUseIndices = use;
-}
+void Component3D::setUseIndices(bool use) {	mUseIndices = use; }
 
 /**
  * Loads the materials in mMaterials into the shader
  * @param shader The shader the materials will be loaded into
  */
 void Component3D::bindMaterials(const Shader &shader) const {
-	if (mMaterials.size() == 1) {
-		mMaterials.at(0).load(&shader);
-		return;
-	}
+	mShader.setInt("numTextures", mMaterials.size());
 	for (unsigned int i = 0; i < mMaterials.size(); i++)
 		mMaterials.at(i).loadIntoArray(&shader, i);
 }
@@ -180,6 +166,10 @@ void Component3D::wireframeRender(const RenderData &data) {
 	mWireframeShader.use();
 	mWireframeShader.setMat4("model", getModelMatrix());	
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	if (mUseIndices)
+		glDrawElements(GL_TRIANGLES, mNumLines, GL_UNSIGNED_INT, 0);
+	else
+		glDrawArrays(GL_TRIANGLES, 0, mNumLines);
 }
 
 /**
@@ -194,6 +184,10 @@ void Component3D::defaultRender(const RenderData &data) {
 	mShader.setVec3("viewPos", data.viewPos);
 	bindMaterials(mShader);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	if (mUseIndices)
+		glDrawElements(GL_TRIANGLES, mNumLines, GL_UNSIGNED_INT, 0);
+	else
+		glDrawArrays(GL_TRIANGLES, 0, mNumLines);
 }	
 
 /**

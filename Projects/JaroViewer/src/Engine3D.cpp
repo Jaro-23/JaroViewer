@@ -2,11 +2,9 @@
 #include "../header/Tools.h"
 #include "../header/Timer.h"
 
-#include <GLAD/glad.h>
-#include <GLFW/glfw3.h>
-
 #include <GLM/gtx/string_cast.hpp>
 #include <algorithm>
+#include <iostream>
 #include <memory>
 
 using namespace JaroViewer;

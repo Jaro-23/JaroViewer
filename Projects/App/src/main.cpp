@@ -2,8 +2,10 @@
 #include <Shader.h>
 #include <Engine3D.h>
 #include <BoxComponent.h>
+#include <Model.h>
 
 #include <GLM/gtx/string_cast.hpp>
+#include <iostream>
 #include <memory>
 
 using namespace JaroViewer;
@@ -22,6 +24,7 @@ int main() {
 	Material crate{basePath + "textures/crate.jpg", basePath + "textures/crate_specular.jpg", 32.0f};
 	Tools::LightColor lightColor{glm::vec3(0.05f), glm::vec3(0.55f), glm::vec3(1.00f)};
 	Tools::AttenuationParams attenParams{ 1.0f, 0.09f, 0.032f };
+
 	// Create the lightset and add it
 	std::shared_ptr<DirectionalLight> dir{ new DirectionalLight{ glm::vec3(-0.2f, -1.0f, -0.3f), lightColor} };
 	std::shared_ptr<PointLight> pointLight{ new PointLight{ fullWhiteShader, lightColor, attenParams } };
@@ -64,6 +67,17 @@ int main() {
 
 		engine.addComponent(box);
 	}
+
+	// Loading a model
+	std::shared_ptr<Model> model{ new Model(shader, basePath + "/models/body/body.obj")};
+	model->setScale(0.1f);
+	model->setTranslation(glm::vec3(2.0f, 0.0f, 0.0f));
+	engine.addComponent(model);
+
+	std::shared_ptr<Model> backpack{ new Model(shader, basePath + "/models/backpack/backpack.obj")};
+	backpack->setScale(0.1f);
+	backpack->setTranslation(glm::vec3(0.0f, 0.0f, 2.0f));
+	engine.addComponent(backpack);
 
 	// Start the engine
 	engine.start();

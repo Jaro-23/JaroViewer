@@ -1,6 +1,6 @@
 #include "../header/Timer.h"
 
-#include <GLAD/glad.h>
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 using namespace JaroViewer;

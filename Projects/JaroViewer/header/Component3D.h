@@ -28,7 +28,7 @@ namespace JaroViewer {
 			void setScale(const glm::vec3 &scale);
 			void setScale(float scale);
 
-			void addComponent(std::shared_ptr<Component3D> &component);
+			void addComponent(const std::shared_ptr<Component3D> &component);
 			void addMaterial(const Material &material);
 
 			virtual void load() = 0;
@@ -41,12 +41,13 @@ namespace JaroViewer {
 			void setUseIndices(bool use);
 			void bindMaterials(const Shader &shader) const;
 
+			
 			unsigned int mNumLines = 0;
 			unsigned int mVaoBuffer = 0;
 			Shader mShader;
 
 		private:
-			void wireframeRender(const RenderData &data);
+			virtual void wireframeRender(const RenderData &data);
 			virtual void defaultRender(const RenderData &data);
 			void normalizeAngles();
 

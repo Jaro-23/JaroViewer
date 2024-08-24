@@ -1,5 +1,6 @@
 
-uniform Material material;
+uniform Material materials[32];
+uniform int numTextures;
 uniform vec3 viewPos;
 
 in vec2 TexCoord;
@@ -15,5 +16,5 @@ void main() {
 		viewPos
 	);
 	
-	FragColor = getLightCorrectedColor(material, TexCoord, posSet);
+	FragColor = getLightCorrectedColor(materials[0], TexCoord, posSet);
 }
