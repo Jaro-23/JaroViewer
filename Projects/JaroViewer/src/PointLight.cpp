@@ -2,8 +2,8 @@
 
 using namespace JaroViewer;
 
-PointLight::PointLight(const Shader &shader, const Shader &wireframeShader, Tools::LightColor lightColor, Tools::AttenuationParams params) :
-	Component3D{shader, wireframeShader},
+PointLight::PointLight(const Shader &shader, Tools::LightColor lightColor, Tools::AttenuationParams params) :
+	Component3D{shader},
 	mLightColor{lightColor},
 	mEnable{true},
 	mConstant{params.constant},

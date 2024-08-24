@@ -1,4 +1,5 @@
 #include "../header/Component3D.h"
+#include "../header/WireframeShader.h"
 #include "GLM/ext/matrix_transform.hpp"
 #include "GLM/fwd.hpp"
 #include "GLM/matrix.hpp"
@@ -11,9 +12,11 @@
 
 using namespace JaroViewer;
 
-Component3D::Component3D(const Shader &shader, const Shader &wireframeShader) :
+
+
+Component3D::Component3D(const Shader &shader) :
 	mShader{ shader },
-	mWireframeShader{ wireframeShader },
+	mWireframeShader{ WireframeShader::getShader() },
 	mChildren{std::vector<std::shared_ptr<Component3D>>()},
 	mWireframeMode{false},
 	mUseIndices{true},

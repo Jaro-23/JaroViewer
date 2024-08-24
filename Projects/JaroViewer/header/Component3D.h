@@ -15,7 +15,7 @@ namespace JaroViewer {
 				float deltaTime;
 			} RenderData;
 
-			Component3D(const Shader &shader, const Shader &wireframeShader);
+			Component3D(const Shader &shader);
 			void setWireframeMode(bool enable);
 			
 			void addTranslation(const glm::vec3 &translation);

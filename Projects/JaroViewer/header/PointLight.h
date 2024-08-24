@@ -18,7 +18,7 @@ namespace JaroViewer {
 				float quadratic;
 			};
 
-			PointLight(const Shader &shader, const Shader &wireframeShader, Tools::LightColor lightColor, Tools::AttenuationParams params);
+			PointLight(const Shader &shader, Tools::LightColor lightColor, Tools::AttenuationParams params);
 
 			void enable(bool enable);
 			PointLightStruct getStruct() const;

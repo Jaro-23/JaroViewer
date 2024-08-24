@@ -4,8 +4,8 @@
 
 using namespace JaroViewer;
 
-BoxComponent::BoxComponent(const Shader &shader, const Shader &wireframeShader) :
-	Component3D(shader, wireframeShader)
+BoxComponent::BoxComponent(const Shader &shader) :
+	Component3D(shader)
 {}
 
 void BoxComponent::load() {

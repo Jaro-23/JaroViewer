@@ -10,6 +10,13 @@
 namespace JaroViewer {
 	class Shader {
 		public:
+			struct ShaderCode {
+				const std::string *vertexCode;
+				const std::string *geometryCode;
+				const std::string *fragmentCode;
+			};
+
+			Shader(const ShaderCode &code);
 			Shader(const std::vector<std::string> &vertexPaths, const std::vector<std::string> &fragmentPaths);
 			Shader(const std::vector<std::string> &vertexPaths, const std::vector<std::string> &geometryPaths, const std::vector<std::string> &fragmentPaths);
 
@@ -30,7 +37,8 @@ namespace JaroViewer {
 
 		private:
 			void readFile(const std::string &filePath, std::string *out) const;
-			unsigned int createShader(GLenum shaderType, const std::vector<std::string> *sources, const std::string &errorName);
+			unsigned int createShaderFromFile(GLenum shaderType, const std::vector<std::string> *sources, const std::string &errorName);
+			unsigned int createShaderFromString(GLenum shaderType, const char* code, const std::string &errorName);
 			void createProgram(unsigned int vertexID, unsigned int geometryID, unsigned int fragmentID);
 			void checkCompilingError(unsigned int shaderID, const std::string &shaderName) const;
 			void checkLinkingError(unsigned int programID) const;

@@ -3,8 +3,8 @@
 
 using namespace JaroViewer;
 
-Spotlight::Spotlight(const Shader &shader, const Shader &wireframeShader, glm::vec3 direction, Tools::LightColor lightColor, Tools::AttenuationParams params, float innerAngle, float outerAngle) :
-	Component3D{shader, wireframeShader},
+Spotlight::Spotlight(const Shader &shader, glm::vec3 direction, Tools::LightColor lightColor, Tools::AttenuationParams params, float innerAngle, float outerAngle) :
+	Component3D{shader},
 	mLightColor{lightColor},
 	mEnable{true},
 	mDirection{direction},

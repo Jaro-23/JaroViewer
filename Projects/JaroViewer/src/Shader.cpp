@@ -8,13 +8,25 @@
 using namespace JaroViewer;
 
 /**
+ * Creates a shader from 2 string containing the vertex and fragment code
+ * @param code A struct with all code for the shader
+ */
+Shader::Shader(const ShaderCode &code) {
+	unsigned int vertex = createShaderFromString(GL_VERTEX_SHADER, code.vertexCode->c_str(), "VERTEX");
+	unsigned int geometry = (code.geometryCode) ? createShaderFromString(GL_GEOMETRY_SHADER, code.geometryCode->c_str(), "GEOMETRY") : 0;
+	unsigned int fragment = createShaderFromString(GL_FRAGMENT_SHADER, code.fragmentCode->c_str(), "FRAGMENT");
+
+	createProgram(vertex, geometry, fragment);
+}
+
+/**
  * Creates a shader by merging all files together for 1 type
  * @param vertexPaths The paths to all vertex files to be merged in the shader
  * @param fragmentPaths The paths to all fragment files to be merged in the shader
  */
 Shader::Shader(const std::vector<std::string> &vertexPaths, const std::vector<std::string> &fragmentPaths) {
-	unsigned int vertex = createShader(GL_VERTEX_SHADER, &vertexPaths, "VERTEX");
-	unsigned int fragment = createShader(GL_FRAGMENT_SHADER, &fragmentPaths, "FRAGMENT");
+	unsigned int vertex = createShaderFromFile(GL_VERTEX_SHADER, &vertexPaths, "VERTEX");
+	unsigned int fragment = createShaderFromFile(GL_FRAGMENT_SHADER, &fragmentPaths, "FRAGMENT");
 
 	createProgram(vertex, 0, fragment);
 }
@@ -26,9 +38,9 @@ Shader::Shader(const std::vector<std::string> &vertexPaths, const std::vector<st
  * @param geometryPaths The paths to all geometry files to be merged in the shader
  */
 Shader::Shader(const std::vector<std::string> &vertexPaths, const std::vector<std::string> &geometryPaths, const std::vector<std::string> &fragmentPaths) {
-	unsigned int vertex = createShader(GL_VERTEX_SHADER, &vertexPaths, "VERTEX");
-	unsigned int geometry = createShader(GL_GEOMETRY_SHADER, &geometryPaths, "GEOMETRY");
-	unsigned int fragment = createShader(GL_FRAGMENT_SHADER, &fragmentPaths, "FRAGMENT");
+	unsigned int vertex = createShaderFromFile(GL_VERTEX_SHADER, &vertexPaths, "VERTEX");
+	unsigned int geometry = createShaderFromFile(GL_GEOMETRY_SHADER, &geometryPaths, "GEOMETRY");
+	unsigned int fragment = createShaderFromFile(GL_FRAGMENT_SHADER, &fragmentPaths, "FRAGMENT");
 
 	createProgram(vertex, geometry, fragment);
 }
@@ -77,7 +89,7 @@ void Shader::readFile(const std::string &filePath, std::string *out) const {
  * @param sources The paths to the source files containing the code of the shader
  * @param errorName The name that will be displayed if there is an error
  */
-unsigned int Shader::createShader(GLenum shaderType, const std::vector<std::string> *sources, const std::string &errorName) {
+unsigned int Shader::createShaderFromFile(GLenum shaderType, const std::vector<std::string> *sources, const std::string &errorName) {
 	// Read the code from the file
 	std::string fullFile = "";
 	std::string out;
@@ -86,13 +98,20 @@ unsigned int Shader::createShader(GLenum shaderType, const std::vector<std::stri
 		fullFile += out;
 	}
 	const char *code = fullFile.c_str();
+	return createShaderFromString(shaderType, code, errorName);
+}
 
-	// Compiling the shader
+/**
+ * Creates a gl shader based on the contents of files
+ * @param shaderType The type of shader that needs to be created
+ * @param code The code for the shader
+ * @param errorName The name that will be displayed if there is an error
+ */
+unsigned int Shader::createShaderFromString(GLenum shaderType, const char* code, const std::string &errorName) {
 	unsigned int id = glCreateShader(shaderType);
 	glShaderSource(id, 1, &code, NULL);
 	glCompileShader(id);
 	checkCompilingError(id, errorName);
-	
 	return id;
 }
 
