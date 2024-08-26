@@ -52,6 +52,10 @@ namespace JaroViewer {
 				glBindBuffer(GL_UNIFORM_BUFFER, 0);
 			}
 
+			static glm::mat3 getNormalModelMatrix(const glm::mat4 &model) {
+				return glm::mat3(glm::transpose(glm::inverse(model)));
+			};
+
 			struct LightColor {
 				glm::vec3 ambient;
 				glm::vec3 diffuse;

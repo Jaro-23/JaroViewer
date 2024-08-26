@@ -41,6 +41,8 @@ Window::Window(int glfwVersion, int width, int height, const std::string &title)
 	// Setting up the viewport
 	glViewport(0, 0, mWidth, mHeight);
 	glEnable(GL_DEPTH_TEST);
+	clearWindow();
+	update();
 }
 
 /**

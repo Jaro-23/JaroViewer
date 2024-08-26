@@ -1,12 +1,17 @@
-#include "Component3D.h"
-
+#include "Shader.h"
+#include "Material.h"
 #include <vector>
 
 namespace JaroViewer {
-	class Mesh : public JaroViewer::Component3D {
+	class Mesh {
 		public:
-			Mesh(const Shader &shader, std::vector<float> &vertices, std::vector<unsigned int> &indices, std::vector<Material> &materials);
+			Mesh(std::vector<float> &vertices, std::vector<unsigned int> &indices, std::vector<Material> &materials);
 
-			void load() override;
+			void Draw(Shader &shader);	
+
+		private:
+			std::vector<Material> mMaterials;
+			unsigned int mVaoBuffer;
+			unsigned int mNumIndices;
 	};
 }

@@ -36,7 +36,6 @@ namespace JaroViewer {
 
 		protected:
 			glm::mat4 getModelMatrix() const;
-			glm::mat3 getNormalModelMatrix(const glm::mat4 &model) const;
 			glm::vec3 getPosition() const;
 			void setUseIndices(bool use);
 			void bindMaterials(const Shader &shader) const;
