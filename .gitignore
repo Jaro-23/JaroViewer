@@ -3,8 +3,10 @@ obj/
 
 Build/
 Generated/
-Lib/
 .cache/
+
+*.lib
+*.a
 
 *.make
 Makefile
