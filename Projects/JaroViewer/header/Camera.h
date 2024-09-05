@@ -1,3 +1,4 @@
+#include "InputHandler.h"
 #include "Spotlight.h"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -12,11 +13,10 @@
 namespace JaroViewer {
 	class Camera {
 		public:
-			static void setupCallback(GLFWwindow *window, Camera *camera);
-
 			Camera(glm::vec3 pos, glm::vec3 up);
 			void setFlashlight(const std::shared_ptr<JaroViewer::Spotlight> flashlight);
 			void toggleFlashlight();
+			void addControls(InputHandler* handler);
 
 			void goForward(float deltaTime);
 			void goBack(float deltaTime);
@@ -27,15 +27,19 @@ namespace JaroViewer {
 			glm::mat4 getView() const;
 			glm::vec3 getPosition() const;
 			void setSpeed(float speed);
+
+		private:
 			bool getFirstMove() const;
 			void setFirstMove(bool state);
+
 			float getMouseX() const;
 			float getMouseY() const;
 			void setMouseX(float x);
 			void setMouseY(float y);
-			float getSensitivity() const;
 
-		private:
+			float getSensitivity() const;
+			std::function<void(GLFWwindow*, double, double)> getMouseEvent();
+
 			std::shared_ptr<JaroViewer::Spotlight> mFlashlight;
 			bool mEnableFlashlight;
 

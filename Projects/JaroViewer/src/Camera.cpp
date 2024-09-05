@@ -5,32 +5,6 @@
 
 using namespace JaroViewer;
 
-void Camera::setupCallback(GLFWwindow *window, Camera *camera) {
-	glfwSetWindowUserPointer(window, camera);
-	auto func = [](GLFWwindow *window, double xpos, double ypos) {
-		Camera *camObj = static_cast<Camera*>(glfwGetWindowUserPointer(window));
-		if (!camObj) return;
-		if (camObj->getFirstMove()) {
-			camObj->setMouseX(xpos);
-			camObj->setMouseY(ypos);
-			camObj->setFirstMove(false);
-			return;
-		}
-
-		float xoffset = xpos - camObj->getMouseX();
-		float yoffset = camObj->getMouseY() - ypos;
-		camObj->setMouseX(xpos);
-		camObj->setMouseY(ypos);
-
-		xoffset *= camObj->getSensitivity();
-		yoffset *= camObj->getSensitivity();
-
-		camObj->updateDirection(xoffset, yoffset);
-	};
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	glfwSetCursorPosCallback(window, func);
-}
-
 Camera::Camera(glm::vec3 pos, glm::vec3 up) :
 	mPos{pos},
 	mUp{up},
@@ -46,6 +20,15 @@ void Camera::setFlashlight(const std::shared_ptr<Spotlight> flashlight) {
 }
 
 void Camera::toggleFlashlight() { if (mFlashlight) mFlashlight->enable(!mFlashlight->getState()); }
+
+void Camera::addControls(InputHandler* handler) {
+	handler->addMouseEvent(getMouseEvent());
+	handler->addKey(GLFW_KEY_W, InputHandler::KeyAction::DOWN, [=] (float deltaTime) { this->goForward(deltaTime); });
+	handler->addKey(GLFW_KEY_S, InputHandler::KeyAction::DOWN, [=] (float deltaTime) { this->goBack(deltaTime); });
+	handler->addKey(GLFW_KEY_A, InputHandler::KeyAction::DOWN, [=] (float deltaTime) { this->goLeft(deltaTime); });
+	handler->addKey(GLFW_KEY_D, InputHandler::KeyAction::DOWN, [=] (float deltaTime) { this->goRight(deltaTime); });
+	handler->addKey(GLFW_KEY_F, InputHandler::KeyAction::PRESS, [=] (float deltaTime) { this->toggleFlashlight(); });
+}
 
 void Camera::goForward(float deltaTime) { 
 	mPos += mFront * mSpeed * deltaTime; 
@@ -91,3 +74,24 @@ float Camera::getMouseY() const { return mMouseY; }
 void Camera::setMouseX(float x) { mMouseX = x; }
 void Camera::setMouseY(float y) { mMouseY = y; }
 float Camera::getSensitivity() const { return mSensitivity; }
+
+std::function<void(GLFWwindow*, double, double)> Camera::getMouseEvent() {
+	return [=](GLFWwindow *window, double xpos, double ypos) {
+		if (this->getFirstMove()) {
+			this->setMouseX(xpos);
+			this->setMouseY(ypos);
+			this->setFirstMove(false);
+			return;
+		}
+
+		float xoffset = xpos - this->getMouseX();
+		float yoffset = this->getMouseY() - ypos;
+		this->setMouseX(xpos);
+		this->setMouseY(ypos);
+
+		xoffset *= this->getSensitivity();
+		yoffset *= this->getSensitivity();
+
+		this->updateDirection(xoffset, yoffset);
+	};
+}

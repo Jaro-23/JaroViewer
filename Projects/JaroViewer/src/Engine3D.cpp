@@ -12,13 +12,8 @@ Engine3D::Engine3D(const Window &window, Camera* camera) :
 	mInputHandler{&mWindow},
 	mCamera{camera}
 {
-	Camera::setupCallback(window.getPointer(), mCamera);
-
-	mInputHandler.addKey(GLFW_KEY_ESCAPE, [&] (float deltaTime) {mWindow.setShouldClose(true);});
-	mInputHandler.addKey(GLFW_KEY_W, [&] (float deltaTime) { mCamera->goForward(deltaTime); });
-	mInputHandler.addKey(GLFW_KEY_S, [&] (float deltaTime) { mCamera->goBack(deltaTime); });
-	mInputHandler.addKey(GLFW_KEY_A, [&] (float deltaTime) { mCamera->goLeft(deltaTime); });
-	mInputHandler.addKey(GLFW_KEY_D, [&] (float deltaTime) { mCamera->goRight(deltaTime); });
+	mCamera->addControls(&mInputHandler);
+	mInputHandler.addKey(GLFW_KEY_ESCAPE, InputHandler::KeyAction::DOWN, [&] (float deltaTime) {mWindow.setShouldClose(true);});
 }
 
 /**
