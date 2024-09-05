@@ -18,7 +18,8 @@ namespace JaroViewer {
 
 			InputHandler(Window* window);
 			void addKey(int key, KeyAction action, std::function<void(float)> func);
-			void addMouseEvent(std::function<void(GLFWwindow*, double, double)> func);
+			void addMouseKey(int key, KeyAction action, std::function<void(float)> func);
+			void addMouseMoveEvent(std::function<void(GLFWwindow*, double, double)> func);
 			void processInputs(float deltaTime);
 
 		private:
@@ -28,10 +29,11 @@ namespace JaroViewer {
 				std::function<void(float)> function;
 				int prevPressed;
 				KeyAction action;
+				bool isKey;
 			};
 
 			Window* mWindow;
 			std::map<int, KeyState> mKeys;
-			std::vector<std::function<void(GLFWwindow*, double, double)>> mMouseEvents;
+			std::vector<std::function<void(GLFWwindow*, double, double)>> mMouseMoveEvents;
 	};
 }

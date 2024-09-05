@@ -81,15 +81,24 @@ bool Window::updateView() {
  * Sets the should close variable
  * @param close The new value of the should close variable
  */
-void Window::setShouldClose(bool close) {
-	glfwSetWindowShouldClose(mWindow, close);
-}
+void Window::setShouldClose(bool close) { glfwSetWindowShouldClose(mWindow, close); }
+
+/**
+ * Sets the mouse mode
+ * @param mode The new mode for the mouse
+ */
+void Window::setMouseMode(GLenum mode) { glfwSetInputMode(mWindow, GLFW_CURSOR, mode); }
 
 /**
  * Returns the should close variable
  * @return The value of the should close variable
  */
 bool Window::shouldClose() const { return glfwWindowShouldClose(mWindow); }
+
+/**
+ * Gets the cursor input mode
+ */
+int Window::getMouseMode() const { return glfwGetInputMode(mWindow, GLFW_CURSOR); }
 
 /**
  * Returns the pointer to the GLFWwindow pointer
@@ -111,6 +120,14 @@ glm::mat4 Window::getProjection() const {
  */
 bool Window::isKeyPressed(int key) const {
 	return glfwGetKey(mWindow, key) == GLFW_PRESS;
+}
+
+/**
+ * Returns if a mouse key is pressed on the window
+ * @return True if the mouse key is pressed otherwise false
+ */
+bool Window::isMouseKeyPressed(int key) const {
+	return glfwGetMouseButton(mWindow, key) == GLFW_PRESS;
 }
 
 /**

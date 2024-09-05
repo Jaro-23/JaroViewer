@@ -16,11 +16,15 @@ namespace JaroViewer {
 			bool updateView();
 			
 			void setShouldClose(bool close);
+			void setMouseMode(GLenum mode);
+
 			bool shouldClose() const;
+			int getMouseMode() const;
 
 			GLFWwindow* getPointer() const;
 			glm::mat4 getProjection() const;
 			bool isKeyPressed(int key) const;
+			bool isMouseKeyPressed(int mouseKey) const;
 			bool isKeyReleased(int key) const;
 
 			void setKeyCallback(GLFWkeyfun callback);

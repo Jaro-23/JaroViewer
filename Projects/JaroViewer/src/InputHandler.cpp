@@ -17,19 +17,30 @@ void InputHandler::addKey(int key, KeyAction action, std::function<void(float)> 
 		KeyState{
 			func,
 			mWindow->isKeyPressed(key),
-			action
+			action,
+			true
 		}
 	});
 }
 
-void InputHandler::addMouseEvent(std::function<void(GLFWwindow*, double, double)> func) {
-	mMouseEvents.push_back(func);
+void InputHandler::addMouseKey(int key, KeyAction action, std::function<void(float)> func) {
+	mKeys.insert(
+		{key, 
+		KeyState{
+			func,
+			mWindow->isKeyPressed(key),
+			action,
+			false
+		}
+	});
 }
+
+void InputHandler::addMouseMoveEvent(std::function<void(GLFWwindow*, double, double)> func) { mMouseMoveEvents.push_back(func); }
 
 void InputHandler::processInputs(float deltaTime) {
 	for (auto keyIter = mKeys.begin(); keyIter != mKeys.end(); keyIter++) {
-		bool pressed = mWindow->isKeyPressed(keyIter->first);
 		KeyState state = keyIter->second;
+		bool pressed = (state.isKey) ? mWindow->isKeyPressed(keyIter->first) : mWindow->isMouseKeyPressed(keyIter->first);
 		switch (state.action) {
 			case KeyAction::DOWN:
 				if (pressed) state.function(deltaTime);
@@ -55,8 +66,8 @@ void InputHandler::addMouseCallback() {
 		mWindow->getPointer(), 
 		[](GLFWwindow *window, double xpos, double ypos) {
 			InputHandler *handler = static_cast<InputHandler*>(glfwGetWindowUserPointer(window));
-			for (int i = 0; i < handler->mMouseEvents.size(); i++)
-				handler->mMouseEvents.at(i)(window, xpos, ypos);
+			for (int i = 0; i < handler->mMouseMoveEvents.size(); i++)
+				handler->mMouseMoveEvents.at(i)(window, xpos, ypos);
 		}
 	);
 }

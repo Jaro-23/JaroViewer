@@ -12,8 +12,7 @@ Engine3D::Engine3D(const Window &window, Camera* camera) :
 	mInputHandler{&mWindow},
 	mCamera{camera}
 {
-	mCamera->addControls(&mInputHandler);
-	mInputHandler.addKey(GLFW_KEY_ESCAPE, InputHandler::KeyAction::DOWN, [&] (float deltaTime) {mWindow.setShouldClose(true);});
+	mCamera->addControls(&mInputHandler, &mWindow);
 }
 
 /**

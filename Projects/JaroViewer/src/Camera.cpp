@@ -1,6 +1,8 @@
 #include "../header/Camera.h"
+#include "GLFW/glfw3.h"
 
 #include <cmath>
+#include <iostream>
 #include <memory>
 
 using namespace JaroViewer;
@@ -21,13 +23,24 @@ void Camera::setFlashlight(const std::shared_ptr<Spotlight> flashlight) {
 
 void Camera::toggleFlashlight() { if (mFlashlight) mFlashlight->enable(!mFlashlight->getState()); }
 
-void Camera::addControls(InputHandler* handler) {
-	handler->addMouseEvent(getMouseEvent());
+void Camera::addControls(InputHandler* handler, Window* window) {
+	// Basic movement
+	handler->addMouseMoveEvent(getMouseEvent());
 	handler->addKey(GLFW_KEY_W, InputHandler::KeyAction::DOWN, [=] (float deltaTime) { this->goForward(deltaTime); });
 	handler->addKey(GLFW_KEY_S, InputHandler::KeyAction::DOWN, [=] (float deltaTime) { this->goBack(deltaTime); });
 	handler->addKey(GLFW_KEY_A, InputHandler::KeyAction::DOWN, [=] (float deltaTime) { this->goLeft(deltaTime); });
 	handler->addKey(GLFW_KEY_D, InputHandler::KeyAction::DOWN, [=] (float deltaTime) { this->goRight(deltaTime); });
-	handler->addKey(GLFW_KEY_F, InputHandler::KeyAction::PRESS, [=] (float deltaTime) { this->toggleFlashlight(); });
+
+	// Flashlight
+	handler->addKey(GLFW_KEY_F, InputHandler::KeyAction::PRESS, [=] (float) { this->toggleFlashlight(); });
+
+	// Set focus keys
+	handler->addKey(GLFW_KEY_ESCAPE, InputHandler::KeyAction::DOWN, [=] (float) { 
+		if(window->getMouseMode() == GLFW_CURSOR_DISABLED) window->setMouseMode(GLFW_CURSOR_NORMAL); 
+	});
+	handler->addMouseKey(GLFW_MOUSE_BUTTON_LEFT, InputHandler::KeyAction::PRESS, [=](float) {
+		if(window->getMouseMode() == GLFW_CURSOR_NORMAL) window->setMouseMode(GLFW_CURSOR_DISABLED); 
+	});
 }
 
 void Camera::goForward(float deltaTime) { 
@@ -77,6 +90,7 @@ float Camera::getSensitivity() const { return mSensitivity; }
 
 std::function<void(GLFWwindow*, double, double)> Camera::getMouseEvent() {
 	return [=](GLFWwindow *window, double xpos, double ypos) {
+		if (glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_NORMAL) return;
 		if (this->getFirstMove()) {
 			this->setMouseX(xpos);
 			this->setMouseY(ypos);
