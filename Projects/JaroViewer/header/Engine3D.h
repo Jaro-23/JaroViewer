@@ -11,6 +11,8 @@
 
 #include "Component3D.h"
 #include "Camera.h"
+#include "InputHandler.h"
+#include "UniformBuffer.h"
 #include "Window.h"
 #include "LightSet.h"
 
@@ -25,10 +27,10 @@ namespace JaroViewer {
 			void removeComponent(unsigned int id);
 
 			void setLightSet(LightSet* lightSet);
+			InputHandler* getInputHandler();
 
 		private:
 			void render();
-			void processInput(float deltaTime);
 
 			struct UniformTransformation {
 				glm::mat4 projection;
@@ -44,9 +46,10 @@ namespace JaroViewer {
 			Window mWindow;
 			Camera* mCamera;
 			LightSet* mLightSet;	
+			InputHandler mInputHandler;
 
-			unsigned int mTransformationUBO;
-			unsigned int mLightSetUBO;
+			std::shared_ptr<UniformBuffer> mTransformationUBO;
+			std::shared_ptr<UniformBuffer> mLightSetUBO;
 	};
 };
 
