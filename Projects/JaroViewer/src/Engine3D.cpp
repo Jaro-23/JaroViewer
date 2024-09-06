@@ -113,10 +113,17 @@ void Engine3D::render() {
 void Engine3D::updateFrame(const Component3D::RenderData &data) {
 	mWindow.clear();
 
-	if (mPostProcessor) mPostProcessor->bind();
+	if (mPostProcessor) {
+		mPostProcessor->bind();
+		mPostProcessor->clear(0.0f, 0.0f, 0.0f, 0.0f);
+	}
+
 	std::map<int, std::shared_ptr<JaroViewer::Component3D>>::iterator it;
 	for (it = mComponents.begin(); it != mComponents.end(); it++) it->second->render(data);
-	if (mPostProcessor) mPostProcessor->render();
+
+	if (mPostProcessor) {
+		mPostProcessor->render();
+	}
 
 	mWindow.update();
 }

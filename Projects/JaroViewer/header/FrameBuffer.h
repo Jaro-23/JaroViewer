@@ -15,8 +15,6 @@ namespace JaroViewer {
 			unsigned int getTexture() const;
 			unsigned int getDepthStencil() const;
 
-			void deleteBuffer();
-
 		private:
 			void genBuffer();
 			unsigned int genTexure(GLenum formatType);

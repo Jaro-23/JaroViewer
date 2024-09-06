@@ -16,7 +16,7 @@ int main() {
 	camera.setSpeed(3.5f);
 	Window window{3, 600, 450, "Basic example"};
 	Engine3D engine = Engine3D(window, &camera);
-	engine.enablePostProcessor(basePath + "fragment/postprocessing.fs");
+	//engine.enablePostProcessor(basePath + "fragment/postprocessing.fs");
 	
 	// Create some shaders and textures
 	Shader shader{{basePath + "vertex/Library.vs", basePath + "vertex/Basic.vs"}, {basePath + "fragment/Library.fs", basePath + "fragment/Basic.fs"}};

@@ -10,7 +10,6 @@ namespace JaroViewer {
 	class PostProcessor {
 		public:
 			PostProcessor(int width, int height, const std::string fragmentFile);
-			~PostProcessor() { mFrameBuffer.deleteBuffer(); };
 			void setupVao();
 
 			void bind() const;

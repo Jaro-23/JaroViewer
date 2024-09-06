@@ -62,9 +62,11 @@ void PostProcessor::clear(float r, float g, float b, float a) const {
 }
 
 void PostProcessor::render() const {
-	//mFrameBuffer.unbind();
+	mFrameBuffer.unbind();
 	mShader->use();
+	mShader->setInt("screenTexture", 0);
 	glBindVertexArray(mVaoBuffer);
-	//glBindTexture(GL_TEXTURE_2D, mFrameBuffer.getTexture());
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, mFrameBuffer.getTexture());
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }

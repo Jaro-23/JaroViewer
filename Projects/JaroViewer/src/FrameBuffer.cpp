@@ -17,8 +17,7 @@ FrameBuffer::FrameBuffer(int width, int height, bool readableColor, bool readabl
 }
 
 FrameBuffer::~FrameBuffer() {
-	std::cout << "Framebuffer destroyed" << std::endl;
-	deleteBuffer();	
+
 }
 
 void FrameBuffer::bind() const { glBindFramebuffer(GL_FRAMEBUFFER, mID); }
@@ -36,14 +35,6 @@ unsigned int FrameBuffer::getDepthStencil() const {
 		return mDepthStencilTexture;
 	std::cout << "ERROR::FRAMEBUFFER::TRYING_TO_READ_RENDER_BUFFER_DEPTH_STENCIL";
 	return 0;
-}
-
-void FrameBuffer::deleteBuffer() {
-	std::cout << "Removing buffers" << std::endl;
-	if (mColorRBO) glDeleteRenderbuffers(1, &mColorRBO);
-	if (mDepthStencilRBO != 0) glDeleteRenderbuffers(1, &mDepthStencilRBO);
-	glDeleteFramebuffers(1, &mID);
-	mID = 0;
 }
 
 void FrameBuffer::genBuffer() {
