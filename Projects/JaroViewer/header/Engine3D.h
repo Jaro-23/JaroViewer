@@ -12,6 +12,7 @@
 #include "Component3D.h"
 #include "Camera.h"
 #include "InputHandler.h"
+#include "PostProcessor.h"
 #include "UniformBuffer.h"
 #include "Window.h"
 #include "LightSet.h"
@@ -22,12 +23,14 @@ namespace JaroViewer {
 			Engine3D(const Window &window, Camera* camera);
 
 			void start();
+
 			unsigned int addComponent(std::shared_ptr<JaroViewer::Component3D> component);
 			std::shared_ptr<JaroViewer::Component3D> getComponent(unsigned int id);
 			void removeComponent(unsigned int id);
 
 			void setLightSet(LightSet* lightSet);
 			InputHandler* getInputHandler();
+			void enablePostProcessor(const std::string fragmentPath);
 
 		private:
 			void render();
@@ -47,6 +50,7 @@ namespace JaroViewer {
 			Camera* mCamera;
 			LightSet* mLightSet;	
 			InputHandler mInputHandler;
+			std::unique_ptr<PostProcessor> mPostProcessor;
 
 			std::shared_ptr<UniformBuffer> mTransformationUBO;
 			std::shared_ptr<UniformBuffer> mLightSetUBO;

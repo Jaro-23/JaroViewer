@@ -36,7 +36,6 @@ namespace JaroViewer {
 			void setMat4(const std::string &name, glm::mat4 mat) const;
 
 		private:
-			void readFile(const std::string &filePath, std::string *out) const;
 			unsigned int createShaderFromFile(GLenum shaderType, const std::vector<std::string> *sources, const std::string &errorName);
 			unsigned int createShaderFromString(GLenum shaderType, const char* code, const std::string &errorName);
 			void createProgram(unsigned int vertexID, unsigned int geometryID, unsigned int fragmentID);

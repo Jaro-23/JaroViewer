@@ -1,5 +1,6 @@
 #include "../header/FrameBuffer.h"
 #include <iostream>
+#include <ostream>
 
 using namespace JaroViewer;
 
@@ -8,21 +9,39 @@ FrameBuffer::FrameBuffer(int width, int height, bool readableColor, bool readabl
 	mHeight = height;
 	
 	genBuffer();
-	createStorage(readableColor, &mColorTexture, GL_COLOR_ATTACHMENT0);
-	createStorage(readableDepthStencil, &mDepthStencilTexture, GL_DEPTH_STENCIL_ATTACHMENT);
+	createStorage(readableColor, &mColorTexture, &mColorRBO, GL_COLOR_ATTACHMENT0);
+	createStorage(readableDepthStencil, &mDepthStencilTexture, &mDepthStencilRBO, GL_DEPTH_STENCIL_ATTACHMENT);
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		std::cout << "ERROR::FRAMEBUFFER::NOT_COMPLETE" << std::endl;
 	unbind();
 }
 
 FrameBuffer::~FrameBuffer() {
+	std::cout << "Framebuffer destroyed" << std::endl;
 	deleteBuffer();	
 }
 
 void FrameBuffer::bind() const { glBindFramebuffer(GL_FRAMEBUFFER, mID); }
 void FrameBuffer::unbind() const { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
 
+unsigned int FrameBuffer::getTexture() const {
+	if (mColorTexture && mID != 0)
+		return mColorTexture;
+	std::cout << "ERROR::FRAMEBUFFER::TRYING_TO_READ_RENDER_BUFFER_COLOR";
+	return 0;
+}
+
+unsigned int FrameBuffer::getDepthStencil() const {
+	if (mDepthStencilTexture && mID != 0)
+		return mDepthStencilTexture;
+	std::cout << "ERROR::FRAMEBUFFER::TRYING_TO_READ_RENDER_BUFFER_DEPTH_STENCIL";
+	return 0;
+}
+
 void FrameBuffer::deleteBuffer() {
+	std::cout << "Removing buffers" << std::endl;
+	if (mColorRBO) glDeleteRenderbuffers(1, &mColorRBO);
+	if (mDepthStencilRBO != 0) glDeleteRenderbuffers(1, &mDepthStencilRBO);
 	glDeleteFramebuffers(1, &mID);
 	mID = 0;
 }
@@ -79,18 +98,20 @@ unsigned int FrameBuffer::bindTexture(GLenum usage) {
 /**
  * Creates a buffer and attaches it to the framebuffer
  * @param usage The usage of the buffer
+ * @return The render buffer id
  * @pre usage == GL_COLOR_ATTACHMENT{num} || usage == GL_DEPTH_STENCIL_ATTACHMENT
  */
-void FrameBuffer::bindRenderBuffer(GLenum usage) {
+unsigned int FrameBuffer::bindRenderBuffer(GLenum usage) {
 	unsigned int buffer = (usage == GL_DEPTH_STENCIL_ATTACHMENT) ? genRenderBuffer(GL_DEPTH24_STENCIL8) : genRenderBuffer(GL_RGB);
 	bind();
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, usage, GL_RENDERBUFFER, buffer);
 	unbind();
+	return buffer;
 }
 
-void FrameBuffer::createStorage(bool readable, unsigned int *storage, GLenum usage) {
+void FrameBuffer::createStorage(bool readable, unsigned int *texureStorage, unsigned int *renderStorage, GLenum usage) {
 	if (readable)
-		*storage = bindTexture(usage);
+		*texureStorage = bindTexture(usage);
 	else
-		bindRenderBuffer(usage);
+		*renderStorage = bindRenderBuffer(usage);
 }

@@ -41,7 +41,7 @@ Window::Window(int glfwVersion, int width, int height, const std::string &title)
 	// Setting up the viewport
 	glViewport(0, 0, mWidth, mHeight);
 	glEnable(GL_DEPTH_TEST);
-	clearWindow();
+	clear();
 	update();
 }
 
@@ -49,7 +49,7 @@ Window::Window(int glfwVersion, int width, int height, const std::string &title)
  * Clears the window
  * @post the window will be fully black
  */
-void Window::clearWindow() {
+void Window::clear() {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
@@ -99,6 +99,9 @@ bool Window::shouldClose() const { return glfwWindowShouldClose(mWindow); }
  * Gets the cursor input mode
  */
 int Window::getMouseMode() const { return glfwGetInputMode(mWindow, GLFW_CURSOR); }
+
+int Window::getWidth() const { return mWidth; }
+int Window::getHeight() const { return mHeight; }
 
 /**
  * Returns the pointer to the GLFWwindow pointer

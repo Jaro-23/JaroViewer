@@ -9,14 +9,16 @@
 using namespace JaroViewer;
 
 int main() {
+	const std::string basePath = "./Projects/App/";
+
 	// Always create engine first because it will start glfw etc..
 	Camera camera = Camera(glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	camera.setSpeed(3.5f);
 	Window window{3, 600, 450, "Basic example"};
 	Engine3D engine = Engine3D(window, &camera);
+	engine.enablePostProcessor(basePath + "fragment/postprocessing.fs");
 	
 	// Create some shaders and textures
-	const std::string basePath = "./Projects/App/";
 	Shader shader{{basePath + "vertex/Library.vs", basePath + "vertex/Basic.vs"}, {basePath + "fragment/Library.fs", basePath + "fragment/Basic.fs"}};
 	Shader fullWhiteShader{{basePath + "vertex/Library.vs", basePath + "vertex/FullWhite.vs"}, {basePath + "fragment/FullWhite.fs"}};
 	Material crate{basePath + "textures/crate.jpg", basePath + "textures/crate_specular.jpg", 32.0f};

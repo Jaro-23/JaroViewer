@@ -11,7 +11,7 @@ namespace JaroViewer {
 		public:
 			Window(int glfwVersion, int width, int height, const std::string &title);
 
-			void clearWindow();
+			void clear();
 			void update();
 			bool updateView();
 			
@@ -20,6 +20,8 @@ namespace JaroViewer {
 
 			bool shouldClose() const;
 			int getMouseMode() const;
+			int getWidth() const;
+			int getHeight() const;
 
 			GLFWwindow* getPointer() const;
 			glm::mat4 getProjection() const;

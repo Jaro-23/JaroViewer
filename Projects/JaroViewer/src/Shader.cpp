@@ -1,9 +1,9 @@
 #include "../header/Shader.h"
+#include "../header/Tools.h"
+
 #include <cstdlib>
-#include <fstream>
 #include <iostream>
 #include <ostream>
-#include <sstream>
 
 using namespace JaroViewer;
 
@@ -63,27 +63,6 @@ void Shader::setMat3(const std::string &name, glm::mat3 mat) const { glUniformMa
 void Shader::setMat4(const std::string &name, glm::mat4 mat) const { glUniformMatrix4fv(getLocation(name), 1, GL_FALSE, glm::value_ptr(mat)); }
 
 /**
- * Reads a file into a std::string
- * @param filePath The path to the file
- * @param out The output where in content of the file will be placed in
- */
-void Shader::readFile(const std::string &filePath, std::string *out) const {
-	std::ifstream fileStream;
-	fileStream.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-
-	try {
-		fileStream.open(filePath);
-		std::stringstream stringStream;
-		stringStream << fileStream.rdbuf();
-		fileStream.close();
-		*out = stringStream.str();
-	}
-	catch (std::ifstream::failure) {
-		std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ::" << filePath << std::endl;
-	}
-}
-
-/**
  * Creates a gl shader based on the contents of files
  * @param shaderType The type of shader that needs to be created
  * @param sources The paths to the source files containing the code of the shader
@@ -94,7 +73,7 @@ unsigned int Shader::createShaderFromFile(GLenum shaderType, const std::vector<s
 	std::string fullFile = "";
 	std::string out;
 	for (int i = 0; i < sources->size(); i++) {
-		readFile(sources->at(i), &out);
+		Tools::readFile(sources->at(i), &out);
 		fullFile += out;
 	}
 	const char *code = fullFile.c_str();

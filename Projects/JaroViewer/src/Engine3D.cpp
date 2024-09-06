@@ -71,6 +71,14 @@ void Engine3D::setLightSet(LightSet* lightSet) {
 InputHandler* Engine3D::getInputHandler() { return &mInputHandler; }
 
 /**
+ * Creates a postprocessor with the given fragment shader
+ * @param fragmentPath The path to the fragment shader
+ */
+void Engine3D::enablePostProcessor(const std::string fragmentPath) {
+	mPostProcessor = std::make_unique<PostProcessor>(mWindow.getWidth(), mWindow.getHeight(), fragmentPath);
+}
+
+/**
  * Contains the main rendering loop 
  */
 void Engine3D::render() {
@@ -103,10 +111,12 @@ void Engine3D::render() {
  * @param data The data that will be given to each component
  */
 void Engine3D::updateFrame(const Component3D::RenderData &data) {
-	mWindow.clearWindow();
+	mWindow.clear();
 
+	if (mPostProcessor) mPostProcessor->bind();
 	std::map<int, std::shared_ptr<JaroViewer::Component3D>>::iterator it;
 	for (it = mComponents.begin(); it != mComponents.end(); it++) it->second->render(data);
+	if (mPostProcessor) mPostProcessor->render();
 
 	mWindow.update();
 }

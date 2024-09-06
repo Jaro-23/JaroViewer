@@ -1,9 +1,12 @@
 #pragma once
 
+#include <fstream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <GLM/glm.hpp>
 
+#include <iostream>
+#include <sstream>
 #include <vector>
 
 namespace JaroViewer {
@@ -27,6 +30,27 @@ namespace JaroViewer {
 			static glm::mat3 getNormalModelMatrix(const glm::mat4 &model) {
 				return glm::mat3(glm::transpose(glm::inverse(model)));
 			};
+
+			/**
+			 * Reads a file into a std::string
+			 * @param filePath The path to the file
+			 * @param out The output where in content of the file will be placed in
+			 */
+			static void readFile(const std::string &filePath, std::string *out) {
+				std::ifstream fileStream;
+				fileStream.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+
+				try {
+					fileStream.open(filePath);
+					std::stringstream stringStream;
+					stringStream << fileStream.rdbuf();
+					fileStream.close();
+					*out = stringStream.str();
+				}
+				catch (std::ifstream::failure) {
+					std::cout << "ERROR::TOOLS::FILE_NOT_SUCCESFULLY_READ::" << filePath << std::endl;
+				}
+			}
 
 			struct LightColor {
 				glm::vec3 ambient;
