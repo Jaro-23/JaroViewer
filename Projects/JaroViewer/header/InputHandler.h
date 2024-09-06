@@ -17,6 +17,7 @@ namespace JaroViewer {
 			};
 
 			InputHandler(Window* window);
+			Window* getWindow() const;
 			void addKey(int key, KeyAction action, std::function<void(float)> func);
 			void addMouseKey(int key, KeyAction action, std::function<void(float)> func);
 			void addMouseMoveEvent(std::function<void(GLFWwindow*, double, double)> func);

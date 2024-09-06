@@ -11,6 +11,17 @@ InputHandler::InputHandler(Window* window) :
 	addMouseCallback();	
 }
 
+/**
+ * Returns the window on which the handler is active
+ */
+Window* InputHandler::getWindow() const { return mWindow; }
+
+/**
+ * Adds a key event
+ * @param key The key on which the action will trigger
+ * @param action What needs to happen to the key to trigger the event
+ * @param func The event that will be called
+ */
 void InputHandler::addKey(int key, KeyAction action, std::function<void(float)> func) {
 	mKeys.insert(
 		{key, 
@@ -23,6 +34,12 @@ void InputHandler::addKey(int key, KeyAction action, std::function<void(float)> 
 	});
 }
 
+/**
+ * Adds a mouse key event
+ * @param key The mouse key on which the action will trigger
+ * @param action What needs to happen to the mouse key to trigger the event
+ * @param func The event that will be called
+ */
 void InputHandler::addMouseKey(int key, KeyAction action, std::function<void(float)> func) {
 	mKeys.insert(
 		{key, 
@@ -35,8 +52,16 @@ void InputHandler::addMouseKey(int key, KeyAction action, std::function<void(flo
 	});
 }
 
+/**
+ * Adds a mouse move event
+ * @param func The event that will be triggered when the mouse moves
+ */
 void InputHandler::addMouseMoveEvent(std::function<void(GLFWwindow*, double, double)> func) { mMouseMoveEvents.push_back(func); }
 
+/**
+ * Checks all the event triggers and triggers events when passes the check
+ * @param deltaTime The time since the last call
+ */
 void InputHandler::processInputs(float deltaTime) {
 	for (auto keyIter = mKeys.begin(); keyIter != mKeys.end(); keyIter++) {
 		KeyState state = keyIter->second;
@@ -59,6 +84,9 @@ void InputHandler::processInputs(float deltaTime) {
 	}
 }
 
+/**
+ * Adds the callback function to the window
+ */
 void InputHandler::addMouseCallback() {
 	glfwSetWindowUserPointer(mWindow->getPointer(), this);
 	glfwSetInputMode(mWindow->getPointer(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);

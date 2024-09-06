@@ -5,8 +5,6 @@
 #include <Model.h>
 
 #include <GLM/gtx/string_cast.hpp>
-#include <iostream>
-#include <memory>
 
 using namespace JaroViewer;
 

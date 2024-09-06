@@ -17,7 +17,7 @@ namespace JaroViewer {
 			Camera(glm::vec3 pos, glm::vec3 up);
 			void setFlashlight(const std::shared_ptr<JaroViewer::Spotlight> flashlight);
 			void toggleFlashlight();
-			void addControls(InputHandler* handler, Window* window);
+			void addControls(InputHandler* handler);
 
 			void goForward(float deltaTime);
 			void goBack(float deltaTime);

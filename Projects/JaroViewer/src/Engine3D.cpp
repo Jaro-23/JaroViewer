@@ -12,7 +12,7 @@ Engine3D::Engine3D(const Window &window, Camera* camera) :
 	mInputHandler{&mWindow},
 	mCamera{camera}
 {
-	mCamera->addControls(&mInputHandler, &mWindow);
+	mCamera->addControls(&mInputHandler);
 }
 
 /**
