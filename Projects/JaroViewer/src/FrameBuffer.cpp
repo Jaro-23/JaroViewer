@@ -9,6 +9,7 @@ FrameBuffer::FrameBuffer(int width, int height, bool readableColor, bool readabl
 	mHeight = height;
 	
 	genBuffer();
+	bind();
 	createStorage(readableColor, &mColorTexture, &mColorRBO, GL_COLOR_ATTACHMENT0);
 	createStorage(readableDepthStencil, &mDepthStencilTexture, &mDepthStencilRBO, GL_DEPTH_STENCIL_ATTACHMENT);
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -80,9 +81,7 @@ unsigned int FrameBuffer::genRenderBuffer(GLenum formatType) {
  */
 unsigned int FrameBuffer::bindTexture(GLenum usage) {
 	unsigned int texture = (usage == GL_DEPTH_STENCIL_ATTACHMENT) ? genTexure(GL_DEPTH24_STENCIL8) : genTexure(GL_RGB);
-	bind();
 	glFramebufferTexture2D(GL_FRAMEBUFFER, usage, GL_TEXTURE_2D, texture, 0);
-	unbind();
 	return texture;
 }
 
@@ -94,9 +93,7 @@ unsigned int FrameBuffer::bindTexture(GLenum usage) {
  */
 unsigned int FrameBuffer::bindRenderBuffer(GLenum usage) {
 	unsigned int buffer = (usage == GL_DEPTH_STENCIL_ATTACHMENT) ? genRenderBuffer(GL_DEPTH24_STENCIL8) : genRenderBuffer(GL_RGB);
-	bind();
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, usage, GL_RENDERBUFFER, buffer);
-	unbind();
 	return buffer;
 }
 

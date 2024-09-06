@@ -26,13 +26,15 @@ PostProcessor::PostProcessor(int width, int height, const std::string fragmentFi
 
 void PostProcessor::setupVao() {
 	std::vector<float> vertices{
-		-1.0f, 	1.0f,
-		 1.0f, -1.0f,
-		 1.0f, 	1.0f,
+		-1.0f, 	1.0f, 0.0f, 1.0f,
+		 1.0f, -1.0f, 1.0f, 0.0f,
+		 1.0f, 	1.0f, 1.0f, 1.0f,
 
-		-1.0f, 	1.0f,
-		-1.0f, -1.0f,
-		 1.0f, -1.0f,
+
+		-1.0f, 	1.0f, 0.0f, 1.0f,
+		-1.0f, -1.0f, 0.0f, 0.0f,
+		 1.0f, -1.0f, 1.0f, 0.0f,
+
 	};	
 
 	glGenVertexArrays(1, &mVaoBuffer);
@@ -40,20 +42,20 @@ void PostProcessor::setupVao() {
 	
 	Tools::generateBuffer(vertices, GL_ARRAY_BUFFER, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, (void*)0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 4, (void*)0);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, (void*)0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 4, (void*)(2 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 
 	glBindVertexArray(0);
 }
 
 void PostProcessor::bind() const {
-	//mFrameBuffer.bind();	
+	mFrameBuffer.bind();	
 }
 
 void PostProcessor::unbind() const {
-	//mFrameBuffer.unbind();
+	mFrameBuffer.unbind();
 }
 
 void PostProcessor::clear(float r, float g, float b, float a) const {
@@ -67,6 +69,7 @@ void PostProcessor::render() const {
 	mShader->setInt("screenTexture", 0);
 	glBindVertexArray(mVaoBuffer);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, mFrameBuffer.getTexture());
+	unsigned int texture = mFrameBuffer.getTexture();
+	glBindTexture(GL_TEXTURE_2D, texture);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
