@@ -1,7 +1,6 @@
 #pragma once
 
 #include "glad/glad.h"
-#include "GLFW/glfw3.h"
 
 namespace JaroViewer {
 	class FrameBuffer {
@@ -12,7 +11,9 @@ namespace JaroViewer {
 			void bind() const;
 			void unbind() const;
 			
-			unsigned int getTexture() const;
+			void clear(float r, float g, float b, float a) const;
+
+			unsigned int getColor() const;
 			unsigned int getDepthStencil() const;
 
 		private:

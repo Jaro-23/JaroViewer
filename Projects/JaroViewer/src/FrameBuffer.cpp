@@ -4,6 +4,13 @@
 
 using namespace JaroViewer;
 
+/**
+ * Creates a framebuffer with a certain size
+ * @param width The width of the framebuffer
+ * @param height The height of the framebuffer
+ * @param readableColor If it is possible to read the color buffer
+ * @param readableDepthStencil If it is possible to read the depth2_stencil8 buffer
+ */
 FrameBuffer::FrameBuffer(int width, int height, bool readableColor, bool readableDepthStencil) {
 	mWidth = width;
 	mHeight = height;
@@ -21,16 +28,47 @@ FrameBuffer::~FrameBuffer() {
 
 }
 
+// Binds the framebuffer so it will be drawn on
 void FrameBuffer::bind() const { glBindFramebuffer(GL_FRAMEBUFFER, mID); }
+
+// UnBinds the framebuffer so all draw calls will go to the screen
 void FrameBuffer::unbind() const { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
 
-unsigned int FrameBuffer::getTexture() const {
+/**
+ * Clears the framebuffer with a certain color
+ * @param r The R component of the RGBA color
+ * @param g The G component of the RGBA color
+ * @param b The B component of the RGBA color
+ * @param a The A component of the RGBA color
+ */
+void FrameBuffer::clear(float r, float g, float b, float a) const {
+	int draw = 0, read = 0;
+	glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &draw);
+	glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &read);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, mID);
+	glClearColor(r, g, b, a);	
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, draw);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, read);
+}
+
+/**
+ * Returns the color buffer as a texture id
+ * @return The id of the texture with all the data
+ */
+unsigned int FrameBuffer::getColor() const {
 	if (mColorTexture && mID != 0)
 		return mColorTexture;
 	std::cout << "ERROR::FRAMEBUFFER::TRYING_TO_READ_RENDER_BUFFER_COLOR";
 	return 0;
 }
 
+/**
+ * Returns the depth stencil buffer as a texture id
+ * @return The id of the texture with all the data
+ */
 unsigned int FrameBuffer::getDepthStencil() const {
 	if (mDepthStencilTexture && mID != 0)
 		return mDepthStencilTexture;
@@ -97,6 +135,13 @@ unsigned int FrameBuffer::bindRenderBuffer(GLenum usage) {
 	return buffer;
 }
 
+/**
+ * Creates storage for the framebuffer
+ * @param readable if it needs to be readable
+ * @param textureStorage A pointer to the place to store the texture if readble
+ * @param renderStorage A pointer to the place to store the renderbuffer if not readble
+ * @param usage If it is used as color attachment or depth stencil
+ */
 void FrameBuffer::createStorage(bool readable, unsigned int *texureStorage, unsigned int *renderStorage, GLenum usage) {
 	if (readable)
 		*texureStorage = bindTexture(usage);

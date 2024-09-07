@@ -15,6 +15,12 @@ const std::string vertexCode =
 	"}\n"
 ;
 
+/**
+ * Creates a postprocessor
+ * @param width The screen width of the postprocessor
+ * @param height The screen height of the postprocessor
+ * @param fragmentFile The path to the fragment shader for the postprocessor
+ */
 PostProcessor::PostProcessor(int width, int height, const std::string fragmentFile) :
 	mFrameBuffer{width, height, true, false}
 {
@@ -24,6 +30,9 @@ PostProcessor::PostProcessor(int width, int height, const std::string fragmentFi
 	setupVao();
 }
 
+/**
+ * Creates a vao for a plane that covers the screen
+ */
 void PostProcessor::setupVao() {
 	std::vector<float> vertices{
 		-1.0f, 	1.0f, 0.0f, 1.0f,
@@ -50,26 +59,31 @@ void PostProcessor::setupVao() {
 	glBindVertexArray(0);
 }
 
-void PostProcessor::bind() const {
+/**
+ * Binds the postprocessor so it gets drawn on
+ */
+void PostProcessor::bindAndClear(float r, float g, float b, float a) const {
 	mFrameBuffer.bind();	
+	mFrameBuffer.clear(r, g, b, a);
 }
 
+/**
+ * Unbinds the postprocessor so the screen gets drawn on
+ */
 void PostProcessor::unbind() const {
 	mFrameBuffer.unbind();
 }
 
-void PostProcessor::clear(float r, float g, float b, float a) const {
-	glClearColor(r, g, b, a);	
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-}
-
+/**
+ * Renders the postprocessor with the fragment shader to the screen
+ */
 void PostProcessor::render() const {
 	mFrameBuffer.unbind();
 	mShader->use();
 	mShader->setInt("screenTexture", 0);
 	glBindVertexArray(mVaoBuffer);
 	glActiveTexture(GL_TEXTURE0);
-	unsigned int texture = mFrameBuffer.getTexture();
+	unsigned int texture = mFrameBuffer.getColor();
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }

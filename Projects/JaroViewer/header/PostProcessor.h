@@ -12,9 +12,8 @@ namespace JaroViewer {
 			PostProcessor(int width, int height, const std::string fragmentFile);
 			void setupVao();
 
-			void bind() const;
+			void bindAndClear(float r, float g, float b, float a) const;
 			void unbind() const;
-			void clear(float r, float g, float b, float a) const;
 			void render() const;
 
 		private:

@@ -50,8 +50,16 @@ Window::Window(int glfwVersion, int width, int height, const std::string &title)
  * @post the window will be fully black
  */
 void Window::clear() {
+	int draw = 0, read = 0;
+	glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &draw);
+	glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &read);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, draw);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, read);
 }
 
 /**
