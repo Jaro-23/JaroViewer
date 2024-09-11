@@ -2,6 +2,7 @@
 
 #include "FrameBuffer.h"
 #include "Shader.h"
+#include "Window.h"
 
 #include <memory>
 #include <string>
@@ -9,7 +10,7 @@
 namespace JaroViewer {
 	class PostProcessor {
 		public:
-			PostProcessor(int width, int height, const std::string fragmentFile);
+			PostProcessor(Window* window, const std::string fragmentFile);
 			void setupVao();
 
 			void bindAndClear(float r, float g, float b, float a) const;

@@ -10,10 +10,12 @@ namespace JaroViewer {
 	class Window {
 		public:
 			Window(int glfwVersion, int width, int height, const std::string &title);
+			Window(int glfwVersion, int width, int height, const std::string &title, unsigned int samples);
 
 			void clear();
 			void update();
 			bool updateView();
+			void toggleFullscreen();
 			
 			void setShouldClose(bool close);
 			void setMouseMode(GLenum mode);
@@ -34,5 +36,9 @@ namespace JaroViewer {
 		private:
 			GLFWwindow *mWindow;
 			int mWidth, mHeight;
+			int mWindowedWidth, mWindowedHeight;
+			int mPosX, mPosY;
+			unsigned int mSamples;
+			bool mIsFullscreen;
 	};
 }

@@ -13,15 +13,33 @@ using namespace JaroViewer;
  * @param height The height of the screen
  * @param title The title of the window
  */
-Window::Window(int glfwVersion, int width, int height, const std::string &title) :
+Window::Window(int glfwVersion, int width, int height, const std::string &title) : Window{glfwVersion, width, height, title, 1} {}
+
+/**
+ * Creates a window
+ * @param glfwVersion The version of glfw that will be used
+ * @param width The width of the screen
+ * @param height The height of the screen
+ * @param title The title of the window
+ * @param samples The number of samples for anti-aliasing
+ */
+Window::Window(int glfwVersion, int width, int height, const std::string &title, unsigned int samples) :
 	mWidth{width},
-	mHeight{height}
+	mHeight{height},
+	mIsFullscreen{false}
 {
 	// Start up GLFW
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, glfwVersion);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, glfwVersion);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+	if (samples > 1) {
+		glfwWindowHint(GLFW_SAMPLES, samples);
+		mSamples = samples;
+	} else {
+		mSamples = 1;
+	}
 
 	// Create the needed window
 	mWindow = glfwCreateWindow(mWidth, mHeight, title.c_str(), NULL, NULL);
@@ -41,6 +59,8 @@ Window::Window(int glfwVersion, int width, int height, const std::string &title)
 	// Setting up the viewport
 	glViewport(0, 0, mWidth, mHeight);
 	glEnable(GL_DEPTH_TEST);
+	if (samples > 0) glEnable(GL_MULTISAMPLE);
+
 	clear();
 	update();
 }
@@ -83,6 +103,23 @@ bool Window::updateView() {
 	mHeight = height;
 	glViewport(0, 0, width, height);
 	return true;
+}
+
+/**
+ * 
+ */
+void Window::toggleFullscreen() {
+	if (!mIsFullscreen) {
+		glfwGetWindowPos(mWindow, &mPosX, &mPosY);
+		glfwGetWindowSize(mWindow, &mWindowedWidth, &mWindowedHeight);
+		GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+		const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+		glfwSetWindowMonitor(mWindow, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+	} else {
+		glfwSetWindowMonitor(mWindow, nullptr, mPosX, mPosY, mWindowedWidth, mWindowedHeight, 0);
+	}
+	glfwGetWindowSize(mWindow, &mWidth, &mHeight);
+	mIsFullscreen = !mIsFullscreen;
 }
 
 /**

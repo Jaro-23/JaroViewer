@@ -20,7 +20,7 @@ namespace JaroViewer {
 			Shader(const std::vector<std::string> &vertexPaths, const std::vector<std::string> &fragmentPaths);
 			Shader(const std::vector<std::string> &vertexPaths, const std::vector<std::string> &geometryPaths, const std::vector<std::string> &fragmentPaths);
 
-			void use();
+			void use() const;
 			
 			void setBool(const std::string &name, bool value) const;
 			void setInt(const std::string &name, int value) const;

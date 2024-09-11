@@ -7,12 +7,14 @@
 
 using namespace JaroViewer;
 
-Engine3D::Engine3D(const Window &window, Camera* camera) :
+Engine3D::Engine3D(Window* window, Camera* camera) :
 	mWindow{window},
-	mInputHandler{&mWindow},
+	mInputHandler{mWindow},
 	mCamera{camera}
 {
 	mCamera->addControls(&mInputHandler);
+
+	mInputHandler.addKey(GLFW_KEY_F11, InputHandler::KeyAction::PRESS, [=](float) { mWindow->toggleFullscreen(); });
 }
 
 /**
@@ -71,25 +73,29 @@ void Engine3D::setLightSet(LightSet* lightSet) {
 InputHandler* Engine3D::getInputHandler() { return &mInputHandler; }
 
 /**
- * Creates a postprocessor with the given fragment shader
- * @param fragmentPath The path to the fragment shader
+ * Sets the arguments for the engine
+ * @param args The engine arguments
  */
-void Engine3D::enablePostProcessor(const std::string fragmentPath) {
-	mPostProcessor = std::make_unique<PostProcessor>(mWindow.getWidth(), mWindow.getHeight(), fragmentPath);
-}
+void Engine3D::setArgs(EngineArgs args) { mArgs = args; }
+
+/**
+ * Gets the arguments for the engine
+ * @return The engine arguments
+ */
+Engine3D::EngineArgs* Engine3D::getArgsPtr() { return &mArgs; }
 
 /**
  * Contains the main rendering loop 
  */
 void Engine3D::render() {
 	UniformTransformation uniformData {
-		mWindow.getProjection(),
+		mWindow->getProjection(),
 		mCamera->getView()
 	};
 
 	// Start the main loop
 	Timer timer{};
-	while (!mWindow.shouldClose()) {
+	while (!mWindow->shouldClose()) {
 		Component3D::RenderData data{
 			mCamera->getPosition(),
 			timer.getDeltaTime()	
@@ -100,7 +106,7 @@ void Engine3D::render() {
 		LightSet::LightSetStruct lightStruct = mLightSet->getStruct();
 		mLightSetUBO->UpdateData(&lightStruct);
 
-		if (mWindow.updateView()) uniformData.projection = mWindow.getProjection();
+		if (mWindow->updateView()) uniformData.projection = mWindow->getProjection();
 		mInputHandler.processInputs(data.deltaTime);
 		updateFrame(data);		
 	}
@@ -111,14 +117,15 @@ void Engine3D::render() {
  * @param data The data that will be given to each component
  */
 void Engine3D::updateFrame(const Component3D::RenderData &data) {
-	mWindow.clear();
+	mWindow->clear();
 
-	if (mPostProcessor)	mPostProcessor->bindAndClear(0.0f, 0.0f, 0.0f, 0.0f);
+	if (mArgs.postProcessor) mArgs.postProcessor->bindAndClear(0.0f, 0.0f, 0.0f, 0.0f);
 
 	std::map<int, std::shared_ptr<JaroViewer::Component3D>>::iterator it;
 	for (it = mComponents.begin(); it != mComponents.end(); it++) it->second->render(data);
+	if (mArgs.cubemap) mArgs.cubemap->render();
 
-	if (mPostProcessor)	mPostProcessor->render();
+	if (mArgs.postProcessor) mArgs.postProcessor->render();
 
-	mWindow.update();
+	mWindow->update();
 }

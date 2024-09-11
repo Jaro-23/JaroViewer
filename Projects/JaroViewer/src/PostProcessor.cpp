@@ -17,12 +17,11 @@ const std::string vertexCode =
 
 /**
  * Creates a postprocessor
- * @param width The screen width of the postprocessor
- * @param height The screen height of the postprocessor
+ * @param window The window on which the postprocessor will be applied
  * @param fragmentFile The path to the fragment shader for the postprocessor
  */
-PostProcessor::PostProcessor(int width, int height, const std::string fragmentFile) :
-	mFrameBuffer{width, height, true, false}
+PostProcessor::PostProcessor(Window* window, const std::string fragmentFile) :
+	mFrameBuffer{window->getWidth(), window->getHeight(), true, false}
 {
 	std::string buff;
 	Tools::readFile(fragmentFile, &buff);

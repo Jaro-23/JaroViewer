@@ -1,5 +1,3 @@
-#include "PointLight.h"
-#include <Shader.h>
 #include <Engine3D.h>
 #include <BoxComponent.h>
 #include <Model.h>
@@ -14,9 +12,12 @@ int main() {
 	// Always create engine first because it will start glfw etc..
 	Camera camera = Camera(glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	camera.setSpeed(3.5f);
-	Window window{3, 600, 450, "Basic example"};
-	Engine3D engine = Engine3D(window, &camera);
-	//engine.enablePostProcessor(basePath + "fragment/postprocessing.fs");
+	Window window{3, 600, 450, "Basic example", 16};
+	Engine3D engine = Engine3D(&window, &camera);
+	engine.setArgs(Engine3D::EngineArgs{
+		nullptr, //std::make_shared<PostProcessor>(&window, basePath + "fragment/postprocessing.fs"),
+		nullptr, //std::make_shared<Cubemap>(basePath + "textures/cubemap"),
+	});
 	
 	// Create some shaders and textures
 	Shader shader{{basePath + "vertex/Library.vs", basePath + "vertex/Basic.vs"}, {basePath + "fragment/Library.fs", basePath + "fragment/Basic.fs"}};
@@ -25,7 +26,7 @@ int main() {
 	Tools::LightColor lightColor{glm::vec3(0.05f), glm::vec3(0.55f), glm::vec3(1.00f)};
 	Tools::AttenuationParams attenParams{ 1.0f, 0.09f, 0.032f };
 
-	// Create the lightset and add it
+	// Create the lightset and add all lights to it
 	std::shared_ptr<DirectionalLight> dir{ new DirectionalLight{ glm::vec3(-0.2f, -1.0f, -0.3f), lightColor} };
 	std::shared_ptr<PointLight> pointLight{ new PointLight{ fullWhiteShader, lightColor, attenParams } };
 	pointLight->setTranslation(glm::vec3(-2.0f, 0.3f, 1.0f));

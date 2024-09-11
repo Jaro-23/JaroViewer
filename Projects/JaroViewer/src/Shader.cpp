@@ -45,7 +45,7 @@ Shader::Shader(const std::vector<std::string> &vertexPaths, const std::vector<st
 	createProgram(vertex, geometry, fragment);
 }
 
-void Shader::use() { glUseProgram(mProgramID); }
+void Shader::use() const { glUseProgram(mProgramID); }
 void Shader::setBool(const std::string &name, bool value) const { glUniform1i(getLocation(name), value); }
 void Shader::setInt(const std::string &name, int value) const { glUniform1i(getLocation(name), value); }
 void Shader::setUniformBuffer(const std::string &name, int position) const {

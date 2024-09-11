@@ -13,6 +13,7 @@
 #include "Camera.h"
 #include "InputHandler.h"
 #include "PostProcessor.h"
+#include "Cubemap.h"
 #include "UniformBuffer.h"
 #include "Window.h"
 #include "LightSet.h"
@@ -20,7 +21,12 @@
 namespace JaroViewer {
 		class Engine3D {
 		public:			
-			Engine3D(const Window &window, Camera* camera);
+			typedef struct {
+				std::shared_ptr<PostProcessor> postProcessor;
+				std::shared_ptr<Cubemap> cubemap;
+			} EngineArgs;
+
+			Engine3D(Window* window, Camera* camera);
 
 			void start();
 
@@ -30,7 +36,8 @@ namespace JaroViewer {
 
 			void setLightSet(LightSet* lightSet);
 			InputHandler* getInputHandler();
-			void enablePostProcessor(const std::string fragmentPath);
+			void setArgs(EngineArgs args);
+			EngineArgs* getArgsPtr();
 
 		private:
 			void render();
@@ -46,11 +53,11 @@ namespace JaroViewer {
 			int mComponentsLength;
 			std::vector<int> mOpenSlots;
 
-			Window mWindow;
+			Window* mWindow;
 			Camera* mCamera;
 			LightSet* mLightSet;	
 			InputHandler mInputHandler;
-			std::unique_ptr<PostProcessor> mPostProcessor;
+			EngineArgs mArgs;
 
 			std::shared_ptr<UniformBuffer> mTransformationUBO;
 			std::shared_ptr<UniformBuffer> mLightSetUBO;
