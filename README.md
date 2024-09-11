@@ -12,6 +12,6 @@ The library is compiled and build using generated files from premake. So you goi
 To run the program or compile the library, first you need to run premake5 {format}. After this command the project files will be generated in the folder.
 ## Run the generated files
 The last step for generating the library is to execute these generated files. Beneath you will see the command or step to produce the library based of the format:
- * gmake(2) &#8594 make config={release|debug} -C Generated/
+ * gmake(2) -> make config={release|debug} -C Generated/
 ## Copy library or execute test program
 The library will now be found in "Build/Bin/JaroViewer/{Debug|Release}/". If you want to test the library you can run the program at "Build/Bin/App/{Debug|Release}/" for a simple demo.
