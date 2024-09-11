@@ -4,10 +4,10 @@ JaroViewer is a simple 3D graphics library that allows the user to still work wi
 # Installatation
 ## Prerequisites
 The library is compiled and build using generated files from premake. So you going to need premake5 (other versions are untested). You also going to need a few libraries. Here you have list with links to the respective libraries:
-###Libraries
-.* GLFW (https://github.com/glfw/glfw?tab=readme-ov-file)
-.* Assimp (https://github.com/assimp/assimp)
-.* [Possibly for assimp] Zlib (https://github.com/madler/zlib)
+### Libraries
+ * GLFW (https://github.com/glfw/glfw?tab=readme-ov-file)
+ * Assimp (https://github.com/assimp/assimp)
+ * [Possibly for assimp] Zlib (https://github.com/madler/zlib)
 ## Generating files
 To run the program or compile the library, first you need to run premake5 {format}. After this command the project files will be generated in the folder.
 ## Run the generated files
