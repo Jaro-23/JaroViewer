@@ -1,7 +1,6 @@
 # JaroViewer
 JaroViewer is a simple 3D graphics library that allows the user to still work with glfw3 directly but abstracts the basic handling and managing of the component. It is also include some abstracted features like framebuffers, post processing, cubemaps, ...
 
---------------------------------------
 # Installatation
 ## Prerequisites
 The library is compiled and build using generated files from premake. So you going to need premake5 (other versions are untested). You also going to need a few libraries. Here you have list with links to the respective libraries:
