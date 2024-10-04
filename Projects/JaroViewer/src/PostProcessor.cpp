@@ -1,6 +1,7 @@
 #include "../header/PostProcessor.h"
 #include "../header/Tools.h"
 #include <memory>
+#include <array>
 
 using namespace JaroViewer;
 
@@ -37,7 +38,6 @@ void PostProcessor::setupVao() {
 		-1.0f, 	1.0f, 0.0f, 1.0f,
 		 1.0f, -1.0f, 1.0f, 0.0f,
 		 1.0f, 	1.0f, 1.0f, 1.0f,
-
 
 		-1.0f, 	1.0f, 0.0f, 1.0f,
 		-1.0f, -1.0f, 0.0f, 0.0f,

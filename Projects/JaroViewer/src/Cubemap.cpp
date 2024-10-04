@@ -2,6 +2,7 @@
 
 #include "../header/Tools.h"
 
+#include <array>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <STB_IMAGE/stb_image.h>

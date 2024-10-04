@@ -20,8 +20,7 @@ Component3D::Component3D(const Shader &shader) :
 	mWireframeMode{false},
 	mUseIndices{true},
 	mTranslation{glm::vec3(0.0f)},
-	mScale{glm::vec3(1.0f)},
-	mMaterials{std::vector<Material>()}
+	mScale{glm::vec3(1.0f)}
 {
 	mWireframeShader.setUniformBuffer("Transformation", 0);
 }

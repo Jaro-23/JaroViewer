@@ -57,6 +57,7 @@ void ModelFactory::processNode(aiNode *node, ModelData &data, const aiScene *sce
 
 Mesh ModelFactory::processMesh(aiMesh *mesh, const std::string directory, const aiScene *scene) {
 	std::vector<float> vertices{};
+	vertices.reserve(mesh->mNumVertices * 8);
 	std::vector<unsigned int> indices{};
 	std::vector<Material> materials{};
 
@@ -99,6 +100,7 @@ Mesh ModelFactory::processMesh(aiMesh *mesh, const std::string directory, const 
 
 std::vector<Texture2D> ModelFactory::loadMaterials(aiMaterial *mat, aiTextureType type, const std::string directory, const std::string &typeName) {
 	std::vector<Texture2D> textures;
+	textures.reserve(mat->GetTextureCount(type));
 	for (unsigned int i = 0; i < mat->GetTextureCount(type); i++) {
 		aiString str;
 		mat->GetTexture(type, i, &str);

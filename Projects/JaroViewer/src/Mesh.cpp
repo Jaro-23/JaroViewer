@@ -4,7 +4,7 @@
 
 using namespace JaroViewer;
 
-Mesh::Mesh(std::vector<float> &vertices, std::vector<unsigned int> &indices, std::vector<Material> &materials) :
+Mesh::Mesh(const std::vector<float> &vertices, std::vector<unsigned int> &indices, std::vector<Material> &materials) :
 	mMaterials{materials}
 {
 	// Setup buffers

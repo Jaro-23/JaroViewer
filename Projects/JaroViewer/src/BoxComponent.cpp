@@ -1,6 +1,7 @@
 #include "../header/BoxComponent.h"
 #include "../header/Tools.h"
 #include <GLM/gtx/string_cast.hpp>
+#include <array>
 
 using namespace JaroViewer;
 

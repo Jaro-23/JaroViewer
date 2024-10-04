@@ -1,5 +1,7 @@
 #include "../header/PointLight.h"
 
+#include <array>
+
 using namespace JaroViewer;
 
 PointLight::PointLight(const Shader &shader, Tools::LightColor lightColor, Tools::AttenuationParams params) :

@@ -19,7 +19,7 @@ namespace JaroViewer {
 			 * @param usage The usage of the buffer
 			 */
 			template <typename T, typename Allocator>
-			static unsigned int generateBuffer(std::vector<T, Allocator> &data, GLenum bufferType, GLenum usage) {
+			static unsigned int generateBuffer(const std::vector<T, Allocator> &data, GLenum bufferType, GLenum usage) {
 				unsigned int buffer;
 				glGenBuffers(1, &buffer);
 				glBindBuffer(bufferType, buffer);
