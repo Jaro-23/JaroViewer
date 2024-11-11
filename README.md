@@ -1,4 +1,6 @@
 # JaroViewer
+DISCLOSURE: This is for educational purposes and is in no way intended to be used in larger production or final products
+
 JaroViewer is a simple 3D graphics library that allows the user to still work with glfw3 directly but abstracts the basic handling and managing of the component. It is also include some abstracted features like framebuffers, post processing, cubemaps, ...
 
 # Installatation
