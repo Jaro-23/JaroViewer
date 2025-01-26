@@ -3,6 +3,7 @@ obj/
 
 Build/
 Generated/
+Test/
 .cache/
 
 *.lib
