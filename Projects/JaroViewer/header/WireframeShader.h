@@ -1,13 +1,14 @@
 #pragma once
 
 #include "Shader.h"
+#include <memory>
 
 namespace JaroViewer {
 	class WireframeShader {
 		public:
-			static Shader getShader() { 
+			static std::shared_ptr<Shader> getShader() { 
 				Shader::ShaderCode code{&vertex, &geometry, &fragment};
-				return Shader(code); 
+				return std::make_shared<Shader>(code);
 			}
 
 		private:

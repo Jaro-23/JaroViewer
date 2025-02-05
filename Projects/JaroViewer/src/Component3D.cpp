@@ -1,4 +1,5 @@
 #include "../header/Component3D.h"
+#include "../header/AssetManager.h"
 #include "../header/WireframeShader.h"
 #include "../header/Tools.h"
 #include "GLM/ext/matrix_transform.hpp"
@@ -12,17 +13,17 @@ using namespace JaroViewer;
 
 /**
  * Creates a new component
- * @param shader The shader for the component
+ * @param shader Asset parameters for the shader of this component
  */
-Component3D::Component3D(const Shader &shader) :
-	mShader{ shader },
+Component3D::Component3D(const AssetParameter &shader) :
+	mShader{ AssetManager::instance()->load<Shader>(shader) },
 	mWireframeShader{ WireframeShader::getShader() },
 	mWireframeMode{false},
 	mUseIndices{true},
 	mTranslation{glm::vec3(0.0f)},
 	mScale{glm::vec3(1.0f)}
 {
-	mWireframeShader.setUniformBuffer("Transformation", 0);
+	mWireframeShader->setUniformBuffer("Transformation", 0);
 }
 
 /**
@@ -189,10 +190,10 @@ void Component3D::setUseIndices(bool use) {	mUseIndices = use; }
  * Loads the materials in mMaterials into the shader
  * @param shader The shader the materials will be loaded into
  */
-void Component3D::bindMaterials(const Shader &shader) const {
-	mShader.setInt("numTextures", mMaterials.size());
+void Component3D::bindMaterials(const std::shared_ptr<Shader> &shader) const {
+	mShader->setInt("numTextures", mMaterials.size());
 	for (unsigned int i = 0; i < mMaterials.size(); i++)
-		mMaterials.at(i).loadIntoArray(&shader, i);
+		mMaterials.at(i).loadIntoArray(shader, i);
 }
 
 /**
@@ -200,8 +201,8 @@ void Component3D::bindMaterials(const Shader &shader) const {
  * @param data The data needed to render the component
  */
 void Component3D::wireframeRender(const RenderData &data) {
-	mWireframeShader.use();
-	mWireframeShader.setMat4("model", getModelMatrix());	
+	mWireframeShader->use();
+	mWireframeShader->setMat4("model", getModelMatrix());	
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	if (mUseIndices)
 		glDrawElements(GL_TRIANGLES, mNumLines, GL_UNSIGNED_INT, 0);
@@ -214,11 +215,11 @@ void Component3D::wireframeRender(const RenderData &data) {
  * @param data The data needed to render the component
  */
 void Component3D::defaultRender(const RenderData &data) {
-	mShader.use();
+	mShader->use();
 	glm::mat4 model = getModelMatrix();
-	mShader.setMat4("model", model);
-	mShader.setMat3("normalModel", Tools::getNormalModelMatrix(model));
-	mShader.setVec3("viewPos", data.viewPos);
+	mShader->setMat4("model", model);
+	mShader->setMat3("normalModel", Tools::getNormalModelMatrix(model));
+	mShader->setVec3("viewPos", data.viewPos);
 	bindMaterials(mShader);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	if (mUseIndices)

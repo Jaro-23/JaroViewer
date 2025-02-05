@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Asset.h"
 #include <glad/glad.h>
 #include <GLM/glm.hpp>
 #include <GLM/gtc/type_ptr.hpp>
@@ -8,7 +9,7 @@
 #include <string>
 
 namespace JaroViewer {
-	class Shader {
+	class Shader : public Asset{
 		public:
 			struct ShaderCode {
 				const std::string *vertexCode;
@@ -17,9 +18,9 @@ namespace JaroViewer {
 			};
 
 			Shader(const ShaderCode &code);
-			Shader(const std::vector<std::string> &vertexPaths, const std::vector<std::string> &fragmentPaths);
-			Shader(const std::vector<std::string> &vertexPaths, const std::vector<std::string> &geometryPaths, const std::vector<std::string> &fragmentPaths);
+			Shader();
 
+			bool load(const AssetParameter &params) override;
 			void use() const;
 			
 			void setBool(const std::string &name, bool value) const;
@@ -43,6 +44,6 @@ namespace JaroViewer {
 			void checkLinkingError(unsigned int programID) const;
 			GLint getLocation(const std::string &name) const;
 
-			unsigned int mProgramID;
+			unsigned int m_program_id;
 	};
 };

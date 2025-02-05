@@ -1,10 +1,9 @@
 #include "../header/Model.h"
 #include "../header/ModelFactory.h"
-#include <iostream>
 
 using namespace JaroViewer;
 
-Model::Model(Shader &shader, const std::string &path) : 
+Model::Model(const AssetParameter &shader, const std::string &path) : 
 	Component3D{shader},
 	mPath{path}
 { 

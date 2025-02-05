@@ -1,11 +1,12 @@
 #pragma once
 
+#include "Asset.h"
 #include "Component3D.h"
 
 namespace JaroViewer {
 	class Model : public JaroViewer::Component3D {
 		public:
-			Model(Shader &shader, const std::string &path);
+			Model(const AssetParameter &shader, const std::string &path);
 			void load() override;
 		
 		private:

@@ -13,16 +13,16 @@ std::shared_ptr<ModelFactory> ModelFactory::getInstance() {
 	return mInstance;
 }
 
-void ModelFactory::drawModel(const std::string &path, const glm::mat4 &model, const Component3D::RenderData &data, Shader &shader) {
+void ModelFactory::drawModel(const std::string &path, const glm::mat4 &model, const Component3D::RenderData &data, std::shared_ptr<Shader> &shader) {
 	if (mLoadedModels.find(path) == mLoadedModels.end())
 		createModel(path);
 
 	ModelData &modelData = mLoadedModels.at(path);
 	for (unsigned int i = 0; i < modelData.meshes.size(); i++) {
-		shader.use();
-		shader.setMat4("model", model);
-		shader.setMat3("normalModel", Tools::getNormalModelMatrix(model));
-		shader.setVec3("viewPos", data.viewPos);
+		shader->use();
+		shader->setMat4("model", model);
+		shader->setMat3("normalModel", Tools::getNormalModelMatrix(model));
+		shader->setVec3("viewPos", data.viewPos);
 		modelData.meshes.at(i).Draw(shader);
 	}
 }

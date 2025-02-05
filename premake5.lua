@@ -1,6 +1,7 @@
 workspace "JaroViewer Basic Example"
    location "Generated"
    language "C++"
+   cppdialect "C++20"
    architecture "x86_64"
 
    configurations { "Debug", "Release" }

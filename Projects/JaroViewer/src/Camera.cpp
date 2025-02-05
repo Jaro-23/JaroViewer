@@ -36,13 +36,13 @@ void Camera::toggleFlashlight() { if (mFlashlight) mFlashlight->enable(!mFlashli
 void Camera::addControls(InputHandler* handler) {
 	// Basic movement
 	handler->addMouseMoveEvent(getMouseEvent());
-	handler->addKey(GLFW_KEY_W, InputHandler::KeyAction::DOWN, [=] (float deltaTime) { this->goForward(deltaTime); });
-	handler->addKey(GLFW_KEY_S, InputHandler::KeyAction::DOWN, [=] (float deltaTime) { this->goBack(deltaTime); });
-	handler->addKey(GLFW_KEY_A, InputHandler::KeyAction::DOWN, [=] (float deltaTime) { this->goLeft(deltaTime); });
-	handler->addKey(GLFW_KEY_D, InputHandler::KeyAction::DOWN, [=] (float deltaTime) { this->goRight(deltaTime); });
+	handler->addKey(GLFW_KEY_W, InputHandler::KeyAction::DOWN, [this] (float deltaTime) { this->goForward(deltaTime); });
+	handler->addKey(GLFW_KEY_S, InputHandler::KeyAction::DOWN, [this] (float deltaTime) { this->goBack(deltaTime); });
+	handler->addKey(GLFW_KEY_A, InputHandler::KeyAction::DOWN, [this] (float deltaTime) { this->goLeft(deltaTime); });
+	handler->addKey(GLFW_KEY_D, InputHandler::KeyAction::DOWN, [this] (float deltaTime) { this->goRight(deltaTime); });
 
 	// Flashlight
-	handler->addKey(GLFW_KEY_F, InputHandler::KeyAction::PRESS, [=] (float) { this->toggleFlashlight(); });
+	handler->addKey(GLFW_KEY_F, InputHandler::KeyAction::PRESS, [this] (float) { this->toggleFlashlight(); });
 
 	// Set focus keys
 	handler->addKey(GLFW_KEY_ESCAPE, InputHandler::KeyAction::DOWN, [=] (float) { 
@@ -123,7 +123,7 @@ float Camera::getSensitivity() const { return mSensitivity; }
  * Returns the mouse move event for the mouse
  */
 std::function<void(GLFWwindow*, double, double)> Camera::getMouseEvent() {
-	return [=](GLFWwindow *window, double xpos, double ypos) {
+	return [this](GLFWwindow *window, double xpos, double ypos) {
 		if (glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_NORMAL) return;
 		if (this->getFirstMove()) {
 			this->setMouseX(xpos);

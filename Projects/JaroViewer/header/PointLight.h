@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Asset.h"
 #include "Component3D.h"
 #include "Tools.h"
 #include <GLM/glm.hpp>
@@ -18,7 +19,7 @@ namespace JaroViewer {
 				float quadratic;
 			};
 
-			PointLight(const Shader &shader, Tools::LightColor lightColor, Tools::AttenuationParams params);
+			PointLight(const AssetParameter &shader, Tools::LightColor lightColor, Tools::AttenuationParams params);
 
 			void enable(bool enable);
 			PointLightStruct getStruct() const;

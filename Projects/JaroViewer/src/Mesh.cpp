@@ -1,6 +1,5 @@
 #include "../header/Mesh.h"
 #include "../header/Tools.h"
-#include <iostream>
 
 using namespace JaroViewer;
 
@@ -26,12 +25,12 @@ Mesh::Mesh(const std::vector<float> &vertices, std::vector<unsigned int> &indice
 	glBindVertexArray(0);
 }
 
-void Mesh::Draw(Shader &shader) {
-	shader.use();
-	shader.setInt("numTextures", mMaterials.size());
+void Mesh::Draw(const std::shared_ptr<Shader> &shader) {
+	shader->use();
+	shader->setInt("numTextures", mMaterials.size());
 	glBindVertexArray(mVaoBuffer);
 	for (unsigned int i = 0; i < mMaterials.size(); i++)
-		mMaterials.at(i).loadIntoArray(&shader, i);
+		mMaterials.at(i).loadIntoArray(shader, i);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glDrawElements(GL_TRIANGLES, mNumIndices, GL_UNSIGNED_INT, 0);
 }

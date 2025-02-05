@@ -1,6 +1,7 @@
+#pragma once
+
 #include "InputHandler.h"
 #include "Spotlight.h"
-#include "Window.h"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 

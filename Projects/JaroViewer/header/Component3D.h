@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Asset.h"
 #include "Material.h"
 #include "Shader.h"
 #include <GLM/glm.hpp>
@@ -15,7 +16,7 @@ namespace JaroViewer {
 				float deltaTime;
 			} RenderData;
 
-			Component3D(const Shader &shader);
+			Component3D(const AssetParameter &shader);
 			void setWireframeMode(bool enable);
 			
 			void addTranslation(const glm::vec3 &translation);
@@ -38,19 +39,18 @@ namespace JaroViewer {
 			glm::mat4 getModelMatrix() const;
 			glm::vec3 getPosition() const;
 			void setUseIndices(bool use);
-			void bindMaterials(const Shader &shader) const;
-
+			void bindMaterials(const std::shared_ptr<Shader> &shader) const;
 			
 			unsigned int mNumLines = 0;
 			unsigned int mVaoBuffer = 0;
-			Shader mShader;
+			std::shared_ptr<Shader> mShader;
 
 		private:
 			virtual void wireframeRender(const RenderData &data);
 			virtual void defaultRender(const RenderData &data);
 			void normalizeAngles();
 
-			Shader mWireframeShader;
+			std::shared_ptr<Shader> mWireframeShader;
 			bool mWireframeMode;
 			bool mUseIndices;
 			std::vector<std::shared_ptr<Component3D>> mChildren;

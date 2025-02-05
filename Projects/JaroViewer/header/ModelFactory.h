@@ -14,7 +14,7 @@ namespace JaroViewer {
 		public:
 			static std::shared_ptr<ModelFactory> getInstance();
 
-			void drawModel(const std::string &path, const glm::mat4 &model, const Component3D::RenderData &data, Shader &shader);
+			void drawModel(const std::string &path, const glm::mat4 &model, const Component3D::RenderData &data, std::shared_ptr<Shader> &shader);
 
 		private:
 			static std::shared_ptr<ModelFactory> mInstance;

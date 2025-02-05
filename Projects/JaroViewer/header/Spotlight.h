@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Asset.h"
 #include "Component3D.h"
 #include "Tools.h"
 #include <GLM/glm.hpp>
@@ -24,7 +25,7 @@ namespace JaroViewer {
 				float pad2;
 			};
 
-			Spotlight(const Shader &shader, glm::vec3 direction, Tools::LightColor lightColor, Tools::AttenuationParams params, float innerAngle, float outerAngle);
+			Spotlight(const AssetParameter &shader, glm::vec3 direction, Tools::LightColor lightColor, Tools::AttenuationParams params, float innerAngle, float outerAngle);
 
 			void enable(bool enable);
 			bool getState() const;

@@ -1,13 +1,26 @@
+#include "Asset.h"
+#include "Shader.h"
+#include <AssetManager.h>
 #include <Engine3D.h>
 #include <BoxComponent.h>
 #include <Model.h>
 
 #include <GLM/gtx/string_cast.hpp>
+#include <memory>
 
 using namespace JaroViewer;
 
 int main() {
 	const std::string basePath = "./Projects/App/";
+
+	const AssetParameter shader{{
+		{"vertex", {basePath + "vertex/Library.vs", basePath + "vertex/Basic.vs"}},
+		{"fragment", {basePath + "fragment/Library.fs", basePath + "fragment/Basic.fs"}}
+	}};
+	const AssetParameter fullWhiteShader{{
+		{"vertex", {basePath + "vertex/Library.vs", basePath + "vertex/FullWhite.vs"}}, 
+		{"fragment", {basePath + "fragment/FullWhite.fs"}}
+	}};
 
 	// Always create engine first because it will start glfw etc..
 	Camera camera = Camera(glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -20,8 +33,6 @@ int main() {
 	});
 	
 	// Create some shaders and textures
-	Shader shader{{basePath + "vertex/Library.vs", basePath + "vertex/Basic.vs"}, {basePath + "fragment/Library.fs", basePath + "fragment/Basic.fs"}};
-	Shader fullWhiteShader{{basePath + "vertex/Library.vs", basePath + "vertex/FullWhite.vs"}, {basePath + "fragment/FullWhite.fs"}};
 	Material crate{basePath + "textures/crate.jpg", basePath + "textures/crate_specular.jpg", 32.0f};
 	Tools::LightColor lightColor{glm::vec3(0.05f), glm::vec3(0.55f), glm::vec3(1.00f)};
 	Tools::AttenuationParams attenParams{ 1.0f, 0.09f, 0.032f };

@@ -2,6 +2,7 @@
 
 #include "Shader.h"
 #include "Texture2D.h"
+#include <memory>
 #include <string>
 
 namespace JaroViewer {
@@ -11,7 +12,7 @@ namespace JaroViewer {
 			Material(const std::string &diffusePath, const std::string &specularPath, float shininess);
 
 			void load(const Shader *shader) const;
-			void loadIntoArray(const Shader *shader, int arrayIndex) const;
+			void loadIntoArray(const std::shared_ptr<Shader> &shader, int arrayIndex) const;
 
 		private:
 			std::string mVariableName;

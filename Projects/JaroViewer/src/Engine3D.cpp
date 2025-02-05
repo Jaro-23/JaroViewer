@@ -14,7 +14,7 @@ Engine3D::Engine3D(Window* window, Camera* camera) :
 {
 	mCamera->addControls(&mInputHandler);
 
-	mInputHandler.addKey(GLFW_KEY_F11, InputHandler::KeyAction::PRESS, [=](float) { mWindow->toggleFullscreen(); });
+	mInputHandler.addKey(GLFW_KEY_F11, InputHandler::KeyAction::PRESS, [this](float) { mWindow->toggleFullscreen(); });
 }
 
 /**
