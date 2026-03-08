@@ -1,0 +1,24 @@
+#pragma once
+
+#include "Shader.hpp"
+#include <map>
+
+namespace JaroViewer {
+	class ShaderManager {
+	public:
+		ShaderManager();
+
+		uint loadShader(const ShaderCode& codes);
+		uint loadShader(const ShaderPaths& paths);
+
+		Shader& getShader(uint ident) const;
+		void activateShader(uint ident);
+
+	private:
+		std::string pathsToKey(const ShaderPaths& paths) const;
+
+		std::map<std::string, uint> mPathToIdent;
+		std::vector<Shader> mShaders;
+		uint mActiveShader;
+	};
+} // namespace JaroViewer
