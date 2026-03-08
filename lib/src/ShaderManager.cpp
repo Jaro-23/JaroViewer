@@ -1,9 +1,35 @@
 #include "../headers/ShaderManager.hpp"
+#include "BasicShaders.hpp"
 #include <sstream>
 
 using namespace JaroViewer;
 
-ShaderManager::ShaderManager() : mPathToIdent(), mShaders(), mActiveShader(0) {}
+ShaderManager::ShaderManager() : mPathToIdent(), mShaders(), mActiveShader(0) {
+	loadShader(ShaderCode{basicWhiteVertex, "", basicWhiteFragment});
+	mShaders.at(0).setUniformBuffer("Transformation", 0);
+	mShaders.at(0).use();
+}
+
+uint ShaderManager::loadShader(const ShaderCode& codes) {
+	mShaders.push_back(Shader(codes));
+	uint ident = mShaders.size() - 1;
+	return ident;
+}
+
+uint ShaderManager::loadShader(const ShaderPaths& paths) {
+	std::string key = pathsToKey(paths);
+	if (mPathToIdent.contains(key)) return mPathToIdent.at(key);
+	mShaders.push_back(Shader(paths));
+
+	uint ident        = mShaders.size() - 1;
+	mPathToIdent[key] = ident;
+	return ident;
+}
+
+Shader* ShaderManager::getShader(uint ident) {
+	if (ident >= mShaders.size()) return nullptr;
+	return &mShaders.at(ident);
+}
 
 void ShaderManager::activateShader(uint ident) {
 	if (mActiveShader == ident) return;

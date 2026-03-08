@@ -6,11 +6,7 @@
 using namespace JaroViewer;
 
 Object::Object()
-  : mTranslation{glm::vec3(0.0f)},
-    mAngleX(0.0f),
-    mAngleY(0.0f),
-    mAngleZ(0.0f),
-    mScale{glm::vec3(1.0f)} {}
+  : mTranslation(0.0f), mAngleX(0.0f), mAngleY(0.0f), mAngleZ(0.0f), mScale(1.0f) {}
 
 Object::~Object() {
 	for (auto& callback : mDeleteCallbacks) callback();

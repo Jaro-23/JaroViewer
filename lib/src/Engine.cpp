@@ -24,6 +24,8 @@ void Engine::start() {
 	render();
 }
 
+EngineState* Engine::getState() { return &mState; }
+
 void Engine::render() {
 	Tranformation trans{mState.window.getProjection(), mState.camera.getView()};
 	Timer timer{};
@@ -39,6 +41,7 @@ void Engine::render() {
 
 		// Redraw the screen
 		mState.window.clear();
+		mState.objectManager.renderObjects();
 		mState.window.update();
 	}
 }

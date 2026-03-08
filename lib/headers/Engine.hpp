@@ -2,6 +2,7 @@
 
 #include "Camera.hpp"
 #include "InputHandler.hpp"
+#include "ObjectManager.hpp"
 #include "UniformBuffer.hpp"
 #include "Window.hpp"
 
@@ -26,9 +27,10 @@ namespace JaroViewer {
 		Window window;
 		Camera camera;
 		InputHandler input;
+		ObjectManager objectManager;
 
 		EngineState(Window&& w, Camera c)
-		  : window(std::move(w)), camera(std::move(c)), input(&this->window) {}
+		  : window(std::move(w)), camera(std::move(c)), input(&this->window), objectManager() {}
 	};
 
 	class Engine {
@@ -38,6 +40,7 @@ namespace JaroViewer {
 		~Engine();
 
 		void start();
+		EngineState* getState();
 
 	private:
 		struct Tranformation {

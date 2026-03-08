@@ -11,7 +11,7 @@ namespace JaroViewer {
 		uint loadShader(const ShaderCode& codes);
 		uint loadShader(const ShaderPaths& paths);
 
-		Shader& getShader(uint ident) const;
+		Shader* getShader(uint ident);
 		void activateShader(uint ident);
 
 	private:

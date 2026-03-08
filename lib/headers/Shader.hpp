@@ -9,15 +9,15 @@
 
 namespace JaroViewer {
 	struct ShaderCode {
-		const std::string vertexCode;
-		const std::string fragmentCode;
-		const std::string geometryCode = "";
+		const std::string& vertexCode;
+		const std::string& geometryCode;
+		const std::string& fragmentCode;
 	};
 
 	struct ShaderPaths {
-		std::vector<std::string> vertexPaths;
-		std::vector<std::string> fragmentPaths;
-		std::vector<std::string> geometryPaths = {};
+		std::vector<std::string>& vertexPaths;
+		std::vector<std::string>& geometryPaths;
+		std::vector<std::string>& fragmentPaths;
 	};
 
 	class Shader {

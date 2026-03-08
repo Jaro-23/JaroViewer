@@ -1,14 +1,29 @@
 #include "../headers/ObjectManager.hpp"
 
+#include "Shader.hpp"
 #include "Tools.hpp"
+#include "Window.hpp"
 #include <iostream>
+#include <variant>
 
 using namespace JaroViewer;
 
-ObjectManager::ObjectManager() : mModels() {}
+ObjectManager::ObjectManager() : mModels(), mShaderManager() {}
 
-void ObjectManager::registerModel(const std::string& ident, const std::vector<float>& vertices) {
-	registerFullModel(ident, vertices, 0);
+template<class... Ts> struct Overloaded : Ts... {
+	using Ts::operator()...;
+};
+
+void ObjectManager::registerModel(const std::string& ident, const std::vector<float>& vertices, ShaderParams shaderParams) {
+	uint shaderIdent = std::visit(
+	  Overloaded{
+	    [&](const ShaderCode& codes) { return mShaderManager.loadShader(codes); },
+	    [&](const ShaderPaths& paths) { return mShaderManager.loadShader(paths); },
+	    [&](uint id) { return id; }
+	  },
+	  shaderParams
+	);
+	registerFullModel(ident, vertices, shaderIdent);
 }
 
 Object ObjectManager::createObject(const std::string& model) {
@@ -45,6 +60,25 @@ Object ObjectManager::createObject(const std::string& model) {
 	});
 
 	return obj;
+}
+
+void ObjectManager::renderObjects() {
+	for (auto& model : mModels) {
+		ModelState& state = model.second;
+		glBindVertexArray(state.vao);
+		mShaderManager.activateShader(state.shader);
+		Shader* shader = mShaderManager.getShader(state.shader);
+
+		// TODO: Apply real instancing
+		for (auto& instance : state.instances) {
+			if (!instance.active || !instance.render) continue;
+			shader->setMat4("model", instance.model);
+			shader->setMat4("normalModel", Tools::getNormalModelMatrix(instance.model));
+
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			glDrawArrays(GL_TRIANGLES, 0, state.count);
+		}
+	}
 }
 
 void ObjectManager::registerFullModel(const std::string& ident, const std::vector<float>& vertices, uint shader) {

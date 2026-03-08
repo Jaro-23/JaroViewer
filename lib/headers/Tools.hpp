@@ -47,8 +47,8 @@ namespace JaroViewer {
 				stringStream << fileStream.rdbuf();
 				fileStream.close();
 				*out = stringStream.str();
-			} catch (std::ifstream::failure) {
-				std::cout << "ERROR::TOOLS::FILE_NOT_SUCCESFULLY_READ::" << filePath << std::endl;
+			} catch (std::ifstream::failure&) {
+				std::cout << "[Tools] Error: Coudn't read " << filePath << std::endl;
 			}
 		}
 
