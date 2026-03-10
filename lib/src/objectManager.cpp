@@ -1,6 +1,5 @@
 #include "../headers/objectManager.hpp"
 #include "../headers/tools.hpp"
-#include "MaterialManager.hpp"
 
 #include <iostream>
 #include <variant>
@@ -69,7 +68,7 @@ Object ObjectManager::createObject(const std::string& model) {
 	return obj;
 }
 
-void ObjectManager::renderObjects() {
+void ObjectManager::renderObjects(const glm::vec3& viewPos) {
 	for (auto& model : mModels) {
 		ModelState& state = model.second;
 		glBindVertexArray(state.vao);
@@ -81,7 +80,8 @@ void ObjectManager::renderObjects() {
 		for (auto& instance : state.instances) {
 			if (!instance.active || !instance.render) continue;
 			shader->setMat4("model", instance.model);
-			shader->setMat4("normalModel", Tools::getNormalModelMatrix(instance.model));
+			shader->setMat3("normalModel", Tools::getNormalModelMatrix(instance.model));
+			shader->setVec3("viewPos", viewPos);
 
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 			glDrawArrays(GL_TRIANGLES, 0, state.count);

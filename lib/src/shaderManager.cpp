@@ -12,8 +12,9 @@ ShaderManager::ShaderManager() : mPathToIdent(), mShaders(), mActiveShader(0) {
 
 uint ShaderManager::loadShader(const ShaderCode& codes) {
 	mShaders.push_back(Shader(codes));
-	uint ident = mShaders.size() - 1;
-	return ident;
+	mShaders.back().setUniformBuffer("Transformation", 0);
+	mShaders.back().setUniformBuffer("LightSet", 1);
+	return mShaders.size() - 1;
 }
 
 uint ShaderManager::loadShader(const ShaderPaths& paths) {
@@ -21,6 +22,7 @@ uint ShaderManager::loadShader(const ShaderPaths& paths) {
 	if (mPathToIdent.contains(key)) return mPathToIdent.at(key);
 	mShaders.push_back(Shader(paths));
 	mShaders.back().setUniformBuffer("Transformation", 0);
+	mShaders.back().setUniformBuffer("LightSet", 1);
 
 	uint ident        = mShaders.size() - 1;
 	mPathToIdent[key] = ident;

@@ -2,6 +2,7 @@
 
 #include "camera.hpp"
 #include "inputHandler.hpp"
+#include "lightSet.hpp"
 #include "objectManager.hpp"
 #include "uniformBuffer.hpp"
 #include "window.hpp"
@@ -28,9 +29,14 @@ namespace JaroViewer {
 		Camera camera;
 		InputHandler input;
 		ObjectManager objectManager;
+		LightSet lights;
 
 		EngineState(Window&& w, Camera c)
-		  : window(std::move(w)), camera(std::move(c)), input(&this->window), objectManager() {}
+		  : window(std::move(w)),
+		    camera(std::move(c)),
+		    input(&this->window),
+		    objectManager(),
+		    lights() {}
 	};
 
 	class Engine {
@@ -52,5 +58,6 @@ namespace JaroViewer {
 
 		EngineState mState;
 		std::shared_ptr<UniformBuffer> mTransformUBO;
+		std::shared_ptr<UniformBuffer> mLightsUBO;
 	};
 } // namespace JaroViewer

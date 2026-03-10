@@ -205,8 +205,12 @@ namespace JaroViewer {
 	  "in vec3 FragPos;\n"
 	  "in vec3 Normal;\n"
 	  "void main() {\n"
-	  "vec3 diffuseColor = vec3(texture(materials[0].diffuse, TexCoord));\n"
-	  "FragColor = vec4(diffuseColor, 1.0f);\n"
+	  "LightPosSet posSet = LightPosSet(\n"
+	  "Normal,\n"
+	  "FragPos,\n"
+	  "viewPos\n"
+	  ");\n"
+	  "FragColor = getLightCorrectedColor(materials[0], TexCoord, posSet);\n"
 	  "}\n";
 
 } // namespace JaroViewer

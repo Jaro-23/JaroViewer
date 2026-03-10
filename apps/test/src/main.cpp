@@ -1,6 +1,7 @@
-#include "basicShaders.hpp"
-#include "MaterialManager.hpp"
+#include "basicShapes.hpp"
 #include <engine.hpp>
+#include <materialManager.hpp>
+#include <memory>
 #include <sys/types.h>
 
 using namespace JaroViewer;
@@ -15,48 +16,29 @@ int main(int argc, char* argv[]) {
 	MaterialManager* mm = om.getMaterialManager();
 	uint mat            = mm->createNew();
 	mm->addMaterial(mat, {"./apps/test/textures/crate.jpg", "./apps/test/textures/crate_specular.jpg", 32.0f});
+	om.registerModel("cube", cubeVertices, (uint)1, mat);
+	om.registerModel("light", cubeVertices, (uint)0, 0);
 
-	om.registerModel(
-	  "cube",
-	  {
-	    0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,  -0.5f, -0.5f,
-	    0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,  -0.5f, 0.5f,  0.5f,  0.0f,
-	    0.0f,  1.0f,  1.0f,  1.0f,  0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-	    0.0f,  1.0f,  0.5f,  -0.5f, 0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
-	    -0.5f, -0.5f, 0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,
+	// Add the lights
+	Tools::LightColor lightColor{glm::vec3(0.05f), glm::vec3(0.55f), glm::vec3(1.00f)};
+	Tools::AttenuationParams attenParams{1.0f, 0.09f, 0.032f};
+	std::shared_ptr<DirectionalLight> dir{
+	  new DirectionalLight{glm::vec3(-0.2f, -1.0f, -0.3f), lightColor}
+	};
+	std::shared_ptr<PointLight> pointLight =
+	  std::make_shared<PointLight>(om.createObject("light"), lightColor, attenParams);
+	pointLight->setTranslation(glm::vec3(-2.0f, 0.3f, 1.0f));
+	pointLight->setScale(0.2f);
+	std::shared_ptr<PointLight> pointLight2 =
+	  std::make_shared<PointLight>(om.createObject("light"), lightColor, attenParams);
+	pointLight2->setTranslation(glm::vec3(0.5f, 1.2f, -9.0f));
+	pointLight2->setScale(0.2f);
 
-	    -0.5f, 0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,  0.5f,  0.5f,
-	    -0.5f, 0.0f,  1.0f,  0.0f,  1.0f,  0.0f,  0.5f,  0.5f,  0.5f,  0.0f,
-	    1.0f,  0.0f,  1.0f,  1.0f,  -0.5f, 0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-	    0.0f,  1.0f,  -0.5f, 0.5f,  -0.5f, 0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
-	    0.5f,  0.5f,  -0.5f, 0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
+	state->lights.addDirLight(dir);
+	state->lights.addPointLight(pointLight);
+	state->lights.addPointLight(pointLight2);
 
-	    -0.5f, 0.5f,  -0.5f, 0.0f,  0.0f,  -1.0f, 0.0f,  1.0f,  0.5f,  -0.5f,
-	    -0.5f, 0.0f,  0.0f,  -1.0f, 1.0f,  0.0f,  0.5f,  0.5f,  -0.5f, 0.0f,
-	    0.0f,  -1.0f, 1.0f,  1.0f,  -0.5f, 0.5f,  -0.5f, 0.0f,  0.0f,  -1.0f,
-	    0.0f,  1.0f,  -0.5f, -0.5f, -0.5f, 0.0f,  0.0f,  -1.0f, 0.0f,  0.0f,
-	    0.5f,  -0.5f, -0.5f, 0.0f,  0.0f,  -1.0f, 1.0f,  0.0f,
-
-	    -0.5f, -0.5f, -0.5f, 0.0f,  -1.0f, 0.0f,  0.0f,  1.0f,  0.5f,  -0.5f,
-	    0.5f,  0.0f,  -1.0f, 0.0f,  1.0f,  0.0f,  0.5f,  -0.5f, -0.5f, 0.0f,
-	    -1.0f, 0.0f,  1.0f,  1.0f,  -0.5f, -0.5f, -0.5f, 0.0f,  -1.0f, 0.0f,
-	    0.0f,  1.0f,  -0.5f, -0.5f, 0.5f,  0.0f,  -1.0f, 0.0f,  0.0f,  0.0f,
-	    0.5f,  -0.5f, 0.5f,  0.0f,  -1.0f, 0.0f,  1.0f,  0.0f,
-
-	    0.5f,  0.5f,  -0.5f, 1.0f,  0.0f,  0.0f,  0.0f,  1.0f,  0.5f,  -0.5f,
-	    0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  0.5f,  0.5f,  0.5f,  1.0f,
-	    0.0f,  0.0f,  1.0f,  1.0f,  0.5f,  0.5f,  -0.5f, 1.0f,  0.0f,  0.0f,
-	    0.0f,  1.0f,  0.5f,  -0.5f, -0.5f, 1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
-	    0.5f,  -0.5f, 0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-
-	    -0.5f, 0.5f,  0.5f,  -1.0f, 0.0f,  0.0f,  0.0f,  1.0f,  -0.5f, -0.5f,
-	    -0.5f, -1.0f, 0.0f,  0.0f,  1.0f,  0.0f,  -0.5f, 0.5f,  -0.5f, -1.0f,
-	    0.0f,  0.0f,  1.0f,  1.0f,  -0.5f, 0.5f,  0.5f,  -1.0f, 0.0f,  0.0f,
-	    0.0f,  1.0f,  -0.5f, -0.5f, 0.5f,  -1.0f, 0.0f,  0.0f,  0.0f,  0.0f,
-	    -0.5f, -0.5f, -0.5f, -1.0f, 0.0f,  0.0f,  1.0f,  0.0f,
-	  },
-	  (uint)1, mat
-	);
+	// Places "random" cubes
 	std::array<glm::vec3, 10> cubePositions =
 	  {glm::vec3(0.0f, 0.0f, 0.0f),    glm::vec3(2.0f, 5.0f, -15.0f),
 	   glm::vec3(-1.5f, -2.2f, -2.5f), glm::vec3(-3.8f, -2.0f, -12.3f),

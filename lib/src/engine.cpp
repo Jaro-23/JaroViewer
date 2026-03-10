@@ -1,5 +1,6 @@
 #include "../headers/engine.hpp"
 #include "../headers/timer.hpp"
+#include "lightSet.hpp"
 #include <memory>
 
 using namespace JaroViewer;
@@ -19,6 +20,9 @@ Engine::~Engine() { glfwTerminate(); }
 
 void Engine::start() {
 	mTransformUBO = std::make_shared<UniformBuffer>(0, sizeof(Tranformation), GL_STATIC_DRAW);
+	mLightsUBO = std::shared_ptr<UniformBuffer>(
+	  new UniformBuffer(1, sizeof(LightSet::LightSetStruct), GL_STATIC_DRAW)
+	);
 	render();
 }
 
@@ -33,13 +37,15 @@ void Engine::render() {
 		if (mState.window.updateView())
 			trans.projection = mState.window.getProjection();
 		mTransformUBO->updateData(&trans);
+		LightSet::LightSetStruct lights = mState.lights.getStruct();
+		mLightsUBO->updateData(&lights);
 
 		// Process the inputs
 		mState.input.processInputs(timer.getDeltaTime());
 
 		// Redraw the screen
 		mState.window.clear();
-		mState.objectManager.renderObjects();
+		mState.objectManager.renderObjects(mState.camera.getPosition());
 		mState.window.update();
 	}
 }

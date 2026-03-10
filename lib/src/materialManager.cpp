@@ -1,4 +1,4 @@
-#include "../headers/MaterialManager.hpp"
+#include "../headers/materialManager.hpp"
 
 using namespace JaroViewer;
 

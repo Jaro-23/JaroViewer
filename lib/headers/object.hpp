@@ -33,7 +33,7 @@ namespace JaroViewer {
 		void subscribeTransform(std::function<void(glm::mat4)> callback);
 		void subscribeVisibility(std::function<void(bool)> callback);
 
-	private:
+	protected:
 		void normalizeAngles();
 
 		// Data
