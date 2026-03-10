@@ -8,6 +8,29 @@ using namespace JaroViewer;
 Object::Object()
   : mTranslation(0.0f), mAngleX(0.0f), mAngleY(0.0f), mAngleZ(0.0f), mScale(1.0f) {}
 
+Object::Object(Object&& other) noexcept
+  : mTranslation(other.mTranslation),
+    mAngleX(other.mAngleX),
+    mAngleY(other.mAngleY),
+    mAngleZ(other.mAngleZ),
+    mScale(other.mScale),
+    mDeleteCallbacks(std::move(other.mDeleteCallbacks)),
+    mTransformCallbacks(std::move(other.mTransformCallbacks)),
+    mVisibilityCallbacks(std::move(other.mVisibilityCallbacks)) {}
+
+Object& Object::operator=(Object&& other) noexcept {
+	if (this == &other) return *this;
+	mTranslation         = other.mTranslation;
+	mAngleX              = other.mAngleX;
+	mAngleY              = other.mAngleY;
+	mAngleZ              = other.mAngleZ;
+	mScale               = other.mScale;
+	mDeleteCallbacks     = std::move(other.mDeleteCallbacks);
+	mTransformCallbacks  = std::move(other.mTransformCallbacks);
+	mVisibilityCallbacks = std::move(other.mVisibilityCallbacks);
+	return *this;
+}
+
 Object::~Object() {
 	for (auto& callback : mDeleteCallbacks) callback();
 }

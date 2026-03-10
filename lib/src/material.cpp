@@ -45,7 +45,7 @@ void Material::load(const Shader* shader) const {
  * @param shader The shader that contains the array
  * @param arrayIndex The index where the materials will be placed
  */
-void Material::loadIntoArray(const std::shared_ptr<Shader>& shader, int arrayIndex) const {
+void Material::loadIntoArray(const Shader* shader, int arrayIndex) const {
 	// Setup the shader
 	std::string base = (mArrayName + "[") + std::to_string(arrayIndex) + "]";
 	int baseIndex    = arrayIndex * 2;

@@ -2,6 +2,7 @@
 
 #include "shader.hpp"
 #include "texture2D.hpp"
+
 #include <memory>
 #include <string>
 
@@ -24,7 +25,7 @@ namespace JaroViewer {
 		Material(const ColorMaterialArgs& args);
 
 		void load(const Shader* shader) const;
-		void loadIntoArray(const std::shared_ptr<Shader>& shader, int arrayIndex) const;
+		void loadIntoArray(const Shader* shader, int arrayIndex) const;
 
 	private:
 		std::string mVariableName;

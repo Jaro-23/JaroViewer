@@ -1,5 +1,6 @@
 #include "../headers/objectManager.hpp"
 #include "../headers/tools.hpp"
+#include "MaterialManager.hpp"
 
 #include <iostream>
 #include <variant>
@@ -8,11 +9,19 @@ using namespace JaroViewer;
 
 ObjectManager::ObjectManager() : mModels(), mShaderManager() {}
 
+MaterialManager* ObjectManager::getMaterialManager() {
+	return &mMaterialManager;
+}
+
 template<class... Ts> struct Overloaded : Ts... {
 	using Ts::operator()...;
 };
-
-void ObjectManager::registerModel(const std::string& ident, const std::vector<float>& vertices, ShaderParams shaderParams) {
+void ObjectManager::registerModel(
+  const std::string& ident,
+  const std::vector<float>& vertices,
+  ShaderParams shaderParams,
+  uint material
+) {
 	uint shaderIdent = std::visit(
 	  Overloaded{
 	    [&](const ShaderCode& codes) { return mShaderManager.loadShader(codes); },
@@ -21,7 +30,7 @@ void ObjectManager::registerModel(const std::string& ident, const std::vector<fl
 	  },
 	  shaderParams
 	);
-	registerFullModel(ident, vertices, shaderIdent);
+	registerFullModel(ident, vertices, shaderIdent, material);
 }
 
 Object ObjectManager::createObject(const std::string& model) {
@@ -66,6 +75,7 @@ void ObjectManager::renderObjects() {
 		glBindVertexArray(state.vao);
 		mShaderManager.activateShader(state.shader);
 		Shader* shader = mShaderManager.getShader(state.shader);
+		mMaterialManager.loadMaterial(shader, state.material);
 
 		// TODO: Apply real instancing
 		for (auto& instance : state.instances) {
@@ -79,7 +89,7 @@ void ObjectManager::renderObjects() {
 	}
 }
 
-void ObjectManager::registerFullModel(const std::string& ident, const std::vector<float>& vertices, uint shader) {
+void ObjectManager::registerFullModel(const std::string& ident, const std::vector<float>& vertices, uint shader, uint material) {
 	if (mModels.contains(ident)) {
 		std::cerr << "[Object Manager] Error: Already a model with iden \'" + ident + "\'"
 		          << std::endl;
@@ -102,8 +112,7 @@ void ObjectManager::registerFullModel(const std::string& ident, const std::vecto
 	glBindVertexArray(0);
 
 	// Create the model entry
-	// TODO: Add Material
-	mModels[ident] = ModelState(vao, vertices.size() / 8, false, shader, 0, {});
+	mModels[ident] = ModelState(vao, vertices.size() / 8, false, shader, material, {});
 }
 
 size_t ObjectManager::getNextFreeSlot(const std::string& model) const {

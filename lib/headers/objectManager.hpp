@@ -1,5 +1,6 @@
 #pragma once
 
+#include "MaterialManager.hpp"
 #include "object.hpp"
 #include "shader.hpp"
 #include "shaderManager.hpp"
@@ -33,16 +34,19 @@ namespace JaroViewer {
 	public:
 		ObjectManager();
 
-		void registerModel(const std::string& ident, const std::vector<float>& vertices, ShaderParams shaderParams);
+		MaterialManager* getMaterialManager();
+
+		void registerModel(const std::string& ident, const std::vector<float>& vertices, ShaderParams shaderParams, uint material);
 		Object createObject(const std::string& model);
 
 		void renderObjects();
 
 	private:
-		void registerFullModel(const std::string& ident, const std::vector<float>& vertices, uint shader);
+		void registerFullModel(const std::string& ident, const std::vector<float>& vertices, uint shader, uint material);
 		size_t getNextFreeSlot(const std::string& model) const;
 
 		std::map<std::string, ModelState> mModels;
 		ShaderManager mShaderManager;
+		MaterialManager mMaterialManager;
 	};
 } // namespace JaroViewer

@@ -7,6 +7,10 @@ namespace JaroViewer {
 	class Object {
 	public:
 		Object();
+		Object(const Object&)            = delete;
+		Object& operator=(const Object&) = delete;
+		Object(Object&& other) noexcept;
+		Object& operator=(Object&& other) noexcept;
 		~Object();
 
 		void setVisibility(bool visibility);

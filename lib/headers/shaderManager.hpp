@@ -12,7 +12,7 @@ namespace JaroViewer {
 		uint loadShader(const ShaderPaths& paths);
 
 		Shader* getShader(uint ident);
-		void activateShader(uint ident);
+		bool activateShader(uint ident);
 
 	private:
 		std::string pathsToKey(const ShaderPaths& paths) const;
