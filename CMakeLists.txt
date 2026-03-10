@@ -12,9 +12,13 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/)
 add_subdirectory(lib)
 file(GLOB_RECURSE SOURCES 
   "${PROJECT_SOURCE_DIR}/apps/${PROJECT_NAME}/src/*.cpp"
-  "${PROJECT_SOURCE_DIR}/apps/${PROJECT_NAME}/headers/*.hpp"
 )
 add_executable(${PROJECT_NAME} ${SOURCES})
+
+target_include_directories(${PROJECT_NAME}
+  PRIVATE
+  ${PROJECT_SOURCE_DIR}/apps/${PROJECT_NAME}/headers
+)
 
 target_link_libraries(${PROJECT_NAME}
   PRIVATE

@@ -1,4 +1,4 @@
-#include "../headers/InputHandler.hpp"
+#include "../headers/inputHandler.hpp"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>

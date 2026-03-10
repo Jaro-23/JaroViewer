@@ -1,4 +1,4 @@
-#include "../headers/UniformBuffer.hpp"
+#include "../headers/uniformBuffer.hpp"
 
 using namespace JaroViewer;
 

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Object.hpp"
-#include "Shader.hpp"
-#include "ShaderManager.hpp"
+#include "object.hpp"
+#include "shader.hpp"
+#include "shaderManager.hpp"
 
 #include <map>
 #include <string>

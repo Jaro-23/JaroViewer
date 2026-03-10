@@ -1,5 +1,5 @@
-#include "../headers/Shader.hpp"
-#include "../headers/Tools.hpp"
+#include "../headers/shader.hpp"
+#include "../headers/tools.hpp"
 
 #include <cstdlib>
 #include <iostream>

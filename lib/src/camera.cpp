@@ -1,4 +1,4 @@
-#include "../headers/Camera.hpp"
+#include "../headers/camera.hpp"
 
 #include <cmath>
 #include <iostream>

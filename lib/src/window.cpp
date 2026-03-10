@@ -1,4 +1,4 @@
-#include "../headers/Window.hpp"
+#include "../headers/window.hpp"
 #include "GLFW/glfw3.h"
 
 #include <glm/gtc/matrix_transform.hpp>

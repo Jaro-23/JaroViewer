@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Camera.hpp"
-#include "InputHandler.hpp"
-#include "ObjectManager.hpp"
-#include "UniformBuffer.hpp"
-#include "Window.hpp"
+#include "camera.hpp"
+#include "inputHandler.hpp"
+#include "objectManager.hpp"
+#include "uniformBuffer.hpp"
+#include "window.hpp"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>

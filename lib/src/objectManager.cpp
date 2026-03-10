@@ -1,8 +1,6 @@
-#include "../headers/ObjectManager.hpp"
+#include "../headers/objectManager.hpp"
+#include "../headers/tools.hpp"
 
-#include "Shader.hpp"
-#include "Tools.hpp"
-#include "Window.hpp"
 #include <iostream>
 #include <variant>
 

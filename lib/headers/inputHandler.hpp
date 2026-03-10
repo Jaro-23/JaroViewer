@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Window.hpp"
+#include "window.hpp"
 
 #include <functional>
 #include <map>

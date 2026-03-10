@@ -38,7 +38,6 @@ FetchContent_MakeAvailable(glfw assimp glm)
 
 file(GLOB_RECURSE SOURCES 
   "${PROJECT_SOURCE_DIR}/src/*.cpp"
-  "${PROJECT_SOURCE_DIR}/headers/*.hpp"
 )
 add_library(${PROJECT_NAME} ${SOURCES})
 target_sources(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/src/glad.c")

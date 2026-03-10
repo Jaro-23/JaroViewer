@@ -1,4 +1,4 @@
-#include "../headers/Object.hpp"
+#include "../headers/object.hpp"
 
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/fwd.hpp>

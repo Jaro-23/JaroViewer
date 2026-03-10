@@ -1,7 +1,5 @@
-#include "../headers/Engine.hpp"
-#include "Timer.hpp"
-#include "UniformBuffer.hpp"
-#include "Window.hpp"
+#include "../headers/engine.hpp"
+#include "../headers/timer.hpp"
 #include <memory>
 
 using namespace JaroViewer;

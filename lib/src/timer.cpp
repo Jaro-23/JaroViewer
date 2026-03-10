@@ -1,4 +1,4 @@
-#include "../headers/Timer.hpp"
+#include "../headers/timer.hpp"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>

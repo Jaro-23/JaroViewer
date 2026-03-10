@@ -1,5 +1,5 @@
-#include "../headers/ShaderManager.hpp"
-#include "BasicShaders.hpp"
+#include "../headers/shaderManager.hpp"
+#include "../headers/basicShaders.hpp"
 #include <sstream>
 
 using namespace JaroViewer;

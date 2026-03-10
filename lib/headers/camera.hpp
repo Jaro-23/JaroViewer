@@ -1,6 +1,6 @@
 #pragma once
 
-#include "InputHandler.hpp"
+#include "inputHandler.hpp"
 // #include "Spotlight.h"
 #include <functional>
 #include <glad/glad.h>
