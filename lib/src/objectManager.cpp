@@ -76,16 +76,22 @@ void ObjectManager::renderObjects(const glm::vec3& viewPos) {
 		Shader* shader = mShaderManager.getShader(state.shader);
 		mMaterialManager.loadMaterial(shader, state.material);
 
-		// TODO: Apply real instancing
+		struct InstanceData {
+			glm::mat4 model;
+			glm::mat3 normalModel;
+		};
+
+		std::vector<InstanceData> data;
 		for (auto& instance : state.instances) {
 			if (!instance.active || !instance.render) continue;
-			shader->setMat4("model", instance.model);
-			shader->setMat3("normalModel", Tools::getNormalModelMatrix(instance.model));
-			shader->setVec3("viewPos", viewPos);
-
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-			glDrawArrays(GL_TRIANGLES, 0, state.count);
+			data.push_back({instance.model, Tools::getNormalModelMatrix(instance.model)});
 		}
+
+		glBindBuffer(GL_ARRAY_BUFFER, state.instanceVBO);
+		glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(InstanceData), data.data(), GL_DYNAMIC_DRAW);
+
+		shader->setVec3("viewPos", viewPos);
+		glDrawArraysInstanced(GL_TRIANGLES, 0, state.count, data.size());
 	}
 }
 
@@ -109,10 +115,34 @@ void ObjectManager::registerFullModel(const std::string& ident, const std::vecto
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)(6 * sizeof(float)));
 	glEnableVertexAttribArray(2);
 
+	uint instanceVBO;
+	glGenBuffers(1, &instanceVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+
+	// mat4 model at locations 3-6
+	for (int i = 0; i < 4; i++) {
+		glVertexAttribPointer(
+		  3 + i, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4) + sizeof(glm::mat3),
+		  (void*)(i * sizeof(glm::vec4))
+		);
+		glEnableVertexAttribArray(3 + i);
+		glVertexAttribDivisor(3 + i, 1); // ← advance once per instance
+	}
+	// mat3 normalModel at locations 7-9
+	for (int i = 0; i < 3; i++) {
+		glVertexAttribPointer(
+		  7 + i, 3, GL_FLOAT, GL_FALSE, sizeof(glm::mat4) + sizeof(glm::mat3),
+		  (void*)(sizeof(glm::mat4) + i * sizeof(glm::vec3))
+		);
+		glEnableVertexAttribArray(7 + i);
+		glVertexAttribDivisor(7 + i, 1);
+	}
+
 	glBindVertexArray(0);
 
 	// Create the model entry
-	mModels[ident] = ModelState(vao, vertices.size() / 8, false, shader, material, {});
+	mModels[ident] =
+	  ModelState(vao, instanceVBO, vertices.size() / 8, false, shader, material, {});
 }
 
 size_t ObjectManager::getNextFreeSlot(const std::string& model) const {

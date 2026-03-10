@@ -5,17 +5,18 @@
 namespace JaroViewer {
 	const std::string basicWhiteVertex =
 	  "#version 460 core\n"
-	  "uniform mat4 model;\n"
 	  "layout(std140, binding = 0) uniform Transformation {\n"
 	  "mat4 projection;\n"
 	  "mat4 view;\n"
 	  "};\n"
-	  "vec4 transform(vec3 pos) {\n"
-	  "return projection * view * model * vec4(pos, 1.0);\n"
-	  "}\n"
 	  "layout (location = 0) in vec3 aPos;\n"
 	  "layout (location = 1) in vec3 aNormal;\n"
 	  "layout (location = 2) in vec2 aTexCoord;\n"
+	  "layout (location = 3) in mat4 model;\n"
+	  "layout (location = 7) in mat3 normalModel;\n"
+	  "vec4 transform(vec3 pos) {\n"
+	  "return projection * view * model * vec4(pos, 1.0);\n"
+	  "}\n"
 	  "void main() {\n"
 	  "gl_Position = transform(aPos);\n"
 	  "}\n";
@@ -28,18 +29,18 @@ namespace JaroViewer {
 
 	const std::string vertexLibrary =
 	  "#version 460 core\n"
-	  "uniform mat4 model;\n"
 	  "layout(std140, binding = 0) uniform Transformation {\n"
 	  "mat4 projection;\n"
 	  "mat4 view;\n"
 	  "};\n"
-	  "vec4 transform(vec3 pos) {\n"
-	  "return projection * view * model * vec4(pos, 1.0);\n"
-	  "}\n"
 	  "layout (location = 0) in vec3 aPos;\n"
 	  "layout (location = 1) in vec3 aNormal;\n"
 	  "layout (location = 2) in vec2 aTexCoord;\n"
-	  "uniform mat3 normalModel;\n";
+	  "layout (location = 3) in mat4 model;\n"
+	  "layout (location = 7) in mat3 normalModel;\n"
+	  "vec4 transform(vec3 pos) {\n"
+	  "return projection * view * model * vec4(pos, 1.0);\n"
+	  "}\n";
 
 	const std::string fragmentLibrary =
 	  "#version 460 core\n"

@@ -19,7 +19,7 @@ namespace JaroViewer {
 	};
 
 	struct ModelState {
-		uint vao;
+		uint vao, instanceVBO;
 		uint count;
 		bool useIndices;
 		uint shader;

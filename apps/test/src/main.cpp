@@ -8,6 +8,7 @@ using namespace JaroViewer;
 
 int main(int argc, char* argv[]) {
 	EngineArgs args{};
+	args.windowSamples = 16;
 	Engine engine{args};
 	EngineState* state = engine.getState();
 
