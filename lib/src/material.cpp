@@ -18,14 +18,11 @@ Material::Material(const Texture2D& diffuse, const Texture2D& specular, float sh
 	mArrayName    = "materials";
 }
 
-/**
- * Creates a material based of the filepaths to a diffuse and specular texture and a shininess value
- * @param diffusePath The path to the diffuse texture that forms the basic color of each fragment
- * @param specularPath The path to the specular texture that forms the highlight color of each fragment
- * @param shininess The shininess of the material
- */
-Material::Material(const std::string& diffusePath, const std::string& specularPath, float shininess)
-  : Material(Texture2D(diffusePath), Texture2D(specularPath), shininess) {}
+Material::Material(const MaterialArgs& args)
+  : Material(Texture2D(args.diffusePath), Texture2D(args.specularPath), args.shininess) {}
+
+Material::Material(const ColorMaterialArgs& args)
+  : Material(Texture2D(args.diffuse), Texture2D(args.specular), args.shininess) {}
 
 /**
  * Loads the material in a variable set by the variable name

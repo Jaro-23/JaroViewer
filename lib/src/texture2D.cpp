@@ -1,5 +1,9 @@
 #include "../headers/texture2D.hpp"
 
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+
 #include <cassert>
 #include <iostream>
 
@@ -28,6 +32,24 @@ Texture2D::Texture2D(const std::string& filepath, bool flip) {
 	genTexture();
 	setupParameters();
 	loadImageToTexture(filepath.c_str(), flip);
+}
+
+Texture2D::Texture2D(const glm::vec4 color) {
+	genTexture();
+	setupParameters();
+
+	GLuint fbo;
+	glGenFramebuffers(1, &fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mTextureID, 0);
+
+	glViewport(0, 0, 512, 512);
+
+	glClearColor(color.x, color.y, color.z, color.a);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 /**
