@@ -32,7 +32,13 @@ FetchContent_Declare(
 )
 set(GLM_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 
-FetchContent_MakeAvailable(glfw assimp glm)
+FetchContent_Declare(
+  stb
+  GIT_REPOSITORY https://github.com/nothings/stb.git
+  GIT_TAG        master
+)
+
+FetchContent_MakeAvailable(glfw assimp glm stb)
 
 # Build library
 
@@ -54,6 +60,7 @@ target_include_directories(${PROJECT_NAME}
     ${glfw_SOURCE_DIR}/include
     ${assimp_SOURCE_DIR}/include 
     ${glm_SOURCE_DIR}
+    ${stb_SOURCE_DIR}
   PRIVATE
     ${ZLIB_INCLUDE_DIRS}
 )
