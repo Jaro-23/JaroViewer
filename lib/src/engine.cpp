@@ -1,16 +1,42 @@
 #include "../headers/engine.hpp"
 #include "../headers/timer.hpp"
+#include "cubemap.hpp"
 #include "lightSet.hpp"
 #include <memory>
+#include <optional>
 
 using namespace JaroViewer;
 
+template<class... Ts> struct Overloaded : Ts... {
+	using Ts::operator()...;
+};
 EngineState Engine::argsToState(const EngineArgs& args) {
 	glfwInit();
 	Window window{args.openGLMajor,  args.openGLMinor, args.windowWidth,
 	              args.windowHeight, args.windowTitle, args.windowSamples};
 
-	EngineState state{std::move(window), Camera(glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f))};
+	std::optional<Cubemap> mp = std::visit(
+	  Tools::Overloaded{
+	    [&](const std::string& dirPath) -> std::optional<Cubemap> {
+		    if (dirPath == "") return std::nullopt;
+		    return Cubemap(dirPath);
+	    },
+	    [&](const std::vector<std::string>& filePaths) -> std::optional<Cubemap> {
+		    if (filePaths.size() == 0) return std::nullopt;
+		    return Cubemap(filePaths);
+	    },
+	  },
+	  args.cubemapParams
+	);
+
+	std::optional<PostProcessor> pp = (args.postProcessShader != "") ?
+	  std::optional<PostProcessor>(PostProcessor(&window, args.postProcessShader)) :
+	  std::nullopt;
+
+	EngineState state{
+	  std::move(window), Camera(glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)),
+	  std::move(mp), std::move(pp)
+	};
 	state.camera.addControls(state.input);
 	return state;
 }
@@ -32,7 +58,7 @@ void Engine::render() {
 	Tranformation trans{mState.window.getProjection(), mState.camera.getView()};
 	Timer timer{};
 	while (!mState.window.shouldClose()) {
-		// Update the transformation UBO
+		// Update the UBOs
 		trans.view = mState.camera.getView();
 		if (mState.window.updateView())
 			trans.projection = mState.window.getProjection();
@@ -45,7 +71,14 @@ void Engine::render() {
 
 		// Redraw the screen
 		mState.window.clear();
-		mState.objectManager.renderObjects(mState.camera.getPosition());
+		if (mState.postProcessor)
+			mState.postProcessor->bindAndClear(0.0f, 0.0f, 0.0f, 0.0f);
+
+		mState.objectManager
+		  .renderObjects(mState.postProcessor.has_value(), mState.camera.getPosition());
+		if (mState.cubemap) mState.cubemap->render();
+
+		if (mState.postProcessor) mState.postProcessor->render();
 		mState.window.update();
 	}
 }

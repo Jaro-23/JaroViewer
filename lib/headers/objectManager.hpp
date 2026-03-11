@@ -39,7 +39,7 @@ namespace JaroViewer {
 		void registerModel(const std::string& ident, const std::vector<float>& vertices, ShaderParams shaderParams, uint material);
 		Object createObject(const std::string& model);
 
-		void renderObjects(const glm::vec3& viewPos);
+		void renderObjects(bool usingPostProcessor, const glm::vec3& viewPos);
 
 	private:
 		void registerFullModel(const std::string& ident, const std::vector<float>& vertices, uint shader, uint material);

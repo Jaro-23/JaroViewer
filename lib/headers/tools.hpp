@@ -52,6 +52,10 @@ namespace JaroViewer {
 			}
 		}
 
+		template<class... Ts> struct Overloaded : Ts... {
+			using Ts::operator()...;
+		};
+
 		struct LightColor {
 			glm::vec3 ambient;
 			glm::vec3 diffuse;

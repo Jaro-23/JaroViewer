@@ -1,9 +1,11 @@
 #pragma once
 
 #include "camera.hpp"
+#include "cubemap.hpp"
 #include "inputHandler.hpp"
 #include "lightSet.hpp"
 #include "objectManager.hpp"
+#include "postProcessor.hpp"
 #include "uniformBuffer.hpp"
 #include "window.hpp"
 
@@ -11,17 +13,20 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
+#include <optional>
 #include <string>
 
 namespace JaroViewer {
 	struct EngineArgs {
 		// Window args
-		int openGLMajor         = 4;
-		int openGLMinor         = 6;
-		int windowWidth         = 600;
-		int windowHeight        = 450;
-		std::string windowTitle = "Basic window";
-		uint windowSamples      = 1;
+		int openGLMajor               = 4;
+		int openGLMinor               = 6;
+		int windowWidth               = 600;
+		int windowHeight              = 450;
+		std::string windowTitle       = "Basic window";
+		uint windowSamples            = 1;
+		std::string postProcessShader = "";
+		std::variant<std::string, std::vector<std::string>> cubemapParams = "";
 	};
 
 	struct EngineState {
@@ -30,13 +35,17 @@ namespace JaroViewer {
 		InputHandler input;
 		ObjectManager objectManager;
 		LightSet lights;
+		std::optional<Cubemap> cubemap;
+		std::optional<PostProcessor> postProcessor;
 
-		EngineState(Window&& w, Camera c)
+		EngineState(Window&& w, Camera c, std::optional<Cubemap> cm, std::optional<PostProcessor> pp)
 		  : window(std::move(w)),
 		    camera(std::move(c)),
 		    input(&this->window),
 		    objectManager(),
-		    lights() {}
+		    lights(),
+		    cubemap(std::move(cm)),
+		    postProcessor(std::move(pp)) {}
 	};
 
 	class Engine {

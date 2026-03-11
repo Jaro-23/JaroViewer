@@ -12,9 +12,6 @@ MaterialManager* ObjectManager::getMaterialManager() {
 	return &mMaterialManager;
 }
 
-template<class... Ts> struct Overloaded : Ts... {
-	using Ts::operator()...;
-};
 void ObjectManager::registerModel(
   const std::string& ident,
   const std::vector<float>& vertices,
@@ -22,7 +19,7 @@ void ObjectManager::registerModel(
   uint material
 ) {
 	uint shaderIdent = std::visit(
-	  Overloaded{
+	  Tools::Overloaded{
 	    [&](const ShaderCode& codes) { return mShaderManager.loadShader(codes); },
 	    [&](const ShaderPaths& paths) { return mShaderManager.loadShader(paths); },
 	    [&](uint id) { return id; }
@@ -68,7 +65,8 @@ Object ObjectManager::createObject(const std::string& model) {
 	return obj;
 }
 
-void ObjectManager::renderObjects(const glm::vec3& viewPos) {
+void ObjectManager::renderObjects(bool usingPostProcessor, const glm::vec3& viewPos) {
+	if (usingPostProcessor) mMaterialManager.resetLastShader();
 	for (auto& model : mModels) {
 		ModelState& state = model.second;
 		glBindVertexArray(state.vao);

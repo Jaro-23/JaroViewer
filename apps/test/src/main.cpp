@@ -8,7 +8,9 @@ using namespace JaroViewer;
 
 int main(int argc, char* argv[]) {
 	EngineArgs args{};
-	args.windowSamples = 16;
+	args.windowSamples     = 16;
+	args.cubemapParams     = "./apps/test/cubemap";
+	args.postProcessShader = "./apps/test/fragment/postprocessing.fs";
 	Engine engine{args};
 	EngineState* state = engine.getState();
 
