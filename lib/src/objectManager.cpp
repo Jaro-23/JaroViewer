@@ -2,11 +2,14 @@
 #include "../headers/tools.hpp"
 
 #include <iostream>
+#include <memory>
 #include <variant>
 
 using namespace JaroViewer;
 
-ObjectManager::ObjectManager() : mModels(), mShaderManager() {}
+ObjectManager::ObjectManager() : mModels(), mShaderManager() {
+	mImporter = std::make_shared<Assimp::Importer>();
+}
 
 MaterialManager* ObjectManager::getMaterialManager() {
 	return &mMaterialManager;
@@ -26,7 +29,25 @@ void ObjectManager::registerModel(
 	  },
 	  shaderParams
 	);
-	registerFullModel(ident, vertices, shaderIdent, material);
+	if (mModels.contains(ident)) {
+		std::cerr << "[Object Manager] Error: Already a model with iden \'" + ident + "\'"
+		          << std::endl;
+		return;
+	}
+	Mesh mesh      = registerVerticesModel(vertices, material);
+	mModels[ident] = ModelState(std::vector<Mesh>{mesh}, false, shaderIdent, {});
+}
+
+void ObjectManager::registerModel(const std::string& ident, const std::string& modelPath, ShaderParams shaderParams) {
+	uint shaderIdent = std::visit(
+	  Tools::Overloaded{
+	    [&](const ShaderCode& codes) { return mShaderManager.loadShader(codes); },
+	    [&](const ShaderPaths& paths) { return mShaderManager.loadShader(paths); },
+	    [&](uint id) { return id; }
+	  },
+	  shaderParams
+	);
+	registerFileModel(ident, modelPath, shaderIdent);
 }
 
 Object ObjectManager::createObject(const std::string& model) {
@@ -69,10 +90,6 @@ void ObjectManager::renderObjects(bool usingPostProcessor, const glm::vec3& view
 	if (usingPostProcessor) mMaterialManager.resetLastShader();
 	for (auto& model : mModels) {
 		ModelState& state = model.second;
-		glBindVertexArray(state.vao);
-		mShaderManager.activateShader(state.shader);
-		Shader* shader = mShaderManager.getShader(state.shader);
-		mMaterialManager.loadMaterial(shader, state.material);
 
 		struct InstanceData {
 			glm::mat4 model;
@@ -85,27 +102,58 @@ void ObjectManager::renderObjects(bool usingPostProcessor, const glm::vec3& view
 			data.push_back({instance.model, Tools::getNormalModelMatrix(instance.model)});
 		}
 
-		glBindBuffer(GL_ARRAY_BUFFER, state.instanceVBO);
-		glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(InstanceData), data.data(), GL_DYNAMIC_DRAW);
+		for (Mesh& mesh : state.meshes) {
+			glBindVertexArray(mesh.vao);
 
-		shader->setVec3("viewPos", viewPos);
-		glDrawArraysInstanced(GL_TRIANGLES, 0, state.count, data.size());
+			mShaderManager.activateShader(state.shader);
+			Shader* shader = mShaderManager.getShader(state.shader);
+			mMaterialManager.loadMaterial(shader, mesh.material);
+
+			glBindBuffer(GL_ARRAY_BUFFER, mesh.instanceVBO);
+			glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(InstanceData), data.data(), GL_DYNAMIC_DRAW);
+
+			shader->setVec3("viewPos", viewPos);
+			if (state.useIndices)
+				glDrawElementsInstanced(
+				  GL_TRIANGLES, mesh.count, GL_UNSIGNED_INT, 0, data.size()
+				);
+			else
+				glDrawArraysInstanced(GL_TRIANGLES, 0, mesh.count, data.size());
+		}
 	}
 }
 
-void ObjectManager::registerFullModel(const std::string& ident, const std::vector<float>& vertices, uint shader, uint material) {
-	if (mModels.contains(ident)) {
-		std::cerr << "[Object Manager] Error: Already a model with iden \'" + ident + "\'"
-		          << std::endl;
-		return;
-	}
-
+Mesh ObjectManager::registerVerticesModel(const std::vector<float>& vertices, uint material) {
 	// Create the vao
 	uint vao;
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 
 	Tools::generateBuffer(vertices, GL_ARRAY_BUFFER, GL_STATIC_DRAW);
+	uint instanceVBO = handleBuffers();
+
+	glBindVertexArray(0);
+	return Mesh(vao, instanceVBO, vertices.size() / 8, material);
+}
+
+Mesh ObjectManager::registerIndicesModel(
+  const std::vector<float>& vertices,
+  const std::vector<uint>& indices,
+  uint material
+) {
+	uint vao;
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+
+	Tools::generateBuffer(vertices, GL_ARRAY_BUFFER, GL_STATIC_DRAW);
+	Tools::generateBuffer(indices, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW);
+	uint instanceVBO = handleBuffers();
+
+	glBindVertexArray(0);
+	return Mesh(vao, instanceVBO, indices.size(), material);
+}
+
+uint ObjectManager::handleBuffers() {
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)0);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)(3 * sizeof(float)));
@@ -135,12 +183,96 @@ void ObjectManager::registerFullModel(const std::string& ident, const std::vecto
 		glEnableVertexAttribArray(7 + i);
 		glVertexAttribDivisor(7 + i, 1);
 	}
+	return instanceVBO;
+}
 
-	glBindVertexArray(0);
+void ObjectManager::registerFileModel(const std::string& ident, const std::string& modelPath, uint shader) {
+	if (mModels.contains(ident)) {
+		std::cerr << "[Object Manager] Error: Already a model with ident \'" + ident + "\'"
+		          << std::endl;
+		return;
+	}
 
-	// Create the model entry
-	mModels[ident] =
-	  ModelState(vao, instanceVBO, vertices.size() / 8, false, shader, material, {});
+	const aiScene* scene =
+	  mImporter->ReadFile(modelPath, aiProcess_Triangulate | aiProcess_FlipUVs);
+
+	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
+		std::cout << "[Object Manager] Error: Failed assimp load => "
+		          << mImporter->GetErrorString() << std::endl;
+		return;
+	}
+
+	mModels[ident]        = ModelState(std::vector<Mesh>(), false, shader, {});
+	std::string directory = modelPath.substr(0, modelPath.find_last_of("/"));
+	processNode(scene->mRootNode, ident, directory, scene);
+}
+
+void ObjectManager::processNode(aiNode* node, const std::string& ident, const std::string& directory, const aiScene* scene) {
+
+	for (uint i = 0; i < node->mNumMeshes; i++) {
+		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+		mModels.at(ident).meshes.push_back(processMesh(mesh, directory, scene));
+	}
+
+	for (uint i = 0; i < node->mNumChildren; i++)
+		processNode(node->mChildren[i], ident, directory, scene);
+}
+
+Mesh ObjectManager::processMesh(aiMesh* mesh, const std::string& directory, const aiScene* scene) {
+	std::vector<float> vertices{};
+	vertices.reserve(mesh->mNumVertices * 8);
+	std::vector<uint> indices{};
+	uint materialIdent = 0;
+
+	// Process the vertices
+	for (uint i = 0; i < mesh->mNumVertices; i++) {
+		vertices.push_back(mesh->mVertices[i].x);
+		vertices.push_back(mesh->mVertices[i].y);
+		vertices.push_back(mesh->mVertices[i].z);
+		vertices.push_back(mesh->mNormals[i].x);
+		vertices.push_back(mesh->mNormals[i].y);
+		vertices.push_back(mesh->mNormals[i].z);
+
+		if (mesh->mTextureCoords[0]) {
+			vertices.push_back(mesh->mTextureCoords[0][i].x);
+			vertices.push_back(mesh->mTextureCoords[0][i].y);
+		} else {
+			vertices.push_back(0.0f);
+			vertices.push_back(0.0f);
+		}
+	}
+
+	// Process indices
+	for (uint i = 0; i < mesh->mNumFaces; i++) {
+		aiFace face = mesh->mFaces[i];
+		for (uint j = 0; j < face.mNumIndices; j++)
+			indices.push_back(face.mIndices[j]);
+	}
+
+	aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+	std::vector<std::string> diffuseStr = loadMaterials(material, aiTextureType_DIFFUSE);
+	std::vector<std::string> specularStr = loadMaterials(material, aiTextureType_SPECULAR);
+	assert(diffuseStr.size() == specularStr.size());
+
+	materialIdent = mMaterialManager.createNew();
+	for (uint i = 0; i < diffuseStr.size(); i++)
+		mMaterialManager.addMaterial(
+		  materialIdent,
+		  {directory + "/" + diffuseStr.at(i), directory + "/" + specularStr.at(i), 32.0f}
+		);
+
+	return registerIndicesModel(vertices, indices, materialIdent);
+}
+
+std::vector<std::string> ObjectManager::loadMaterials(aiMaterial* mat, aiTextureType type) {
+	std::vector<std::string> texNames;
+	texNames.reserve(mat->GetTextureCount(type));
+	for (uint i = 0; i < mat->GetTextureCount(type); i++) {
+		aiString str;
+		mat->GetTexture(type, i, &str);
+		texNames.push_back(str.C_Str());
+	}
+	return texNames;
 }
 
 size_t ObjectManager::getNextFreeSlot(const std::string& model) const {

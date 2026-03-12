@@ -8,9 +8,9 @@ using namespace JaroViewer;
 
 int main(int argc, char* argv[]) {
 	EngineArgs args{};
-	args.windowSamples     = 16;
-	args.cubemapParams     = "./apps/test/cubemap";
-	args.postProcessShader = "./apps/test/fragment/postprocessing.fs";
+	args.windowSamples = 16;
+	args.cubemapParams = "./apps/test/cubemap";
+	// args.postProcessShader = "./apps/test/fragment/postprocessing.fs";
 	Engine engine{args};
 	EngineState* state = engine.getState();
 
@@ -20,6 +20,7 @@ int main(int argc, char* argv[]) {
 	uint mat            = mm->createNew();
 	mm->addMaterial(mat, {"./apps/test/textures/crate.jpg", "./apps/test/textures/crate_specular.jpg", 32.0f});
 	om.registerModel("cube", cubeVertices, (uint)1, mat);
+	om.registerModel("backpack", "./apps/test/models/backpack/backpack.obj", (uint)1);
 	om.registerModel("light", cubeVertices, (uint)0, 0);
 
 	// Add the lights
@@ -55,6 +56,10 @@ int main(int argc, char* argv[]) {
 		objs.back().setTranslation(cubePositions.at(i));
 		objs.back().setRotation(3.65f * i, 23.78f * i, 43.12 * i);
 	}
+
+	Object obj = om.createObject("backpack");
+	obj.setScale(0.1f);
+	obj.setTranslation(glm::vec3(0.0f, 0.0f, 2.0f));
 
 	engine.start();
 	return 0;

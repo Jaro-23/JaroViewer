@@ -1,7 +1,9 @@
 #pragma once
 
 #include "material.hpp"
+#include "texture2D.hpp"
 
+#include <map>
 #include <vector>
 
 namespace JaroViewer {
@@ -18,6 +20,7 @@ namespace JaroViewer {
 
 	private:
 		std::vector<std::vector<Material>> mMaterials;
+		std::map<std::string, std::shared_ptr<Texture2D>> mTextures;
 		uint mLastMaterial;
 		Shader* mLastShader; // Only used to compare in loading, not for use
 	};

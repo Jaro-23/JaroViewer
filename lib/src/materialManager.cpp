@@ -1,9 +1,10 @@
 #include "../headers/materialManager.hpp"
+#include "texture2D.hpp"
 
 using namespace JaroViewer;
 
 MaterialManager::MaterialManager()
-  : mMaterials(), mLastMaterial(0), mLastShader(nullptr) {}
+  : mMaterials(), mTextures(), mLastMaterial(0), mLastShader(nullptr) {}
 
 uint MaterialManager::createNew() {
 	mMaterials.push_back(std::vector<Material>());
@@ -12,7 +13,14 @@ uint MaterialManager::createNew() {
 
 void MaterialManager::addMaterial(uint ident, const MaterialArgs& args) {
 	if (ident == 0) return;
-	mMaterials.at(ident - 1).push_back(Material(args));
+	if (!mTextures.contains(args.diffusePath))
+		mTextures[args.diffusePath] = std::make_shared<Texture2D>(args.diffusePath);
+	if (!mTextures.contains(args.specularPath))
+		mTextures[args.specularPath] = std::make_shared<Texture2D>(args.specularPath);
+
+	mMaterials.at(ident - 1).push_back(
+	  Material(*mTextures[args.diffusePath], *mTextures[args.specularPath], args.shininess)
+	);
 }
 
 void MaterialManager::addMaterial(uint ident, const ColorMaterialArgs& args) {

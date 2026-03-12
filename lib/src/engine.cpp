@@ -7,9 +7,6 @@
 
 using namespace JaroViewer;
 
-template<class... Ts> struct Overloaded : Ts... {
-	using Ts::operator()...;
-};
 EngineState Engine::argsToState(const EngineArgs& args) {
 	glfwInit();
 	Window window{args.openGLMajor,  args.openGLMinor, args.windowWidth,
