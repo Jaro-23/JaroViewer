@@ -49,6 +49,7 @@ BreakBeforeBinaryOperators: None
 BreakBeforeBraces: Attach
 BreakBeforeTernaryOperators: false
 BreakStringLiterals: true
+BreakTemplateDeclarations: Yes
 
 # Other thingies
 ColumnLimit: 80

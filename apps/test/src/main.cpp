@@ -1,6 +1,7 @@
-#include "basicShapes.hpp"
-#include <engine.hpp>
-#include <materialManager.hpp>
+#include <core/engine.hpp>
+#include <geometry/basicShapes.hpp>
+#include <graphics/materialManager.hpp>
+
 #include <memory>
 #include <sys/types.h>
 

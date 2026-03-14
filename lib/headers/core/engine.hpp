@@ -1,0 +1,72 @@
+#pragma once
+
+#include "core/window.hpp"
+#include "graphics/cubemap.hpp"
+#include "input/inputHandler.hpp"
+#include "lighting/lightSet.hpp"
+#include "rendering/postProcessor.hpp"
+#include "rendering/uniformBuffer.hpp"
+#include "scene/camera.hpp"
+#include "scene/objectManager.hpp"
+
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+
+#include <optional>
+#include <string>
+
+namespace JaroViewer {
+	struct EngineArgs {
+		// Window args
+		int openGLMajor               = 4;
+		int openGLMinor               = 6;
+		int windowWidth               = 600;
+		int windowHeight              = 450;
+		std::string windowTitle       = "Basic window";
+		uint windowSamples            = 1;
+		std::string postProcessShader = "";
+		std::variant<std::string, std::vector<std::string>> cubemapParams = "";
+	};
+
+	struct EngineState {
+		Window window;
+		Camera camera;
+		InputHandler input;
+		ObjectManager objectManager;
+		LightSet lights;
+		std::optional<Cubemap> cubemap;
+		std::optional<PostProcessor> postProcessor;
+
+		EngineState(Window&& w, Camera c, std::optional<Cubemap> cm, std::optional<PostProcessor> pp)
+		  : window(std::move(w)),
+		    camera(std::move(c)),
+		    input(&this->window),
+		    objectManager(),
+		    lights(),
+		    cubemap(std::move(cm)),
+		    postProcessor(std::move(pp)) {}
+	};
+
+	class Engine {
+	public:
+		static EngineState argsToState(const EngineArgs& args);
+		Engine(const EngineArgs& args);
+		~Engine();
+
+		void start();
+		EngineState* getState();
+
+	private:
+		struct Tranformation {
+			glm::mat4 projection;
+			glm::mat4 view;
+		};
+
+		void render();
+
+		EngineState mState;
+		std::shared_ptr<UniformBuffer> mTransformUBO;
+		std::shared_ptr<UniformBuffer> mLightsUBO;
+	};
+} // namespace JaroViewer
