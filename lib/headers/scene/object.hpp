@@ -9,8 +9,8 @@
 
 namespace JaroViewer {
 	struct ModifierStack {
-		uint size;
-		std::vector<glm::vec4> params;
+		uint count;
+		std::vector<float> params;
 	};
 
 	class Object {

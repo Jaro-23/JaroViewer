@@ -1,6 +1,5 @@
 #pragma once
 
-#include "glm/fwd.hpp"
 #include <map>
 #include <optional>
 #include <string>
@@ -12,7 +11,7 @@ namespace JaroViewer {
 		static std::string getVertexLibrary();
 		static std::optional<uint> registerModifier(const std::string& name, const std::string& funcCode);
 
-		virtual std::vector<glm::vec4> getParams() const = 0;
+		virtual std::vector<float> getParams() const = 0;
 
 	private:
 		struct RegisterEntry {
