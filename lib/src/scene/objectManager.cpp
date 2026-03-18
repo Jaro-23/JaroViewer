@@ -2,7 +2,6 @@
 #include "core/tools.hpp"
 
 #include <iostream>
-#include <memory>
 #include <variant>
 
 using namespace JaroViewer;
@@ -34,8 +33,9 @@ void ObjectManager::registerModel(
 		          << std::endl;
 		return;
 	}
-	Mesh mesh      = registerVerticesModel(vertices, material);
-	mModels[ident] = ModelState(std::vector<Mesh>{mesh}, false, shaderIdent, {});
+	Mesh mesh = registerVerticesModel(vertices, material);
+	mModels[ident] =
+	  ModelState(std::vector<Mesh>{mesh}, false, shaderIdent, GpuVector(), {});
 }
 
 void ObjectManager::registerModel(const std::string& ident, const std::string& modelPath, ShaderParams shaderParams) {
@@ -64,15 +64,20 @@ Object ObjectManager::createObject(const std::string& model) {
 
 	// Create the instance
 	if (index == mModels.at(model).instances.size()) {
-		mModels.at(model).instances.push_back(Instance{true, true, obj.getModelMatrix()});
+		mModels.at(model).instances.push_back(Instance{true, true, obj.getModelMatrix(), 0, 0});
 	} else {
-		Instance& instance = mModels.at(model).instances.at(index);
-		instance.active    = true;
-		instance.render    = true;
-		instance.model     = obj.getModelMatrix();
+		Instance& instance     = mModels.at(model).instances.at(index);
+		instance.active        = true;
+		instance.render        = true;
+		instance.model         = obj.getModelMatrix();
+		instance.modifierStart = 0;
+		instance.modifierCount = 0;
 	}
 
 	// Link all events
+	obj.subscribeModifier([this, model, index](const ModifierStack& stack) {
+		this->updateModifierTex(stack, model, index);
+	});
 	obj.subscribeDelete([this, model, index]() {
 		this->mModels.at(model).instances.at(index).active = false;
 	});
@@ -121,6 +126,32 @@ void ObjectManager::renderObjects(bool usingPostProcessor, const glm::vec3& view
 				glDrawArraysInstanced(GL_TRIANGLES, 0, mesh.count, data.size());
 		}
 	}
+}
+
+void ObjectManager::updateModifierTex(const ModifierStack& stack, const std::string& model, uint instanceIdent) {
+	// Update the data for the instance
+	ModelState& state = mModels.at(model);
+	Instance& ins     = state.instances.at(instanceIdent);
+
+	size_t nextStack = 0;
+	for (size_t i = instanceIdent + 1; i < state.instances.size(); ++i) {
+		Instance& nextIns = state.instances.at(i);
+		if (nextIns.modifierCount <= 0) continue;
+		nextStack = nextIns.modifierStart;
+		break;
+	}
+
+	if (nextStack - ins.modifierStart != stack.count) {
+		int offset = (nextStack - ins.modifierStart) - stack.count;
+		state.modifierData.move(ins.modifierStart, ins.modifierStart + offset);
+		for (size_t i = instanceIdent + 1; i < state.instances.size(); ++i) {
+			Instance& nextIns = state.instances.at(i);
+			if (nextIns.modifierCount <= 0) continue;
+			nextIns.modifierStart = nextIns.modifierStart - offset;
+		}
+	}
+
+	state.modifierData.copy(stack.params, stack.count);
 }
 
 Mesh ObjectManager::registerVerticesModel(const std::vector<float>& vertices, uint material) {
@@ -202,7 +233,7 @@ void ObjectManager::registerFileModel(const std::string& ident, const std::strin
 		return;
 	}
 
-	mModels[ident]        = ModelState(std::vector<Mesh>(), false, shader, {});
+	mModels[ident] = ModelState(std::vector<Mesh>(), false, shader, GpuVector(), {});
 	std::string directory = modelPath.substr(0, modelPath.find_last_of("/"));
 	processNode(scene->mRootNode, ident, directory, scene);
 }

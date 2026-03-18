@@ -1,6 +1,8 @@
 #pragma once
 
+#include "core/window.hpp"
 #include "graphics/materialManager.hpp"
+#include "rendering/gpuVector.hpp"
 #include "rendering/shader.hpp"
 #include "rendering/shaderManager.hpp"
 #include "scene/object.hpp"
@@ -20,6 +22,8 @@ namespace JaroViewer {
 		bool active;
 		bool render;
 		glm::mat4 model;
+		uint modifierStart;
+		uint modifierCount;
 	};
 
 	struct Mesh {
@@ -33,6 +37,7 @@ namespace JaroViewer {
 		std::vector<Mesh> meshes;
 		bool useIndices;
 		uint shader;
+		GpuVector modifierData;
 		std::vector<Instance> instances;
 	};
 
@@ -52,6 +57,8 @@ namespace JaroViewer {
 		void renderObjects(bool usingPostProcessor, const glm::vec3& viewPos);
 
 	private:
+		void updateModifierTex(const ModifierStack& stack, const std::string& model, uint instanceIdent);
+
 		Mesh registerVerticesModel(const std::vector<float>& vertices, uint material);
 		Mesh registerIndicesModel(const std::vector<float>& vertices, const std::vector<uint>& indices, uint material);
 		uint handleBuffers();

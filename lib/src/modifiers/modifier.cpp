@@ -8,6 +8,7 @@
 using namespace JaroViewer;
 
 uint Modifier::mNextIdent = 0;
+std::map<std::string, Modifier::RegisterEntry> JaroViewer::Modifier::mModifiers = {};
 
 std::string Modifier::getVertexLibrary() {
 	std::stringstream out;
@@ -29,4 +30,14 @@ std::optional<uint> Modifier::registerModifier(const std::string& name, const st
 	}
 	mModifiers[name] = RegisterEntry(mNextIdent, funcCode);
 	return mNextIdent++;
+}
+
+void Modifier::subscribeUpdate(const std::function<void()>& callback) {
+	mUpdateCallbacks.push_back(callback);
+}
+
+void Modifier::sendUpdateEvent() {
+	for (auto& callback : mUpdateCallbacks) {
+		callback();
+	}
 }

@@ -39,9 +39,9 @@ namespace JaroViewer {
 
 		// Modifiers
 		void addModifier(std::shared_ptr<Modifier> modifier);
-		ModifierStack getModifierStack() const;
 
 		// Events
+		void subscribeModifier(std::function<void(const ModifierStack&)> callback);
 		void subscribeDelete(std::function<void()> callback);
 		void subscribeTransform(std::function<void(glm::mat4)> callback);
 		void subscribeVisibility(std::function<void(bool)> callback);
@@ -58,6 +58,7 @@ namespace JaroViewer {
 		std::vector<std::shared_ptr<Modifier>> mModifiers;
 
 		// Event callbacks
+		std::vector<std::function<void(const ModifierStack&)>> mModifierCallbacks;
 		std::vector<std::function<void()>> mDeleteCallbacks;
 		std::vector<std::function<void(glm::mat4)>> mTransformCallbacks;
 		std::vector<std::function<void(bool)>> mVisibilityCallbacks;

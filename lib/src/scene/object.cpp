@@ -137,20 +137,21 @@ void Object::setScale(float scale) {
 }
 
 void Object::addModifier(std::shared_ptr<Modifier> modifier) {
+	modifier->subscribeUpdate([this]() {
+		ModifierStack stack{(uint)this->mModifiers.size(), {}};
+		for (auto& modifier : this->mModifiers) {
+			std::vector<float> params = modifier->getParams();
+			stack.params.insert(stack.params.end(), params.begin(), params.end());
+		}
+
+		for (auto& callback : this->mModifierCallbacks) callback(stack);
+	});
+
 	mModifiers.push_back(modifier);
 }
 
-// TODO: Change this so it only updates the vector on modifier change and
-// propagate event to object manager So it only updates the modifier stack
-// shader on a change Does the count need to be changeable after creation?
-ModifierStack Object::getModifierStack() const {
-	ModifierStack out{(uint)mModifiers.size(), {}};
-	for (auto& modifier : mModifiers) {
-		std::vector<float> params = modifier->getParams();
-		out.params.insert(out.params.end(), params.begin(), params.end());
-	}
-
-	return out;
+void Object::subscribeModifier(std::function<void(const ModifierStack&)> callback) {
+	mModifierCallbacks.push_back(callback);
 }
 
 void Object::subscribeDelete(std::function<void()> callback) {
