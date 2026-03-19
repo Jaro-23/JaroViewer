@@ -14,7 +14,7 @@ std::string Modifier::getVertexLibrary() {
 	std::stringstream out;
 	out << vertexLibrary;
 	out << "int modifierIndex = 0;\n"
-	       "float nextModifierParam(uint index) {\n"
+	       "float nextModifierParam() {\n"
 	       "float ret = getDataFromVector(modifierData, modifierIndex);\n"
 	       "modifierIndex = modifierIndex + 1;\n"
 	       "return ret;\n"

@@ -1,4 +1,5 @@
 #include "rendering/shaderManager.hpp"
+#include "modifiers/modifier.hpp"
 #include "rendering/basicShaders.hpp"
 
 #include <sstream>
@@ -7,7 +8,7 @@ using namespace JaroViewer;
 
 ShaderManager::ShaderManager() : mPathToIdent(), mShaders(), mActiveShader(0) {
 	loadShader(ShaderCode{basicWhiteVertex, "", basicWhiteFragment});
-	loadShader(ShaderCode{vertexLibrary + basicVertex, "", fragmentLibrary + basicFragment});
+	loadShader(ShaderCode{Modifier::getVertexLibrary() + basicVertex, "", fragmentLibrary + basicFragment});
 	mShaders.at(0).use();
 }
 
