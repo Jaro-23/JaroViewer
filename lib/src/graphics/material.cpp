@@ -30,15 +30,15 @@ Material::Material(const ColorMaterialArgs& args)
  * @param shader The shader you want to set the material to
  * @pre shader != nullptr
  */
-void Material::load(const Shader* shader) const {
+void Material::load(const Shader* shader, uint offset) const {
 	// Setup the shader
-	shader->setInt(mVariableName + ".diffuse", 0);
-	shader->setInt(mVariableName + ".specular", 1);
+	shader->setInt(mVariableName + ".diffuse", offset);
+	shader->setInt(mVariableName + ".specular", offset + 1);
 	shader->setFloat1(mVariableName + ".shininess", mShininess);
 
 	// Load the textures
-	mDiffuse.bind(0);
-	mSpecular.bind(1);
+	mDiffuse.bind(offset);
+	mSpecular.bind(offset + 1);
 }
 
 /**
@@ -46,10 +46,10 @@ void Material::load(const Shader* shader) const {
  * @param shader The shader that contains the array
  * @param arrayIndex The index where the materials will be placed
  */
-void Material::loadIntoArray(const Shader* shader, int arrayIndex) const {
+void Material::loadIntoArray(const Shader* shader, int arrayIndex, uint offset) const {
 	// Setup the shader
 	std::string base = (mArrayName + "[") + std::to_string(arrayIndex) + "]";
-	int baseIndex    = arrayIndex * 2;
+	int baseIndex    = arrayIndex * 2 + offset;
 	shader->setInt(base + ".diffuse", baseIndex);
 	shader->setInt(base + ".specular", baseIndex + 1);
 	shader->setFloat1(base + ".shininess", mShininess);

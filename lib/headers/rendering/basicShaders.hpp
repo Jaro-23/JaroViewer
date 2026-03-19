@@ -3,47 +3,45 @@
 #include <string>
 
 namespace JaroViewer {
-	const std::string basicWhiteVertex =
-	  "#version 460 core\n"
+	const std::string shaderVersion = "#version 460 core\n";
+
+	const std::string vertexInputs =
 	  "layout(std140, binding = 0) uniform Transformation {\n"
 	  "mat4 projection;\n"
 	  "mat4 view;\n"
 	  "};\n"
+	  "uniform samplerBuffer modifierData;\n"
 	  "layout (location = 0) in vec3 aPos;\n"
 	  "layout (location = 1) in vec3 aNormal;\n"
 	  "layout (location = 2) in vec2 aTexCoord;\n"
-	  "layout (location = 3) in mat4 model;\n"
-	  "layout (location = 7) in mat3 normalModel;\n"
+	  "layout (location = 3) in mat4 aModel;\n"
+	  "layout (location = 7) in mat3 aNormalModel;\n"
+	  "layout (location = 10) in uint aModifierStart;\n"
+	  "layout (location = 11) in uint aModifierCount;\n";
+
+	const std::string basicWhiteVertex = shaderVersion + vertexInputs +
 	  "vec4 transform(vec3 pos) {\n"
-	  "return projection * view * model * vec4(pos, 1.0);\n"
+	  "return projection * view * aModel * vec4(pos, 1.0);\n"
 	  "}\n"
 	  "void main() {\n"
 	  "gl_Position = transform(aPos);\n"
 	  "}\n";
 
-	const std::string basicWhiteFragment = "#version 460 core\n"
-	                                       "out vec4 FragColor;\n"
-	                                       "void main() {\n"
-	                                       "FragColor = vec4(1.0);\n"
-	                                       "}\n";
-
-	const std::string vertexLibrary =
-	  "#version 460 core\n"
-	  "layout(std140, binding = 0) uniform Transformation {\n"
-	  "mat4 projection;\n"
-	  "mat4 view;\n"
-	  "};\n"
-	  "layout (location = 0) in vec3 aPos;\n"
-	  "layout (location = 1) in vec3 aNormal;\n"
-	  "layout (location = 2) in vec2 aTexCoord;\n"
-	  "layout (location = 3) in mat4 model;\n"
-	  "layout (location = 7) in mat3 normalModel;\n"
-	  "vec4 transform(vec3 pos) {\n"
-	  "return projection * view * model * vec4(pos, 1.0);\n"
+	const std::string basicWhiteFragment = shaderVersion +
+	  "out vec4 FragColor;\n"
+	  "void main() {\n"
+	  "FragColor = vec4(1.0);\n"
 	  "}\n";
 
-	const std::string fragmentLibrary =
-	  "#version 460 core\n"
+	const std::string vertexLibrary = shaderVersion + vertexInputs +
+	  "vec4 transform(vec3 pos) {\n"
+	  "return projection * view * aModel * vec4(pos, 1.0);\n"
+	  "}\n"
+	  "float getDataFromVector(samplerBuffer vec, int index) {\n"
+	  "return texelFetch(vec, index).r;\n"
+	  "}\n";
+
+	const std::string fragmentLibrary = shaderVersion +
 	  "#define MAXNUMDIRLIGHTS 2\n"
 	  "#define MAXNUMPOINTLIGHTS 20\n"
 	  "#define MAXNUMSPOTLIGHTS 10\n"
@@ -197,8 +195,8 @@ namespace JaroViewer {
 	  "void main() {\n"
 	  "gl_Position = transform(aPos);\n"
 	  "TexCoord    = aTexCoord;\n"
-	  "FragPos     = vec3(model * vec4(aPos, 1.0));\n"
-	  "Normal      = normalModel * aNormal;\n"
+	  "FragPos     = vec3(aModel * vec4(aPos, 1.0));\n"
+	  "Normal      = aNormalModel * aNormal;\n"
 	  "}\n";
 
 	const std::string basicFragment =

@@ -13,10 +13,24 @@ std::map<std::string, Modifier::RegisterEntry> JaroViewer::Modifier::mModifiers 
 std::string Modifier::getVertexLibrary() {
 	std::stringstream out;
 	out << vertexLibrary;
+	out << "int modifierIndex = 0;\n"
+	       "float nextModifierParam(uint index) {\n"
+	       "float ret = getDataFromVector(modifierData, modifierIndex);\n"
+	       "modifierIndex = modifierIndex + 1;\n"
+	       "return ret;\n"
+	       "}\n";
 
 	for (auto& modifier : mModifiers)
 		out << "void " << modifier.first << "() {\n"
 		    << modifier.second.code << "\n}\n";
+
+	out << "void processModifiers(uint base) {\n"
+	       "for (int i = 0; i < aModifierCount; ++i) {\n"
+	       "int type = int(nextModifierParam());\n"
+	       "switch (type) {";
+	for (auto& modifier : mModifiers)
+		out << "case " << modifier.first << ": " << modifier.second.ident << "(); break;\n";
+	out << "}\n}\n}\n";
 
 	return out.str();
 }

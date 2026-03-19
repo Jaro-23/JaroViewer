@@ -24,8 +24,8 @@ namespace JaroViewer {
 		Material(const MaterialArgs& args);
 		Material(const ColorMaterialArgs& args);
 
-		void load(const Shader* shader) const;
-		void loadIntoArray(const Shader* shader, int arrayIndex) const;
+		void load(const Shader* shader, uint offset = 0) const;
+		void loadIntoArray(const Shader* shader, int arrayIndex, uint offset = 0) const;
 
 	private:
 		std::string mVariableName;

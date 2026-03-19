@@ -1,6 +1,5 @@
 #pragma once
 
-#include "core/window.hpp"
 #include "graphics/materialManager.hpp"
 #include "rendering/gpuVector.hpp"
 #include "rendering/shader.hpp"
@@ -22,6 +21,13 @@ namespace JaroViewer {
 		bool active;
 		bool render;
 		glm::mat4 model;
+		uint modifierStart;
+		uint modifierCount;
+	};
+
+	struct InstanceData {
+		glm::mat4 model;
+		glm::mat3 normalModel;
 		uint modifierStart;
 		uint modifierCount;
 	};

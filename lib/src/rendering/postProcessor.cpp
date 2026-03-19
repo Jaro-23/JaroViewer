@@ -1,18 +1,19 @@
 #include "rendering/postProcessor.hpp"
 #include "core/tools.hpp"
+#include "rendering/basicShaders.hpp"
 
 #include <memory>
 
 using namespace JaroViewer;
 
-const std::string vertexCode = "#version 460 core\n"
-                               "layout (location = 0) in vec2 aPos;\n"
-                               "layout (location = 1) in vec2 aTexCoords;\n"
-                               "out vec2 TexCoords;\n"
-                               "void main() {\n"
-                               "	gl_Position = vec4(aPos, 0.0, 1.0);\n"
-                               "	TexCoords = aTexCoords;\n\n"
-                               "}\n";
+const std::string vertexCode = shaderVersion +
+  "layout (location = 0) in vec2 aPos;\n"
+  "layout (location = 1) in vec2 aTexCoords;\n"
+  "out vec2 TexCoords;\n"
+  "void main() {\n"
+  "	gl_Position = vec4(aPos, 0.0, 1.0);\n"
+  "	TexCoords = aTexCoords;\n\n"
+  "}\n";
 
 /**
  * Creates a postprocessor

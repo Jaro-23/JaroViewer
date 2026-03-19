@@ -1,8 +1,8 @@
 #include "graphics/cubemap.hpp"
 
 #include "core/tools.hpp"
+#include "rendering/basicShaders.hpp"
 
-#include <array>
 #include <filesystem>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -13,26 +13,20 @@
 using namespace JaroViewer;
 
 // TODO : Rework the view because in needs 2 cast for each call (Whut????)
-const std::string vertex =
-  "#version 460 core\n"
-  "layout (location = 0) in vec3 aPos;\n"
+const std::string vertex = shaderVersion + vertexInputs +
   "out vec3 TexCoords;\n"
-  "layout(std140, binding = 0) uniform Transformation {\n"
-  "	mat4 projection;\n"
-  "	mat4 view;\n"
-  "};\n"
   "void main() {\n"
   "    TexCoords = aPos;\n"
   "    gl_Position = (projection * mat4(mat3(view)) * vec4(aPos, 1.0)).xyww;\n"
   "}\n";
 
-const std::string fragment = "#version 460 core\n"
-                             "out vec4 FragColor;\n"
-                             "in vec3 TexCoords;\n"
-                             "uniform samplerCube skybox;\n"
-                             "void main() {\n"
-                             "    FragColor = texture(skybox, TexCoords);\n"
-                             "}\n";
+const std::string fragment = shaderVersion +
+  "out vec4 FragColor;\n"
+  "in vec3 TexCoords;\n"
+  "uniform samplerCube skybox;\n"
+  "void main() {\n"
+  "    FragColor = texture(skybox, TexCoords);\n"
+  "}\n";
 
 /**
  * Creates a cubemap based of the paths to the textures

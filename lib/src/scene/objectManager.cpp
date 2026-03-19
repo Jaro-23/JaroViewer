@@ -1,6 +1,7 @@
 #include "scene/objectManager.hpp"
 #include "core/tools.hpp"
 
+#include <cstddef>
 #include <iostream>
 #include <variant>
 
@@ -96,15 +97,13 @@ void ObjectManager::renderObjects(bool usingPostProcessor, const glm::vec3& view
 	for (auto& model : mModels) {
 		ModelState& state = model.second;
 
-		struct InstanceData {
-			glm::mat4 model;
-			glm::mat3 normalModel;
-		};
-
 		std::vector<InstanceData> data;
 		for (auto& instance : state.instances) {
 			if (!instance.active || !instance.render) continue;
-			data.push_back({instance.model, Tools::getNormalModelMatrix(instance.model)});
+			data.push_back(
+			  {instance.model, Tools::getNormalModelMatrix(instance.model),
+			   instance.modifierStart, instance.modifierCount}
+			);
 		}
 
 		for (Mesh& mesh : state.meshes) {
@@ -112,7 +111,9 @@ void ObjectManager::renderObjects(bool usingPostProcessor, const glm::vec3& view
 
 			mShaderManager.activateShader(state.shader);
 			Shader* shader = mShaderManager.getShader(state.shader);
-			mMaterialManager.loadMaterial(shader, mesh.material);
+			shader->setInt("modifierData", 0);
+			state.modifierData.load(0);
+			mMaterialManager.loadMaterial(shader, mesh.material, 1);
 
 			glBindBuffer(GL_ARRAY_BUFFER, mesh.instanceVBO);
 			glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(InstanceData), data.data(), GL_DYNAMIC_DRAW);
@@ -199,21 +200,35 @@ uint ObjectManager::handleBuffers() {
 	// mat4 model at locations 3-6
 	for (int i = 0; i < 4; i++) {
 		glVertexAttribPointer(
-		  3 + i, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4) + sizeof(glm::mat3),
-		  (void*)(i * sizeof(glm::vec4))
+		  3 + i, 4, GL_FLOAT, GL_FALSE, sizeof(InstanceData), (void*)(i * sizeof(glm::vec4))
 		);
 		glEnableVertexAttribArray(3 + i);
-		glVertexAttribDivisor(3 + i, 1); // ← advance once per instance
+		glVertexAttribDivisor(3 + i, 1);
 	}
-	// mat3 normalModel at locations 7-9
+	// mat3 aNormalModel at locations 7-9
 	for (int i = 0; i < 3; i++) {
 		glVertexAttribPointer(
-		  7 + i, 3, GL_FLOAT, GL_FALSE, sizeof(glm::mat4) + sizeof(glm::mat3),
-		  (void*)(sizeof(glm::mat4) + i * sizeof(glm::vec3))
+		  7 + i, 3, GL_FLOAT, GL_FALSE, sizeof(InstanceData),
+		  (void*)(offsetof(InstanceData, normalModel) + i * sizeof(glm::vec3))
 		);
 		glEnableVertexAttribArray(7 + i);
 		glVertexAttribDivisor(7 + i, 1);
 	}
+	// modifier start
+	glVertexAttribPointer(
+	  10, 1, GL_UNSIGNED_INT, GL_FALSE, sizeof(InstanceData),
+	  (void*)(offsetof(InstanceData, modifierStart))
+	);
+	glEnableVertexAttribArray(10);
+	glVertexAttribDivisor(10, 1);
+	// modifier count
+	glVertexAttribPointer(
+	  11, 1, GL_UNSIGNED_INT, GL_FALSE, sizeof(InstanceData),
+	  (void*)(offsetof(InstanceData, modifierCount))
+	);
+	glEnableVertexAttribArray(11);
+	glVertexAttribDivisor(11, 1);
+
 	return instanceVBO;
 }
 

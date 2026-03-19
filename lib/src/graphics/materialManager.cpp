@@ -28,7 +28,7 @@ void MaterialManager::addMaterial(uint ident, const ColorMaterialArgs& args) {
 	mMaterials.at(ident - 1).push_back(Material(args));
 }
 
-void MaterialManager::loadMaterial(Shader* shader, uint material) {
+void MaterialManager::loadMaterial(Shader* shader, uint material, uint offset) {
 	if (material == 0 || (mLastShader == shader && mLastMaterial == material))
 		return;
 	mLastShader                 = shader;
@@ -37,5 +37,5 @@ void MaterialManager::loadMaterial(Shader* shader, uint material) {
 
 	shader->setInt("numTextures", mats.size());
 	for (unsigned int i = 0; i < mats.size(); i++)
-		mats.at(i).loadIntoArray(shader, i);
+		mats.at(i).loadIntoArray(shader, i, offset);
 }

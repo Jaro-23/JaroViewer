@@ -1,5 +1,6 @@
 #include "rendering/gpuVector.hpp"
 #include <algorithm>
+#include <cassert>
 #include <cstring>
 
 using namespace JaroViewer;
@@ -12,17 +13,18 @@ size_t GpuVector::size() const {
 	GLint64 size;
 	GLint prevBuffer = 0;
 
-	// Save current binding
 	glGetIntegerv(GL_TEXTURE_BINDING_BUFFER, &prevBuffer);
 
-	// Bind your buffer
 	glBindBuffer(GL_TEXTURE_BUFFER, mBuffer);
 	glGetBufferParameteri64v(GL_TEXTURE_BUFFER, GL_BUFFER_SIZE, &size);
 
-	// Restore previous binding
-	glBindBuffer(GL_TEXTURE_BUFFER, prevBuffer);
-
 	return static_cast<size_t>(size);
+}
+
+void GpuVector::load(uint position) const {
+	assert(position < 32);
+	glActiveTexture(GL_TEXTURE0 + position);
+	glBindTexture(GL_TEXTURE_2D, mTexture);
 }
 
 void GpuVector::copy(const std::vector<float>& data, size_t offset) {

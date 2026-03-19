@@ -16,7 +16,7 @@ namespace JaroViewer {
 		void addMaterial(uint ident, const ColorMaterialArgs& args);
 		void resetLastShader() { mLastShader = nullptr; }
 
-		void loadMaterial(Shader* shader, uint ident);
+		void loadMaterial(Shader* shader, uint ident, uint offset = 0);
 
 	private:
 		std::vector<std::vector<Material>> mMaterials;
