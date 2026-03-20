@@ -2,6 +2,7 @@
 #include "modifiers/modifier.hpp"
 #include "rendering/basicShaders.hpp"
 
+#include <iostream>
 #include <sstream>
 
 using namespace JaroViewer;

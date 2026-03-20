@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cstring>
+#include <iostream>
 
 using namespace JaroViewer;
 
@@ -28,6 +29,7 @@ void GpuVector::load(uint position) const {
 }
 
 void GpuVector::copy(const std::vector<float>& data, size_t offset) {
+	std::cout << data.size() << std::endl;
 	mCount = std::max(offset + data.size(), mCount);
 	if (mCount > size()) enlarge();
 

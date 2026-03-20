@@ -1,3 +1,4 @@
+#include "modifiers/wavingModifier.hpp"
 #include <core/engine.hpp>
 #include <geometry/basicShapes.hpp>
 #include <graphics/materialManager.hpp>
@@ -51,9 +52,12 @@ int main(int argc, char* argv[]) {
 	   glm::vec3(1.3f, -2.0f, -2.5f),  glm::vec3(1.5f, 2.0f, -2.5f),
 	   glm::vec3(1.5f, 0.2f, -1.5f),   glm::vec3(-1.3f, 1.0f, -1.5f)};
 
+	std::shared_ptr<WavingModifier> mod = std::make_shared<WavingModifier>();
+
 	std::vector<Object> objs = {};
-	for (int i = 0; i < cubePositions.size(); i++) {
+	for (int i = 0; i < 1; i++) {
 		objs.push_back(om.createObject("cube"));
+		objs.back().addModifier(mod);
 		objs.back().setTranslation(cubePositions.at(i));
 		objs.back().setRotation(3.65f * i, 23.78f * i, 43.12 * i);
 	}

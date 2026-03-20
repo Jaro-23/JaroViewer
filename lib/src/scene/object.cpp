@@ -2,6 +2,7 @@
 
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/fwd.hpp>
+#include <iostream>
 
 using namespace JaroViewer;
 

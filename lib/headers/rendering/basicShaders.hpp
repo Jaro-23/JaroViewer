@@ -10,6 +10,8 @@ namespace JaroViewer {
 	  "mat4 projection;\n"
 	  "mat4 view;\n"
 	  "};\n"
+	  "uniform vec3 minPoint;\n"
+	  "uniform vec3 maxPoint;\n"
 	  "uniform samplerBuffer modifierData;\n"
 	  "layout (location = 0) in vec3 aPos;\n"
 	  "layout (location = 1) in vec3 aNormal;\n"
@@ -37,8 +39,8 @@ namespace JaroViewer {
 	  "vec4 transform(vec3 pos) {\n"
 	  "return projection * view * aModel * vec4(pos, 1.0);\n"
 	  "}\n"
-	  "float getDataFromVector(samplerBuffer vec, int index) {\n"
-	  "return texelFetch(vec, index).r;\n"
+	  "float getDataFromVector(samplerBuffer vec, uint index) {\n"
+	  "return texelFetch(vec, int(index)).r;\n"
 	  "}\n";
 
 	const std::string fragmentLibrary = shaderVersion +
@@ -193,10 +195,11 @@ namespace JaroViewer {
 	  "out vec3 FragPos;\n"
 	  "out vec3 Normal;\n"
 	  "void main() {\n"
-	  "gl_Position = transform(aPos);\n"
-	  "TexCoord    = aTexCoord;\n"
-	  "FragPos     = vec3(aModel * vec4(aPos, 1.0));\n"
-	  "Normal      = aNormalModel * aNormal;\n"
+	  "vec3 modified = processModifiers(aPos);\n"
+	  "gl_Position   = transform(modified);\n"
+	  "TexCoord      = aTexCoord;\n"
+	  "FragPos       = vec3(aModel * vec4(modified, 1.0));\n"
+	  "Normal        = aNormalModel * aNormal;\n"
 	  "}\n";
 
 	const std::string basicFragment =

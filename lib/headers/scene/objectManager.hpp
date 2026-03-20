@@ -37,6 +37,8 @@ namespace JaroViewer {
 		uint instanceVBO;
 		uint count;
 		uint material;
+		glm::vec3 minPoint;
+		glm::vec3 maxPoint;
 	};
 
 	struct ModelState {

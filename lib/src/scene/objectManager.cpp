@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <iostream>
+#include <limits>
 #include <variant>
 
 using namespace JaroViewer;
@@ -118,6 +119,8 @@ void ObjectManager::renderObjects(bool usingPostProcessor, const glm::vec3& view
 			glBindBuffer(GL_ARRAY_BUFFER, mesh.instanceVBO);
 			glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(InstanceData), data.data(), GL_DYNAMIC_DRAW);
 
+			shader->setVec3("minPoint", mesh.minPoint);
+			shader->setVec3("maxPoint", mesh.maxPoint);
 			shader->setVec3("viewPos", viewPos);
 			if (state.useIndices)
 				glDrawElementsInstanced(
@@ -161,11 +164,23 @@ Mesh ObjectManager::registerVerticesModel(const std::vector<float>& vertices, ui
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 
+	glm::vec3 minPoint{std::numeric_limits<float>().max()};
+	glm::vec3 maxPoint{std::numeric_limits<float>().min()};
+	for (size_t i = 0; i < vertices.size(); i += 8) {
+		minPoint.x = std::min(minPoint.x, vertices.at(i));
+		minPoint.y = std::min(minPoint.x, vertices.at(i + 1));
+		minPoint.z = std::min(minPoint.x, vertices.at(i + 2));
+
+		maxPoint.x = std::max(maxPoint.x, vertices.at(i));
+		maxPoint.y = std::max(maxPoint.x, vertices.at(i + 1));
+		maxPoint.z = std::max(maxPoint.x, vertices.at(i + 2));
+	}
+
 	Tools::generateBuffer(vertices, GL_ARRAY_BUFFER, GL_STATIC_DRAW);
 	uint instanceVBO = handleBuffers();
 
 	glBindVertexArray(0);
-	return Mesh(vao, instanceVBO, vertices.size() / 8, material);
+	return Mesh(vao, instanceVBO, vertices.size() / 8, material, minPoint, maxPoint);
 }
 
 Mesh ObjectManager::registerIndicesModel(
@@ -177,12 +192,24 @@ Mesh ObjectManager::registerIndicesModel(
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 
+	glm::vec3 minPoint{std::numeric_limits<float>().max()};
+	glm::vec3 maxPoint{std::numeric_limits<float>().min()};
+	for (size_t i = 0; i < vertices.size(); i += 8) {
+		minPoint.x = std::min(minPoint.x, vertices.at(i));
+		minPoint.y = std::min(minPoint.x, vertices.at(i + 1));
+		minPoint.z = std::min(minPoint.x, vertices.at(i + 2));
+
+		maxPoint.x = std::max(maxPoint.x, vertices.at(i));
+		maxPoint.y = std::max(maxPoint.x, vertices.at(i + 1));
+		maxPoint.z = std::max(maxPoint.x, vertices.at(i + 2));
+	}
+
 	Tools::generateBuffer(vertices, GL_ARRAY_BUFFER, GL_STATIC_DRAW);
 	Tools::generateBuffer(indices, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW);
 	uint instanceVBO = handleBuffers();
 
 	glBindVertexArray(0);
-	return Mesh(vao, instanceVBO, indices.size(), material);
+	return Mesh(vao, instanceVBO, indices.size(), material, minPoint, maxPoint);
 }
 
 uint ObjectManager::handleBuffers() {
