@@ -14,12 +14,10 @@ namespace JaroViewer {
 		static std::string getVertexLibrary();
 		static std::optional<uint> registerModifier(const std::string& name, const std::string& funcCode);
 
+		void sendUpdateEvent();
 		void subscribeUpdate(const std::function<void()>& callback);
 
 		virtual ModifierParams getParams() const = 0;
-
-	protected:
-		void sendUpdateEvent();
 
 	private:
 		struct RegisterEntry {

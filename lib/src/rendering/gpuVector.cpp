@@ -1,4 +1,5 @@
 #include "rendering/gpuVector.hpp"
+#include "graphics/texture2D.hpp"
 #include <algorithm>
 #include <cassert>
 #include <cstring>
@@ -6,9 +7,11 @@
 
 using namespace JaroViewer;
 
-GpuVector::GpuVector() {
+GpuVector::GpuVector() : mCount(0) {
 	genDataTex(&mTexture, &mBuffer, 1024);
 } // TODO: What should be the starting size
+
+size_t GpuVector::count() const { return mCount; }
 
 size_t GpuVector::size() const {
 	GLint64 size;
@@ -25,11 +28,10 @@ size_t GpuVector::size() const {
 void GpuVector::load(uint position) const {
 	assert(position < 32);
 	glActiveTexture(GL_TEXTURE0 + position);
-	glBindTexture(GL_TEXTURE_2D, mTexture);
+	glBindTexture(GL_TEXTURE_BUFFER, mTexture);
 }
 
 void GpuVector::copy(const std::vector<float>& data, size_t offset) {
-	std::cout << data.size() << std::endl;
 	mCount = std::max(offset + data.size(), mCount);
 	if (mCount > size()) enlarge();
 
@@ -50,15 +52,15 @@ void GpuVector::move(size_t from, size_t to, size_t count) {
 	GLuint temp;
 	glGenBuffers(1, &temp);
 	glBindBuffer(GL_COPY_WRITE_BUFFER, temp);
-	glBufferData(GL_COPY_WRITE_BUFFER, count, nullptr, GL_STATIC_DRAW);
+	glBufferData(GL_COPY_WRITE_BUFFER, count * sizeof(float), nullptr, GL_STATIC_DRAW);
 
 	glBindBuffer(GL_COPY_READ_BUFFER, mBuffer);
 	glBindBuffer(GL_COPY_WRITE_BUFFER, temp);
-	glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, from, 0, count);
+	glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, from, 0, count * sizeof(float));
 
 	glBindBuffer(GL_COPY_READ_BUFFER, temp);
 	glBindBuffer(GL_COPY_WRITE_BUFFER, mBuffer);
-	glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, 0, to, count);
+	glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, 0, to, count * sizeof(float));
 
 	glDeleteBuffers(1, &temp);
 }
@@ -78,7 +80,7 @@ void GpuVector::copy(GLuint fromBuffer, GLuint toBuffer) {
 	glBindBuffer(GL_COPY_READ_BUFFER, fromBuffer);
 	glBindBuffer(GL_COPY_WRITE_BUFFER, toBuffer);
 
-	glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, 0, 0, mCount);
+	glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, 0, 0, mCount * sizeof(float));
 }
 
 void GpuVector::genDataTex(GLuint* tex, GLuint* tbo, size_t size) {

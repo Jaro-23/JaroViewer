@@ -1,5 +1,6 @@
 #include "scene/objectManager.hpp"
 #include "core/tools.hpp"
+#include "rendering/gpuVector.hpp"
 
 #include <cstddef>
 #include <iostream>
@@ -137,6 +138,9 @@ void ObjectManager::updateModifierTex(const ModifierStack& stack, const std::str
 	ModelState& state = mModels.at(model);
 	Instance& ins     = state.instances.at(instanceIdent);
 
+	if (ins.modifierCount == 0) ins.modifierStart = state.modifierData.count();
+	ins.modifierCount = stack.count;
+
 	size_t nextStack = 0;
 	for (size_t i = instanceIdent + 1; i < state.instances.size(); ++i) {
 		Instance& nextIns = state.instances.at(i);
@@ -145,8 +149,9 @@ void ObjectManager::updateModifierTex(const ModifierStack& stack, const std::str
 		break;
 	}
 
-	if (nextStack - ins.modifierStart != stack.count) {
-		int offset = (nextStack - ins.modifierStart) - stack.count;
+	int count = nextStack - ins.modifierStart;
+	if (nextStack > 0 && (uint)count != stack.count) {
+		int offset = count - stack.count;
 		state.modifierData.move(ins.modifierStart, ins.modifierStart + offset);
 		for (size_t i = instanceIdent + 1; i < state.instances.size(); ++i) {
 			Instance& nextIns = state.instances.at(i);
@@ -155,7 +160,7 @@ void ObjectManager::updateModifierTex(const ModifierStack& stack, const std::str
 		}
 	}
 
-	state.modifierData.copy(stack.params, stack.count);
+	state.modifierData.copy(stack.params, ins.modifierStart);
 }
 
 Mesh ObjectManager::registerVerticesModel(const std::vector<float>& vertices, uint material) {
@@ -168,12 +173,12 @@ Mesh ObjectManager::registerVerticesModel(const std::vector<float>& vertices, ui
 	glm::vec3 maxPoint{std::numeric_limits<float>().min()};
 	for (size_t i = 0; i < vertices.size(); i += 8) {
 		minPoint.x = std::min(minPoint.x, vertices.at(i));
-		minPoint.y = std::min(minPoint.x, vertices.at(i + 1));
-		minPoint.z = std::min(minPoint.x, vertices.at(i + 2));
+		minPoint.y = std::min(minPoint.y, vertices.at(i + 1));
+		minPoint.z = std::min(minPoint.z, vertices.at(i + 2));
 
 		maxPoint.x = std::max(maxPoint.x, vertices.at(i));
-		maxPoint.y = std::max(maxPoint.x, vertices.at(i + 1));
-		maxPoint.z = std::max(maxPoint.x, vertices.at(i + 2));
+		maxPoint.y = std::max(maxPoint.y, vertices.at(i + 1));
+		maxPoint.z = std::max(maxPoint.z, vertices.at(i + 2));
 	}
 
 	Tools::generateBuffer(vertices, GL_ARRAY_BUFFER, GL_STATIC_DRAW);
@@ -196,12 +201,12 @@ Mesh ObjectManager::registerIndicesModel(
 	glm::vec3 maxPoint{std::numeric_limits<float>().min()};
 	for (size_t i = 0; i < vertices.size(); i += 8) {
 		minPoint.x = std::min(minPoint.x, vertices.at(i));
-		minPoint.y = std::min(minPoint.x, vertices.at(i + 1));
-		minPoint.z = std::min(minPoint.x, vertices.at(i + 2));
+		minPoint.y = std::min(minPoint.y, vertices.at(i + 1));
+		minPoint.z = std::min(minPoint.z, vertices.at(i + 2));
 
 		maxPoint.x = std::max(maxPoint.x, vertices.at(i));
-		maxPoint.y = std::max(maxPoint.x, vertices.at(i + 1));
-		maxPoint.z = std::max(maxPoint.x, vertices.at(i + 2));
+		maxPoint.y = std::max(maxPoint.y, vertices.at(i + 1));
+		maxPoint.z = std::max(maxPoint.z, vertices.at(i + 2));
 	}
 
 	Tools::generateBuffer(vertices, GL_ARRAY_BUFFER, GL_STATIC_DRAW);
@@ -242,17 +247,11 @@ uint ObjectManager::handleBuffers() {
 		glVertexAttribDivisor(7 + i, 1);
 	}
 	// modifier start
-	glVertexAttribPointer(
-	  10, 1, GL_UNSIGNED_INT, GL_FALSE, sizeof(InstanceData),
-	  (void*)(offsetof(InstanceData, modifierStart))
-	);
+	glVertexAttribIPointer(10, 1, GL_UNSIGNED_INT, sizeof(InstanceData), (void*)(offsetof(InstanceData, modifierStart)));
 	glEnableVertexAttribArray(10);
 	glVertexAttribDivisor(10, 1);
 	// modifier count
-	glVertexAttribPointer(
-	  11, 1, GL_UNSIGNED_INT, GL_FALSE, sizeof(InstanceData),
-	  (void*)(offsetof(InstanceData, modifierCount))
-	);
+	glVertexAttribIPointer(11, 1, GL_UNSIGNED_INT, sizeof(InstanceData), (void*)(offsetof(InstanceData, modifierCount)));
 	glEnableVertexAttribArray(11);
 	glVertexAttribDivisor(11, 1);
 

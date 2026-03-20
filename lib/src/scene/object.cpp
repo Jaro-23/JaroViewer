@@ -16,6 +16,7 @@ Object::Object(Object&& other) noexcept
     mAngleZ(other.mAngleZ),
     mScale(other.mScale),
     mModifiers(std::move(other.mModifiers)),
+    mModifierCallbacks(std::move(other.mModifierCallbacks)),
     mDeleteCallbacks(std::move(other.mDeleteCallbacks)),
     mTransformCallbacks(std::move(other.mTransformCallbacks)),
     mVisibilityCallbacks(std::move(other.mVisibilityCallbacks)) {}
@@ -28,6 +29,7 @@ Object& Object::operator=(Object&& other) noexcept {
 	mAngleZ              = other.mAngleZ;
 	mScale               = other.mScale;
 	mModifiers           = std::move(other.mModifiers);
+	mModifierCallbacks   = std::move(other.mModifierCallbacks);
 	mDeleteCallbacks     = std::move(other.mDeleteCallbacks);
 	mTransformCallbacks  = std::move(other.mTransformCallbacks);
 	mVisibilityCallbacks = std::move(other.mVisibilityCallbacks);
@@ -71,7 +73,7 @@ void Object::addTranslation(const glm::vec3& translation) {
  * @param angleZ The new angle offset around the Z-axis
  */
 void Object::addRotation(float angleX, float angleY, float angleZ) {
-	mAngleY += angleX;
+	mAngleX += angleX;
 	mAngleY += angleY;
 	mAngleZ += angleZ;
 	normalizeAngles();
@@ -149,6 +151,7 @@ void Object::addModifier(std::shared_ptr<Modifier> modifier) {
 	});
 
 	mModifiers.push_back(modifier);
+	modifier->sendUpdateEvent();
 }
 
 void Object::subscribeModifier(std::function<void(const ModifierStack&)> callback) {

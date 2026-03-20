@@ -5,7 +5,7 @@ using namespace JaroViewer;
 
 std::string WavingModifier::getCode() {
 	return "vec3 outVec = inVec;\n outVec.y += "
-	       "sin(inVec.x) * 5.0;\n return outVec;\n";
+	       "sin(inVec.x) * 0.2;\n return outVec;\n";
 }
 
 ModifierParams WavingModifier::getParams() const {

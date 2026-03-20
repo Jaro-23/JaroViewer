@@ -54,9 +54,7 @@ void Modifier::subscribeUpdate(const std::function<void()>& callback) {
 }
 
 void Modifier::sendUpdateEvent() {
-	for (auto& callback : mUpdateCallbacks) {
-		callback();
-	}
+	for (auto& callback : mUpdateCallbacks) callback();
 }
 
 std::map<std::string, Modifier::RegisterEntry>& Modifier::getModifiers() {

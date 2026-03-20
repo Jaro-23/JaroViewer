@@ -10,6 +10,7 @@ namespace JaroViewer {
 	public:
 		GpuVector();
 
+		size_t count() const;
 		size_t size() const;
 		void load(uint position) const;
 

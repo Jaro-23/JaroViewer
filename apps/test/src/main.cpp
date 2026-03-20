@@ -54,12 +54,12 @@ int main(int argc, char* argv[]) {
 
 	std::shared_ptr<WavingModifier> mod = std::make_shared<WavingModifier>();
 
-	std::vector<Object> objs = {};
-	for (int i = 0; i < 1; i++) {
-		objs.push_back(om.createObject("cube"));
-		objs.back().addModifier(mod);
-		objs.back().setTranslation(cubePositions.at(i));
-		objs.back().setRotation(3.65f * i, 23.78f * i, 43.12 * i);
+	std::vector<std::unique_ptr<Object>> objs;
+	for (int i = 0; i < cubePositions.size(); i++) {
+		objs.push_back(std::make_unique<Object>(om.createObject("cube")));
+		objs.back()->addModifier(mod);
+		objs.back()->setTranslation(cubePositions.at(i));
+		objs.back()->setRotation(3.65f * i, 23.78f * i, 43.12f * i);
 	}
 
 	Object obj = om.createObject("backpack");
