@@ -1,10 +1,10 @@
 #pragma once
 
-#include "graphics/materialManager.hpp"
-#include "rendering/gpuVector.hpp"
-#include "rendering/shader.hpp"
-#include "rendering/shaderManager.hpp"
-#include "scene/object.hpp"
+#include "jaroViewer/graphics/materialManager.hpp"
+#include "jaroViewer/rendering/gpuVector.hpp"
+#include "jaroViewer/rendering/shader.hpp"
+#include "jaroViewer/rendering/shaderManager.hpp"
+#include "jaroViewer/scene/object.hpp"
 
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>

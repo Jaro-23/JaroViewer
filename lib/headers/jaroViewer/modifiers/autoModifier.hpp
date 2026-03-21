@@ -1,6 +1,6 @@
 #pragma once
 
-#include "modifiers/modifier.hpp"
+#include "jaroViewer/modifiers/modifier.hpp"
 
 namespace JaroViewer {
 	template<typename T>

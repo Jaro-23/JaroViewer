@@ -1,4 +1,4 @@
-#include "graphics/frameBuffer.hpp"
+#include "jaroViewer/graphics/frameBuffer.hpp"
 
 #include <iostream>
 #include <ostream>

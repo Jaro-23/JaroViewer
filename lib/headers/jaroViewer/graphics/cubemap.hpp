@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rendering/shader.hpp"
+#include "jaroViewer/rendering/shader.hpp"
 
 #include <string>
 #include <vector>

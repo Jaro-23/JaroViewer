@@ -1,6 +1,6 @@
-#include "rendering/shaderManager.hpp"
-#include "modifiers/modifier.hpp"
-#include "rendering/basicShaders.hpp"
+#include "jaroViewer/rendering/shaderManager.hpp"
+#include "jaroViewer/modifiers/modifier.hpp"
+#include "jaroViewer/rendering/basicShaders.hpp"
 
 #include <iostream>
 #include <sstream>

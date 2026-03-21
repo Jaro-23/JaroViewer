@@ -1,5 +1,6 @@
 #pragma once
 
+#include "jaroViewer/core/eventSender.hpp"
 #include <functional>
 #include <map>
 #include <optional>
@@ -9,13 +10,12 @@
 namespace JaroViewer {
 	using ModifierParams = std::vector<float>;
 
-	class Modifier {
+	enum ModifierEvent { UPDATE };
+
+	class Modifier : public EventSender<Modifier, ModifierEvent> {
 	public:
 		static std::string getVertexLibrary();
 		static std::optional<uint> registerModifier(const std::string& name, const std::string& funcCode);
-
-		void sendUpdateEvent();
-		void subscribeUpdate(const std::function<void()>& callback);
 
 		virtual ModifierParams getParams() const = 0;
 
@@ -28,7 +28,6 @@ namespace JaroViewer {
 		static std::map<std::string, RegisterEntry>& getModifiers();
 		static uint& getNextIdent();
 
-		std::vector<std::function<void()>> mUpdateCallbacks;
 		static std::map<std::string, RegisterEntry> mModifiers;
 		static uint mNextIdent;
 	};

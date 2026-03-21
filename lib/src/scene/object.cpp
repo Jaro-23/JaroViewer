@@ -1,48 +1,51 @@
-#include "scene/object.hpp"
+#include "jaroViewer/scene/object.hpp"
+#include "jaroViewer/core/eventSender.hpp"
+#include "jaroViewer/modifiers/modifier.hpp"
 
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/fwd.hpp>
-#include <iostream>
 
 using namespace JaroViewer;
 
 Object::Object()
-  : mTranslation(0.0f), mAngleX(0.0f), mAngleY(0.0f), mAngleZ(0.0f), mScale(1.0f) {}
+  : mTranslation(0.0f),
+    mAngleX(0.0f),
+    mAngleY(0.0f),
+    mAngleZ(0.0f),
+    mScale(1.0f),
+    mVisibility(true) {}
 
 Object::Object(Object&& other) noexcept
-  : mTranslation(other.mTranslation),
+  : EventSender<Object, ObjectEvent>(std::move(other)),
+    mTranslation(other.mTranslation),
     mAngleX(other.mAngleX),
     mAngleY(other.mAngleY),
     mAngleZ(other.mAngleZ),
     mScale(other.mScale),
-    mModifiers(std::move(other.mModifiers)),
-    mModifierCallbacks(std::move(other.mModifierCallbacks)),
-    mDeleteCallbacks(std::move(other.mDeleteCallbacks)),
-    mTransformCallbacks(std::move(other.mTransformCallbacks)),
-    mVisibilityCallbacks(std::move(other.mVisibilityCallbacks)) {}
+    mVisibility(other.mVisibility),
+    mModifiers(std::move(other.mModifiers)) {}
 
 Object& Object::operator=(Object&& other) noexcept {
 	if (this == &other) return *this;
-	mTranslation         = other.mTranslation;
-	mAngleX              = other.mAngleX;
-	mAngleY              = other.mAngleY;
-	mAngleZ              = other.mAngleZ;
-	mScale               = other.mScale;
-	mModifiers           = std::move(other.mModifiers);
-	mModifierCallbacks   = std::move(other.mModifierCallbacks);
-	mDeleteCallbacks     = std::move(other.mDeleteCallbacks);
-	mTransformCallbacks  = std::move(other.mTransformCallbacks);
-	mVisibilityCallbacks = std::move(other.mVisibilityCallbacks);
+	EventSender<Object, ObjectEvent>::operator=(std::move(other));
+	mTranslation = other.mTranslation;
+	mAngleX      = other.mAngleX;
+	mAngleY      = other.mAngleY;
+	mAngleZ      = other.mAngleZ;
+	mScale       = other.mScale;
+	mVisibility  = other.mVisibility;
+	mModifiers   = std::move(other.mModifiers);
 	return *this;
 }
 
-Object::~Object() {
-	for (auto& callback : mDeleteCallbacks) callback();
-}
+Object::~Object() { send(this, ObjectEvent::DELETE); }
 
 void Object::setVisibility(bool visibility) {
-	for (auto& callback : mVisibilityCallbacks) callback(visibility);
+	mVisibility = visibility;
+	send(this, ObjectEvent::VISIBILITY);
 }
+
+bool Object::getVisibility() const { return mVisibility; }
 
 /**
  * Returns the model matrix with all the transformations for this component
@@ -63,7 +66,7 @@ glm::mat4 Object::getModelMatrix() const {
  */
 void Object::addTranslation(const glm::vec3& translation) {
 	mTranslation += translation;
-	for (auto& callback : mTransformCallbacks) callback(getModelMatrix());
+	send(this, ObjectEvent::TRANSFORM);
 }
 
 /**
@@ -77,7 +80,7 @@ void Object::addRotation(float angleX, float angleY, float angleZ) {
 	mAngleY += angleY;
 	mAngleZ += angleZ;
 	normalizeAngles();
-	for (auto& callback : mTransformCallbacks) callback(getModelMatrix());
+	send(this, ObjectEvent::TRANSFORM);
 }
 
 /**
@@ -86,7 +89,7 @@ void Object::addRotation(float angleX, float angleY, float angleZ) {
  */
 void Object::addScale(const glm::vec3& scale) {
 	mScale += scale;
-	for (auto& callback : mTransformCallbacks) callback(getModelMatrix());
+	send(this, ObjectEvent::TRANSFORM);
 }
 
 /**
@@ -95,7 +98,7 @@ void Object::addScale(const glm::vec3& scale) {
  */
 void Object::addScale(float scale) {
 	mScale += glm::vec3(scale);
-	for (auto& callback : mTransformCallbacks) callback(getModelMatrix());
+	send(this, ObjectEvent::TRANSFORM);
 }
 
 /**
@@ -104,7 +107,7 @@ void Object::addScale(float scale) {
  */
 void Object::setTranslation(const glm::vec3& translation) {
 	mTranslation = translation;
-	for (auto& callback : mTransformCallbacks) callback(getModelMatrix());
+	send(this, ObjectEvent::TRANSFORM);
 }
 
 /**
@@ -118,7 +121,7 @@ void Object::setRotation(float angleX, float angleY, float angleZ) {
 	mAngleY = angleY;
 	mAngleZ = angleZ;
 	normalizeAngles();
-	for (auto& callback : mTransformCallbacks) callback(getModelMatrix());
+	send(this, ObjectEvent::TRANSFORM);
 }
 
 /**
@@ -127,7 +130,7 @@ void Object::setRotation(float angleX, float angleY, float angleZ) {
  */
 void Object::setScale(const glm::vec3& scale) {
 	mScale = scale;
-	for (auto& callback : mTransformCallbacks) callback(getModelMatrix());
+	send(this, ObjectEvent::TRANSFORM);
 }
 
 /**
@@ -136,38 +139,25 @@ void Object::setScale(const glm::vec3& scale) {
  */
 void Object::setScale(float scale) {
 	mScale = glm::vec3(scale);
-	for (auto& callback : mTransformCallbacks) callback(getModelMatrix());
+	send(this, ObjectEvent::TRANSFORM);
 }
 
 void Object::addModifier(std::shared_ptr<Modifier> modifier) {
-	modifier->subscribeUpdate([this]() {
-		ModifierStack stack{(uint)this->mModifiers.size(), {}};
-		for (auto& modifier : this->mModifiers) {
-			std::vector<float> params = modifier->getParams();
-			stack.params.insert(stack.params.end(), params.begin(), params.end());
-		}
-
-		for (auto& callback : this->mModifierCallbacks) callback(stack);
+	modifier->addListener([this](Modifier*, ModifierEvent event) {
+		if (event == ModifierEvent::UPDATE) this->send(this, ObjectEvent::MODIFIER);
 	});
 
 	mModifiers.push_back(modifier);
-	modifier->sendUpdateEvent();
+	modifier->send(modifier.get(), ModifierEvent::UPDATE);
 }
 
-void Object::subscribeModifier(std::function<void(const ModifierStack&)> callback) {
-	mModifierCallbacks.push_back(callback);
-}
-
-void Object::subscribeDelete(std::function<void()> callback) {
-	mDeleteCallbacks.push_back(callback);
-}
-
-void Object::subscribeTransform(std::function<void(glm::mat4)> callback) {
-	mTransformCallbacks.push_back(callback);
-}
-
-void Object::subscribeVisibility(std::function<void(bool)> callback) {
-	mVisibilityCallbacks.push_back(callback);
+ModifierStack Object::getStack() const {
+	ModifierStack stack{(uint)this->mModifiers.size(), {}};
+	for (auto& modifier : this->mModifiers) {
+		std::vector<float> params = modifier->getParams();
+		stack.params.insert(stack.params.end(), params.begin(), params.end());
+	}
+	return stack;
 }
 
 /**

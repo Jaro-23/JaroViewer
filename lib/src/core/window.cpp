@@ -1,4 +1,4 @@
-#include "core/window.hpp"
+#include "jaroViewer/core/window.hpp"
 
 #include <GLFW/glfw3.h>
 #include <glm/gtc/matrix_transform.hpp>

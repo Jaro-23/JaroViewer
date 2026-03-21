@@ -1,7 +1,7 @@
-#include "modifiers/wavingModifier.hpp"
-#include <core/engine.hpp>
-#include <geometry/basicShapes.hpp>
-#include <graphics/materialManager.hpp>
+#include <jaroViewer/core/engine.hpp>
+#include <jaroViewer/geometry/basicShapes.hpp>
+#include <jaroViewer/graphics/materialManager.hpp>
+#include <jaroViewer/modifiers/wavingModifier.hpp>
 
 #include <memory>
 #include <sys/types.h>

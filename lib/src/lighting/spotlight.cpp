@@ -1,4 +1,4 @@
-#include "lighting/spotlight.hpp"
+#include "jaroViewer/lighting/spotlight.hpp"
 
 #include "glm/trigonometric.hpp"
 

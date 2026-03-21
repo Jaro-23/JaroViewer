@@ -1,13 +1,13 @@
 #pragma once
 
-#include "core/window.hpp"
-#include "graphics/cubemap.hpp"
-#include "input/inputHandler.hpp"
-#include "lighting/lightSet.hpp"
-#include "rendering/postProcessor.hpp"
-#include "rendering/uniformBuffer.hpp"
-#include "scene/camera.hpp"
-#include "scene/objectManager.hpp"
+#include "jaroViewer/core/window.hpp"
+#include "jaroViewer/graphics/cubemap.hpp"
+#include "jaroViewer/input/inputHandler.hpp"
+#include "jaroViewer/lighting/lightSet.hpp"
+#include "jaroViewer/rendering/postProcessor.hpp"
+#include "jaroViewer/rendering/uniformBuffer.hpp"
+#include "jaroViewer/scene/camera.hpp"
+#include "jaroViewer/scene/objectManager.hpp"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>

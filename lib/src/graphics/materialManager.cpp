@@ -1,5 +1,5 @@
-#include "graphics/materialManager.hpp"
-#include "graphics/texture2D.hpp"
+#include "jaroViewer/graphics/materialManager.hpp"
+#include "jaroViewer/graphics/texture2D.hpp"
 
 using namespace JaroViewer;
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "core/window.hpp"
+#include "jaroViewer/core/window.hpp"
 
 #include <functional>
 #include <map>

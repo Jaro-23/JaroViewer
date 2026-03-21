@@ -4,6 +4,7 @@
 #include "texture2D.hpp"
 
 #include <map>
+#include <memory>
 #include <vector>
 
 namespace JaroViewer {

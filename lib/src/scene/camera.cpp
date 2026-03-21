@@ -1,4 +1,4 @@
-#include "scene/camera.hpp"
+#include "jaroViewer/scene/camera.hpp"
 
 #include <cmath>
 
@@ -8,15 +8,15 @@ Camera::Camera(glm::vec3 pos, glm::vec3 up) : mPos(pos), mUp(up) {
 	updateDirection(0.0f, 0.0f);
 }
 
-// void Camera::setFlashlight(const std::shared_ptr<Spotlight> flashlight) {
-// 	mFlashlight = flashlight;
-// 	mFlashlight->setTranslation(mPos);
-// 	mFlashlight->setDirection(mFront);
-// }
+void Camera::setFlashlight(const std::shared_ptr<Spotlight> flashlight) {
+	mFlashlight = flashlight;
+	mFlashlight->setTranslation(mPos);
+	mFlashlight->setDirection(mFront);
+}
 
-// void Camera::toggleFlashlight() {
-// 	if (mFlashlight) mFlashlight->enable(!mFlashlight->getState());
-// }
+void Camera::toggleFlashlight() {
+	if (mFlashlight) mFlashlight->enable(!mFlashlight->getState());
+}
 
 void Camera::addControls(InputHandler& handler) {
 	// Basic movement
@@ -35,9 +35,9 @@ void Camera::addControls(InputHandler& handler) {
 	});
 
 	// Flashlight
-	// handler.addKey(GLFW_KEY_F, InputHandler::KeyAction::PRESS, [this](float) {
-	// 	this->toggleFlashlight();
-	// });
+	handler.addKey(GLFW_KEY_F, InputHandler::KeyAction::PRESS, [this](float) {
+		this->toggleFlashlight();
+	});
 
 	// Set focus keys
 	handler.addKey(GLFW_KEY_ESCAPE, InputHandler::KeyAction::DOWN, [=](float) {
@@ -52,12 +52,12 @@ void Camera::addControls(InputHandler& handler) {
 
 void Camera::goForward(float deltaTime) {
 	mPos += mFront * mSpeed * deltaTime;
-	// if (mFlashlight) mFlashlight->setTranslation(mPos);
+	if (mFlashlight) mFlashlight->setTranslation(mPos);
 }
 
 void Camera::goRight(float deltaTime) {
 	mPos += glm::normalize(glm::cross(mFront, mUp)) * mSpeed * deltaTime;
-	// if (mFlashlight) mFlashlight->setTranslation(mPos);
+	if (mFlashlight) mFlashlight->setTranslation(mPos);
 }
 
 void Camera::updateDirection(float yaw, float pitch) {
@@ -71,7 +71,7 @@ void Camera::updateDirection(float yaw, float pitch) {
 	mFront.y = sin(glm::radians(mPitch));
 	mFront.z = sin(glm::radians(mYaw)) * cos(glm::radians(mPitch));
 	mFront   = glm::normalize(mFront);
-	// if (mFlashlight) mFlashlight->setDirection(mFront);
+	if (mFlashlight) mFlashlight->setDirection(mFront);
 }
 
 void Camera::setSpeed(float speed) { mSpeed = speed; }

@@ -1,9 +1,8 @@
 #pragma once
 
-#include "graphics/texture2D.hpp"
-#include "rendering/shader.hpp"
+#include "jaroViewer/graphics/texture2D.hpp"
+#include "jaroViewer/rendering/shader.hpp"
 
-#include <memory>
 #include <string>
 
 namespace JaroViewer {

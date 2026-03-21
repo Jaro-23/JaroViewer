@@ -1,7 +1,6 @@
-#include "graphics/cubemap.hpp"
-
-#include "core/tools.hpp"
-#include "rendering/basicShaders.hpp"
+#include "jaroViewer/graphics/cubemap.hpp"
+#include "jaroViewer/core/tools.hpp"
+#include "jaroViewer/rendering/basicShaders.hpp"
 
 #include <filesystem>
 #include <glad/glad.h>

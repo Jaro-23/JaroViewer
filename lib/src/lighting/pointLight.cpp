@@ -1,4 +1,4 @@
-#include "lighting/pointLight.hpp"
+#include "jaroViewer/lighting/pointLight.hpp"
 
 using namespace JaroViewer;
 

@@ -1,7 +1,7 @@
-#include "core/engine.hpp"
-#include "core/timer.hpp"
-#include "graphics/cubemap.hpp"
-#include "lighting/lightSet.hpp"
+#include "jaroViewer/core/engine.hpp"
+#include "jaroViewer/core/timer.hpp"
+#include "jaroViewer/graphics/cubemap.hpp"
+#include "jaroViewer/lighting/lightSet.hpp"
 
 #include <memory>
 #include <optional>

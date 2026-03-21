@@ -1,5 +1,5 @@
-#include "modifiers/modifier.hpp"
-#include "rendering/basicShaders.hpp"
+#include "jaroViewer/modifiers/modifier.hpp"
+#include "jaroViewer/rendering/basicShaders.hpp"
 
 #include <iostream>
 #include <optional>
@@ -47,14 +47,6 @@ std::optional<uint> Modifier::registerModifier(const std::string& name, const st
 	}
 	mods[name] = RegisterEntry(nextIdent, funcCode);
 	return nextIdent++;
-}
-
-void Modifier::subscribeUpdate(const std::function<void()>& callback) {
-	mUpdateCallbacks.push_back(callback);
-}
-
-void Modifier::sendUpdateEvent() {
-	for (auto& callback : mUpdateCallbacks) callback();
 }
 
 std::map<std::string, Modifier::RegisterEntry>& Modifier::getModifiers() {

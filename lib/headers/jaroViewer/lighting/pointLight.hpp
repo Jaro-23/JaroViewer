@@ -1,7 +1,7 @@
 #pragma once
 
-#include "core/tools.hpp"
-#include "scene/object.hpp"
+#include "jaroViewer/core/tools.hpp"
+#include "jaroViewer/scene/object.hpp"
 
 #include <glm/glm.hpp>
 

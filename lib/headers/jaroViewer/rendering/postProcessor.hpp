@@ -1,8 +1,8 @@
 #pragma once
 
-#include "core/window.hpp"
-#include "graphics/frameBuffer.hpp"
-#include "rendering/shader.hpp"
+#include "jaroViewer/core/window.hpp"
+#include "jaroViewer/graphics/frameBuffer.hpp"
+#include "jaroViewer/rendering/shader.hpp"
 
 #include <memory>
 #include <string>

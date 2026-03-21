@@ -1,6 +1,7 @@
-#include "scene/objectManager.hpp"
-#include "core/tools.hpp"
-#include "rendering/gpuVector.hpp"
+#include "jaroViewer/scene/objectManager.hpp"
+#include "jaroViewer/core/tools.hpp"
+#include "jaroViewer/rendering/gpuVector.hpp"
+#include "jaroViewer/scene/object.hpp"
 
 #include <cstddef>
 #include <iostream>
@@ -78,17 +79,21 @@ Object ObjectManager::createObject(const std::string& model) {
 	}
 
 	// Link all events
-	obj.subscribeModifier([this, model, index](const ModifierStack& stack) {
-		this->updateModifierTex(stack, model, index);
-	});
-	obj.subscribeDelete([this, model, index]() {
-		this->mModels.at(model).instances.at(index).active = false;
-	});
-	obj.subscribeTransform([this, model, index](glm::mat4 mat) {
-		this->mModels.at(model).instances.at(index).model = mat;
-	});
-	obj.subscribeVisibility([this, model, index](bool visibility) {
-		this->mModels.at(model).instances.at(index).render = visibility;
+	obj.addListener([this, model, index](Object* obj, ObjectEvent event) {
+		switch (event) {
+		case ObjectEvent::MODIFIER:
+			this->updateModifierTex(obj->getStack(), model, index);
+			break;
+		case ObjectEvent::DELETE:
+			this->mModels.at(model).instances.at(index).active = false;
+			break;
+		case ObjectEvent::TRANSFORM:
+			this->mModels.at(model).instances.at(index).model = obj->getModelMatrix();
+			break;
+		case ObjectEvent::VISIBILITY:
+			this->mModels.at(model).instances.at(index).render = obj->getVisibility();
+			break;
+		}
 	});
 
 	return obj;

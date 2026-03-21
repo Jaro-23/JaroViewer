@@ -1,8 +1,7 @@
 #pragma once
 
 #include "glm/fwd.hpp"
-#include "modifiers/modifier.hpp"
-#include <functional>
+#include "jaroViewer/modifiers/modifier.hpp"
 #include <glm/glm.hpp>
 #include <memory>
 #include <sys/types.h>
@@ -13,7 +12,9 @@ namespace JaroViewer {
 		std::vector<float> params;
 	};
 
-	class Object {
+	enum ObjectEvent { MODIFIER, DELETE, TRANSFORM, VISIBILITY };
+
+	class Object : public EventSender<Object, ObjectEvent> {
 	public:
 		Object();
 		Object(const Object&)            = delete;
@@ -23,6 +24,7 @@ namespace JaroViewer {
 		~Object();
 
 		void setVisibility(bool visibility);
+		bool getVisibility() const;
 		glm::mat4 getModelMatrix() const;
 
 		// Addition transform
@@ -39,12 +41,7 @@ namespace JaroViewer {
 
 		// Modifiers
 		void addModifier(std::shared_ptr<Modifier> modifier);
-
-		// Events
-		void subscribeModifier(std::function<void(const ModifierStack&)> callback);
-		void subscribeDelete(std::function<void()> callback);
-		void subscribeTransform(std::function<void(glm::mat4)> callback);
-		void subscribeVisibility(std::function<void(bool)> callback);
+		ModifierStack getStack() const;
 
 	protected:
 		void normalizeAngles();
@@ -53,14 +50,9 @@ namespace JaroViewer {
 		glm::vec3 mTranslation;
 		float mAngleX, mAngleY, mAngleZ;
 		glm::vec3 mScale;
+		bool mVisibility;
 
 		// Modifiers
 		std::vector<std::shared_ptr<Modifier>> mModifiers;
-
-		// Event callbacks
-		std::vector<std::function<void(const ModifierStack&)>> mModifierCallbacks;
-		std::vector<std::function<void()>> mDeleteCallbacks;
-		std::vector<std::function<void(glm::mat4)>> mTransformCallbacks;
-		std::vector<std::function<void(bool)>> mVisibilityCallbacks;
 	};
 } // namespace JaroViewer

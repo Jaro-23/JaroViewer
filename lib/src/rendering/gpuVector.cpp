@@ -1,5 +1,5 @@
-#include "rendering/gpuVector.hpp"
-#include "graphics/texture2D.hpp"
+#include "jaroViewer/rendering/gpuVector.hpp"
+#include "jaroViewer/graphics/texture2D.hpp"
 #include <algorithm>
 #include <cassert>
 #include <cstring>

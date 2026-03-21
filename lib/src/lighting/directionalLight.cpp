@@ -1,4 +1,4 @@
-#include "lighting/directionalLight.hpp"
+#include "jaroViewer/lighting/directionalLight.hpp"
 
 using namespace JaroViewer;
 

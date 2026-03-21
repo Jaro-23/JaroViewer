@@ -1,8 +1,7 @@
 #pragma once
 
-#include "input/inputHandler.hpp"
-// #include "Spotlight.h"
-//
+#include "jaroViewer/input/inputHandler.hpp"
+#include "jaroViewer/lighting/spotlight.hpp"
 #include <functional>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -18,7 +17,7 @@ namespace JaroViewer {
 	class Camera {
 	public:
 		Camera(glm::vec3 pos, glm::vec3 up);
-		// void setFlashlight(const std::shared_ptr<JaroViewer::Spotlight> flashlight);
+		void setFlashlight(const std::shared_ptr<JaroViewer::Spotlight> flashlight);
 		void toggleFlashlight();
 		void addControls(InputHandler& handler);
 
@@ -42,7 +41,7 @@ namespace JaroViewer {
 		float getSensitivity() const;
 		std::function<void(GLFWwindow*, double, double)> getMouseEvent();
 
-		// std::shared_ptr<JaroViewer::Spotlight> mFlashlight;
+		std::shared_ptr<JaroViewer::Spotlight> mFlashlight;
 		bool mEnableFlashlight;
 
 		// Lateral freedom

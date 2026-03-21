@@ -1,4 +1,4 @@
-#include "graphics/material.hpp"
+#include "jaroViewer/graphics/material.hpp"
 
 #include <memory>
 #include <string>

@@ -1,4 +1,4 @@
-#include "input/inputHandler.hpp"
+#include "jaroViewer/input/inputHandler.hpp"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>

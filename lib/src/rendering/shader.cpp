@@ -1,5 +1,5 @@
-#include "rendering/shader.hpp"
-#include "core/tools.hpp"
+#include "jaroViewer/rendering/shader.hpp"
+#include "jaroViewer/core/tools.hpp"
 
 #include <cstdlib>
 #include <iostream>

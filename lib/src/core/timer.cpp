@@ -1,4 +1,4 @@
-#include "core/timer.hpp"
+#include "jaroViewer/core/timer.hpp"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>

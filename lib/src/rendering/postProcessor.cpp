@@ -1,6 +1,6 @@
-#include "rendering/postProcessor.hpp"
-#include "core/tools.hpp"
-#include "rendering/basicShaders.hpp"
+#include "jaroViewer/rendering/postProcessor.hpp"
+#include "jaroViewer/core/tools.hpp"
+#include "jaroViewer/rendering/basicShaders.hpp"
 
 #include <memory>
 

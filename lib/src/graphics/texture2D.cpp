@@ -1,4 +1,4 @@
-#include "graphics/texture2D.hpp"
+#include "jaroViewer/graphics/texture2D.hpp"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>

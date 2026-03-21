@@ -1,4 +1,4 @@
-#include "lighting/lightSet.hpp"
+#include "jaroViewer/lighting/lightSet.hpp"
 
 #include <iostream>
 #include <memory>
