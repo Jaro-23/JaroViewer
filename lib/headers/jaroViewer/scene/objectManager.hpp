@@ -23,6 +23,7 @@ namespace JaroViewer {
 		glm::mat4 model;
 		uint modifierStart;
 		uint modifierCount;
+		std::vector<std::function<void()>> clickCallbacks = {};
 	};
 
 	struct InstanceData {

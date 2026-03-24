@@ -93,6 +93,9 @@ Object ObjectManager::createObject(const std::string& model) {
 		case ObjectEvent::VISIBILITY:
 			this->mModels.at(model).instances.at(index).render = obj->getVisibility();
 			break;
+		case ObjectEvent::CALLBACK:
+			this->mModels.at(model).instances.at(index).clickCallbacks.push_back(obj->getLatestCallback());
+			break;
 		}
 	});
 

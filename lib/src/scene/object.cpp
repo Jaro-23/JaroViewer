@@ -23,18 +23,20 @@ Object::Object(Object&& other) noexcept
     mAngleZ(other.mAngleZ),
     mScale(other.mScale),
     mVisibility(other.mVisibility),
+    mLatestCallback(other.mLatestCallback),
     mModifiers(std::move(other.mModifiers)) {}
 
 Object& Object::operator=(Object&& other) noexcept {
 	if (this == &other) return *this;
 	EventSender<Object, ObjectEvent>::operator=(std::move(other));
-	mTranslation = other.mTranslation;
-	mAngleX      = other.mAngleX;
-	mAngleY      = other.mAngleY;
-	mAngleZ      = other.mAngleZ;
-	mScale       = other.mScale;
-	mVisibility  = other.mVisibility;
-	mModifiers   = std::move(other.mModifiers);
+	mTranslation    = other.mTranslation;
+	mAngleX         = other.mAngleX;
+	mAngleY         = other.mAngleY;
+	mAngleZ         = other.mAngleZ;
+	mScale          = other.mScale;
+	mVisibility     = other.mVisibility;
+	mModifiers      = std::move(other.mModifiers);
+	mLatestCallback = other.mLatestCallback;
 	return *this;
 }
 
@@ -58,6 +60,15 @@ glm::mat4 Object::getModelMatrix() const {
 	model = glm::rotate(model, mAngleZ, glm::vec3(0.0f, 0.0f, 1.0f));
 	model = glm::scale(model, mScale);
 	return model;
+}
+
+void Object::addClickCallback(std::function<void()> callback) {
+	mLatestCallback = callback;
+	send(this, ObjectEvent::CALLBACK);
+}
+
+std::function<void()> Object::getLatestCallback() const {
+	return mLatestCallback;
 }
 
 /**
