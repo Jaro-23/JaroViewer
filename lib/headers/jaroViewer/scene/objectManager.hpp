@@ -11,6 +11,7 @@
 #include <assimp/scene.h>
 
 #include <map>
+#include <memory>
 #include <string>
 #include <sys/types.h>
 #include <variant>
@@ -18,12 +19,10 @@
 
 namespace JaroViewer {
 	struct Instance {
-		bool active;
-		bool render;
+		std::weak_ptr<RawObject> object;
 		glm::mat4 model;
 		uint modifierStart;
 		uint modifierCount;
-		std::vector<std::function<void()>> clickCallbacks = {};
 	};
 
 	struct InstanceData {

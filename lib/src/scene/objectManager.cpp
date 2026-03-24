@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <iostream>
 #include <limits>
+#include <memory>
 #include <variant>
 
 using namespace JaroViewer;
@@ -56,47 +57,38 @@ void ObjectManager::registerModel(const std::string& ident, const std::string& m
 }
 
 Object ObjectManager::createObject(const std::string& model) {
-	Object obj{};
+	Object obj = std::make_shared<RawObject>();
 
 	// Check if valid model and find the index to work with
 	if (!mModels.contains(model)) {
 		std::cerr
 		  << "[Object Manager] Error: Tried to create object with unknown model \'"
 		  << model << "\'" << std::endl;
-		return obj;
+		return nullptr;
 	}
 	size_t index = getNextFreeSlot(model);
 
 	// Create the instance
 	if (index == mModels.at(model).instances.size()) {
-		mModels.at(model).instances.push_back(Instance{true, true, obj.getModelMatrix(), 0, 0});
+		mModels.at(model).instances.push_back(Instance{obj, obj->getModelMatrix(), 0, 0});
 	} else {
 		Instance& instance     = mModels.at(model).instances.at(index);
-		instance.active        = true;
-		instance.render        = true;
-		instance.model         = obj.getModelMatrix();
+		instance.object        = obj;
+		instance.model         = obj->getModelMatrix();
 		instance.modifierStart = 0;
 		instance.modifierCount = 0;
 	}
 
 	// Link all events
-	obj.addListener([this, model, index](Object* obj, ObjectEvent event) {
+	obj->addListener([this, model, index](RawObject* obj, ObjectEvent event) {
 		switch (event) {
 		case ObjectEvent::MODIFIER:
 			this->updateModifierTex(obj->getStack(), model, index);
 			break;
-		case ObjectEvent::DELETE:
-			this->mModels.at(model).instances.at(index).active = false;
-			break;
 		case ObjectEvent::TRANSFORM:
 			this->mModels.at(model).instances.at(index).model = obj->getModelMatrix();
 			break;
-		case ObjectEvent::VISIBILITY:
-			this->mModels.at(model).instances.at(index).render = obj->getVisibility();
-			break;
-		case ObjectEvent::CALLBACK:
-			this->mModels.at(model).instances.at(index).clickCallbacks.push_back(obj->getLatestCallback());
-			break;
+		default: break;
 		}
 	});
 
@@ -110,7 +102,9 @@ void ObjectManager::renderObjects(bool usingPostProcessor, const glm::vec3& view
 
 		std::vector<InstanceData> data;
 		for (auto& instance : state.instances) {
-			if (!instance.active || !instance.render) continue;
+			if (instance.object.expired()) continue;
+			Object obj = instance.object.lock();
+			if (!obj->getVisibility()) continue;
 			data.push_back(
 			  {instance.model, Tools::getNormalModelMatrix(instance.model),
 			   instance.modifierStart, instance.modifierCount}
@@ -149,7 +143,9 @@ void ObjectManager::renderRegions(glm::vec4 viewPos) {
 
 		std::vector<InstanceData> data;
 		for (auto& instance : state.instances) {
-			if (!instance.active || !instance.render) continue;
+			if (instance.object.expired()) continue;
+			Object obj = instance.object.lock();
+			if (!obj->getVisibility()) continue;
 			data.push_back(
 			  {instance.model, Tools::getNormalModelMatrix(instance.model),
 			   instance.modifierStart, instance.modifierCount}
@@ -399,7 +395,7 @@ std::vector<std::string> ObjectManager::loadMaterials(aiMaterial* mat, aiTexture
 size_t ObjectManager::getNextFreeSlot(const std::string& model) const {
 	const std::vector<Instance>& instances = mModels.at(model).instances;
 	for (size_t i = 0; i < instances.size(); ++i) {
-		if (!instances.at(i).active) {
+		if (instances.at(i).object.expired()) {
 			return i;
 		}
 	}

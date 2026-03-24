@@ -4,7 +4,7 @@
 #include "jaroViewer/scene/object.hpp"
 
 namespace JaroViewer {
-	class Spotlight : public Object {
+	class Spotlight {
 	public:
 		struct SpotlightStruct {
 			glm::vec3 position;
@@ -35,11 +35,13 @@ namespace JaroViewer {
 		void enable(bool enable);
 		bool getState() const;
 		SpotlightStruct getStruct() const;
+		Object getObject();
 
 		void setDirection(const glm::vec3& direction);
 		glm::vec3 getDirection() const;
 
 	private:
+		Object mObject;
 		Tools::LightColor mLightColor;
 		bool mEnable;
 

@@ -1,4 +1,5 @@
 #include "jaroViewer/rendering/shaderManager.hpp"
+#include <iostream>
 #include <jaroViewer/core/engine.hpp>
 #include <jaroViewer/geometry/basicShapes.hpp>
 #include <jaroViewer/graphics/materialManager.hpp>
@@ -11,9 +12,9 @@ using namespace JaroViewer;
 
 int main(int argc, char* argv[]) {
 	EngineArgs args{};
-	args.windowSamples     = 16;
-	args.cubemapParams     = "./apps/test/cubemap";
-	args.postProcessShader = "./apps/test/fragment/postprocessing.fs";
+	args.windowSamples = 16;
+	args.cubemapParams = "./apps/test/cubemap";
+	// args.postProcessShader = "./apps/test/fragment/postprocessing.fs";
 	Engine engine{args};
 	EngineState* state = engine.getState();
 
@@ -34,12 +35,12 @@ int main(int argc, char* argv[]) {
 	};
 	std::shared_ptr<PointLight> pointLight =
 	  std::make_shared<PointLight>(om.createObject("light"), lightColor, attenParams);
-	pointLight->setTranslation(glm::vec3(-2.0f, 0.3f, 1.0f));
-	pointLight->setScale(0.2f);
+	pointLight->getObject()->setTranslation(glm::vec3(-2.0f, 0.3f, 1.0f));
+	pointLight->getObject()->setScale(0.2f);
 	std::shared_ptr<PointLight> pointLight2 =
 	  std::make_shared<PointLight>(om.createObject("light"), lightColor, attenParams);
-	pointLight2->setTranslation(glm::vec3(0.5f, 1.2f, -9.0f));
-	pointLight2->setScale(0.2f);
+	pointLight2->getObject()->setTranslation(glm::vec3(0.5f, 1.2f, -9.0f));
+	pointLight2->getObject()->setScale(0.2f);
 
 	state->lights.addDirLight(dir);
 	state->lights.addPointLight(pointLight);
@@ -55,17 +56,17 @@ int main(int argc, char* argv[]) {
 
 	std::shared_ptr<WavingModifier> mod = std::make_shared<WavingModifier>();
 
-	std::vector<std::unique_ptr<Object>> objs;
+	std::vector<Object> objs;
 	for (int i = 0; i < cubePositions.size(); i++) {
-		objs.push_back(std::make_unique<Object>(om.createObject("cube")));
+		objs.push_back(om.createObject("cube"));
 		objs.back()->addModifier(mod);
 		objs.back()->setTranslation(cubePositions.at(i));
 		objs.back()->setRotation(3.65f * i, 23.78f * i, 43.12f * i);
 	}
 
 	Object obj = om.createObject("backpack");
-	obj.setScale(0.1f);
-	obj.setTranslation(glm::vec3(0.0f, 0.0f, 2.0f));
+	obj->setScale(0.1f);
+	obj->setTranslation(glm::vec3(0.0f, 0.0f, 2.0f));
 
 	engine.start();
 	return 0;

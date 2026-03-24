@@ -7,14 +7,19 @@
 #include <vector>
 
 namespace JaroViewer {
+	struct InputParams {
+		float deltaTime;
+		uint mouseX, mouseY;
+	};
+
 	class InputHandler {
 	public:
 		enum class KeyAction { DOWN, UP, PRESS, RELEASE };
 
 		InputHandler(Window* window);
 		Window* getWindow() const;
-		void addKey(int key, KeyAction action, std::function<void(float)> func);
-		void addMouseKey(int key, KeyAction action, std::function<void(float)> func);
+		void addKey(int key, KeyAction action, std::function<void(InputParams)> func);
+		void addMouseKey(int key, KeyAction action, std::function<void(InputParams)> func);
 		void addMouseMoveEvent(std::function<void(GLFWwindow*, double, double)> func);
 		void processInputs(float deltaTime);
 
@@ -22,7 +27,7 @@ namespace JaroViewer {
 		void addMouseCallback();
 
 		struct KeyState {
-			std::function<void(float)> function;
+			std::function<void(InputParams)> function;
 			bool isPressed;
 			KeyAction action;
 			bool isKey;

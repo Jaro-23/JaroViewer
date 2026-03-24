@@ -7,7 +7,7 @@
 
 using namespace JaroViewer;
 
-Object::Object()
+RawObject::RawObject()
   : mTranslation(0.0f),
     mAngleX(0.0f),
     mAngleY(0.0f),
@@ -15,44 +15,42 @@ Object::Object()
     mScale(1.0f),
     mVisibility(true) {}
 
-Object::Object(Object&& other) noexcept
-  : EventSender<Object, ObjectEvent>(std::move(other)),
+RawObject::RawObject(RawObject&& other) noexcept
+  : EventSender<RawObject, ObjectEvent>(std::move(other)),
     mTranslation(other.mTranslation),
     mAngleX(other.mAngleX),
     mAngleY(other.mAngleY),
     mAngleZ(other.mAngleZ),
     mScale(other.mScale),
     mVisibility(other.mVisibility),
-    mLatestCallback(other.mLatestCallback),
     mModifiers(std::move(other.mModifiers)) {}
 
-Object& Object::operator=(Object&& other) noexcept {
+RawObject& RawObject::operator=(RawObject&& other) noexcept {
 	if (this == &other) return *this;
-	EventSender<Object, ObjectEvent>::operator=(std::move(other));
-	mTranslation    = other.mTranslation;
-	mAngleX         = other.mAngleX;
-	mAngleY         = other.mAngleY;
-	mAngleZ         = other.mAngleZ;
-	mScale          = other.mScale;
-	mVisibility     = other.mVisibility;
-	mModifiers      = std::move(other.mModifiers);
-	mLatestCallback = other.mLatestCallback;
+	EventSender<RawObject, ObjectEvent>::operator=(std::move(other));
+	mTranslation = other.mTranslation;
+	mAngleX      = other.mAngleX;
+	mAngleY      = other.mAngleY;
+	mAngleZ      = other.mAngleZ;
+	mScale       = other.mScale;
+	mVisibility  = other.mVisibility;
+	mModifiers   = std::move(other.mModifiers);
 	return *this;
 }
 
-Object::~Object() { send(this, ObjectEvent::DELETE); }
+RawObject::~RawObject() { send(this, ObjectEvent::DELETE); }
 
-void Object::setVisibility(bool visibility) {
+void RawObject::setVisibility(bool visibility) {
 	mVisibility = visibility;
 	send(this, ObjectEvent::VISIBILITY);
 }
 
-bool Object::getVisibility() const { return mVisibility; }
+bool RawObject::getVisibility() const { return mVisibility; }
 
 /**
  * Returns the model matrix with all the transformations for this component
  */
-glm::mat4 Object::getModelMatrix() const {
+glm::mat4 RawObject::getModelMatrix() const {
 	glm::mat4 model(1.0f);
 	model = glm::translate(model, mTranslation);
 	model = glm::rotate(model, mAngleX, glm::vec3(1.0f, 0.0f, 0.0f));
@@ -62,20 +60,13 @@ glm::mat4 Object::getModelMatrix() const {
 	return model;
 }
 
-void Object::addClickCallback(std::function<void()> callback) {
-	mLatestCallback = callback;
-	send(this, ObjectEvent::CALLBACK);
-}
-
-std::function<void()> Object::getLatestCallback() const {
-	return mLatestCallback;
-}
+glm::vec3 RawObject::getPosition() const { return mTranslation; }
 
 /**
  * Adds a translation to the current translation
  * @param translation The offset from the current translation
  */
-void Object::addTranslation(const glm::vec3& translation) {
+void RawObject::addTranslation(const glm::vec3& translation) {
 	mTranslation += translation;
 	send(this, ObjectEvent::TRANSFORM);
 }
@@ -86,7 +77,7 @@ void Object::addTranslation(const glm::vec3& translation) {
  * @param angleY The new angle offset around the Y-axis
  * @param angleZ The new angle offset around the Z-axis
  */
-void Object::addRotation(float angleX, float angleY, float angleZ) {
+void RawObject::addRotation(float angleX, float angleY, float angleZ) {
 	mAngleX += angleX;
 	mAngleY += angleY;
 	mAngleZ += angleZ;
@@ -98,7 +89,7 @@ void Object::addRotation(float angleX, float angleY, float angleZ) {
  * Adds a scaling offset to the current scale
  * @param scale A vec3 with x component the x scaling, y-component the y scaling and z-component the z scaling
  */
-void Object::addScale(const glm::vec3& scale) {
+void RawObject::addScale(const glm::vec3& scale) {
 	mScale += scale;
 	send(this, ObjectEvent::TRANSFORM);
 }
@@ -107,7 +98,7 @@ void Object::addScale(const glm::vec3& scale) {
  * Adds a scaling offset to the current scale
  * @param scale A float value with which each scale value will be offset
  */
-void Object::addScale(float scale) {
+void RawObject::addScale(float scale) {
 	mScale += glm::vec3(scale);
 	send(this, ObjectEvent::TRANSFORM);
 }
@@ -116,7 +107,7 @@ void Object::addScale(float scale) {
  * Sets the component to a position
  * @param translation The new position
  */
-void Object::setTranslation(const glm::vec3& translation) {
+void RawObject::setTranslation(const glm::vec3& translation) {
 	mTranslation = translation;
 	send(this, ObjectEvent::TRANSFORM);
 }
@@ -127,7 +118,7 @@ void Object::setTranslation(const glm::vec3& translation) {
  * @param angleY The rotation around the Y-axis
  * @param angleZ The rotation around the Z-axis
  */
-void Object::setRotation(float angleX, float angleY, float angleZ) {
+void RawObject::setRotation(float angleX, float angleY, float angleZ) {
 	mAngleX = angleX;
 	mAngleY = angleY;
 	mAngleZ = angleZ;
@@ -139,7 +130,7 @@ void Object::setRotation(float angleX, float angleY, float angleZ) {
  * Sets the scale of the component
  * @param scale The new scale of each axis for the component
  */
-void Object::setScale(const glm::vec3& scale) {
+void RawObject::setScale(const glm::vec3& scale) {
 	mScale = scale;
 	send(this, ObjectEvent::TRANSFORM);
 }
@@ -148,12 +139,12 @@ void Object::setScale(const glm::vec3& scale) {
  * Sets a the scale values to one specific value
  * @param scale The new scale value for each axis
  */
-void Object::setScale(float scale) {
+void RawObject::setScale(float scale) {
 	mScale = glm::vec3(scale);
 	send(this, ObjectEvent::TRANSFORM);
 }
 
-void Object::addModifier(std::shared_ptr<Modifier> modifier) {
+void RawObject::addModifier(std::shared_ptr<Modifier> modifier) {
 	modifier->addListener([this](Modifier*, ModifierEvent event) {
 		if (event == ModifierEvent::UPDATE) this->send(this, ObjectEvent::MODIFIER);
 	});
@@ -162,7 +153,7 @@ void Object::addModifier(std::shared_ptr<Modifier> modifier) {
 	modifier->send(modifier.get(), ModifierEvent::UPDATE);
 }
 
-ModifierStack Object::getStack() const {
+ModifierStack RawObject::getStack() const {
 	ModifierStack stack{(uint)this->mModifiers.size(), {}};
 	for (auto& modifier : this->mModifiers) {
 		std::vector<float> params = modifier->getParams();
@@ -175,7 +166,7 @@ ModifierStack Object::getStack() const {
  * Places the angles between 0 and 360 degree
  * @post mAngleX, mAngleY and mAngleZ are between 0 and 360
  */
-void Object::normalizeAngles() {
+void RawObject::normalizeAngles() {
 	while (mAngleX < 0.0f) mAngleX += 360.0f;
 	while (mAngleX > 360.0f) mAngleX -= 360.0f;
 

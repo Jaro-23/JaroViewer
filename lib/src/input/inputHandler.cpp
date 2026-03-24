@@ -11,11 +11,11 @@ InputHandler::InputHandler(Window* window) : mWindow{window} {
 
 Window* InputHandler::getWindow() const { return mWindow; }
 
-void InputHandler::addKey(int key, KeyAction action, std::function<void(float)> func) {
+void InputHandler::addKey(int key, KeyAction action, std::function<void(InputParams)> func) {
 	mKeys.insert({key, KeyState{func, glfwGetKey(mWindow->cPtr(), key) == GLFW_PRESS, action, true}});
 }
 
-void InputHandler::addMouseKey(int key, KeyAction action, std::function<void(float)> func) {
+void InputHandler::addMouseKey(int key, KeyAction action, std::function<void(InputParams)> func) {
 	mKeys.insert(
 	  {key, KeyState{func, glfwGetMouseButton(mWindow->cPtr(), key) == GLFW_PRESS, action, false}}
 	);
@@ -31,18 +31,19 @@ void InputHandler::processInputs(float deltaTime) {
 		bool pressed   = (state.isKey) ?
 		    glfwGetKey(mWindow->cPtr(), keyIter->first) == GLFW_PRESS :
 		    glfwGetMouseButton(mWindow->cPtr(), keyIter->first) == GLFW_PRESS;
+		InputParams params{deltaTime, 0, 0}; // TODO: Get the mouse position
 		switch (state.action) {
 		case KeyAction::DOWN:
-			if (pressed) state.function(deltaTime);
+			if (pressed) state.function(params);
 			break;
 		case KeyAction::UP:
-			if (!pressed) state.function(deltaTime);
+			if (!pressed) state.function(params);
 			break;
 		case KeyAction::PRESS:
-			if (pressed && !state.isPressed) state.function(deltaTime);
+			if (pressed && !state.isPressed) state.function(params);
 			break;
 		case KeyAction::RELEASE:
-			if (!pressed && state.isPressed) state.function(deltaTime);
+			if (!pressed && state.isPressed) state.function(params);
 			break;
 		}
 		keyIter->second.isPressed = pressed;

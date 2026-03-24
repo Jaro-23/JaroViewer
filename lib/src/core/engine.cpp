@@ -42,9 +42,7 @@ EngineState Engine::argsToState(const EngineArgs& args) {
 	return state;
 }
 
-Engine::Engine(const EngineArgs& args) : mState(argsToState(args)) {
-	mState.input.addMouseKey(GLFW_MOUSE_BUTTON_LEFT, InputHandler::KeyAction::PRESS, triggerClick(););
-}
+Engine::Engine(const EngineArgs& args) : mState(argsToState(args)) {}
 Engine::~Engine() { glfwTerminate(); }
 
 void Engine::start() {

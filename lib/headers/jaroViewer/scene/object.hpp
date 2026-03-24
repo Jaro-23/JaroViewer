@@ -12,22 +12,21 @@ namespace JaroViewer {
 		std::vector<float> params;
 	};
 
-	enum ObjectEvent { CALLBACK, MODIFIER, DELETE, TRANSFORM, VISIBILITY };
+	enum ObjectEvent { MODIFIER, DELETE, TRANSFORM, VISIBILITY };
 
-	class Object : public EventSender<Object, ObjectEvent> {
+	class RawObject : public EventSender<RawObject, ObjectEvent> {
 	public:
-		Object();
-		Object(const Object&)            = delete;
-		Object& operator=(const Object&) = delete;
-		Object(Object&& other) noexcept;
-		Object& operator=(Object&& other) noexcept;
-		~Object();
+		RawObject();
+		RawObject(const RawObject&)            = delete;
+		RawObject& operator=(const RawObject&) = delete;
+		RawObject(RawObject&& other) noexcept;
+		RawObject& operator=(RawObject&& other) noexcept;
+		~RawObject();
 
 		void setVisibility(bool visibility);
 		bool getVisibility() const;
 		glm::mat4 getModelMatrix() const;
-		void addClickCallback(std::function<void()> callback);
-		std::function<void()> getLatestCallback() const;
+		glm::vec3 getPosition() const;
 
 		// Addition transform
 		void addTranslation(const glm::vec3& translation);
@@ -53,9 +52,10 @@ namespace JaroViewer {
 		float mAngleX, mAngleY, mAngleZ;
 		glm::vec3 mScale;
 		bool mVisibility;
-		std::function<void()> mLatestCallback;
 
 		// Modifiers
 		std::vector<std::shared_ptr<Modifier>> mModifiers;
 	};
+
+	using Object = std::shared_ptr<RawObject>;
 } // namespace JaroViewer
