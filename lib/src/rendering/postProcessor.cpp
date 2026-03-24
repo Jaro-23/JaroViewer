@@ -76,3 +76,7 @@ void PostProcessor::render() const {
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
+
+void PostProcessor::resize(uint width, uint height) {
+	mFrameBuffer.resize(width, height);
+}

@@ -16,6 +16,7 @@ namespace JaroViewer {
 		void bindAndClear(float r, float g, float b, float a) const;
 		void unbind() const;
 		void render() const;
+		void resize(uint width, uint height);
 
 	private:
 		std::unique_ptr<Shader> mShader;

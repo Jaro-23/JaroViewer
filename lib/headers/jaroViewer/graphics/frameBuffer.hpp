@@ -1,6 +1,7 @@
 #pragma once
 
 #include "glad/glad.h"
+#include <sys/types.h>
 
 namespace JaroViewer {
 	struct FrameBufferArgs {
@@ -19,26 +20,30 @@ namespace JaroViewer {
 		void bind() const;
 		void unbind() const;
 
+		void resize(uint width, uint height);
 		void clear(float r, float g, float b, float a) const;
 
-		unsigned int getColor() const;
-		unsigned int getDepthStencil() const;
+		uint getColor() const;
+		uint getDepthStencil() const;
 
 	private:
 		void genBuffer();
-		unsigned int genTexure(GLenum formatType);
-		unsigned int genRenderBuffer(GLenum formatType);
-		unsigned int bindTexture(GLenum usage, GLenum formatType);
-		unsigned int bindRenderBuffer(GLenum usage);
-		void createStorage(bool readable, unsigned int* textureStorage, unsigned int* renderStorage, GLenum usage, GLenum formatType);
+		uint genTexure(GLenum formatType);
+		uint genRenderBuffer(GLenum formatType);
+		uint bindTexture(GLenum usage, GLenum formatType);
+		uint bindRenderBuffer(GLenum usage);
+		void createStorage(bool readable, uint* textureStorage, uint* renderStorage, GLenum usage, GLenum formatType);
 
-		unsigned int mID;
-		unsigned int mColorTexture;
-		unsigned int mDepthStencilTexture;
-		unsigned int mColorRBO;
-		unsigned int mDepthStencilRBO;
+		uint mID;
+		uint mColorTexture;
+		uint mDepthStencilTexture;
+		uint mColorRBO;
+		uint mDepthStencilRBO;
 
 		int mWidth;
 		int mHeight;
+		bool mReadableColor;
+		bool mReadableDepthStencil;
+		GLenum mFormatType;
 	};
 } // namespace JaroViewer

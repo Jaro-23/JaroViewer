@@ -58,8 +58,12 @@ void Engine::render() {
 	while (!mState.window.shouldClose()) {
 		// Update the UBOs
 		trans.view = mState.camera.getView();
-		if (mState.window.updateView())
+		if (mState.window.updateView()) {
+			if (mState.postProcessor)
+				mState.postProcessor
+				  ->resize(mState.window.getSize().width, mState.window.getSize().height);
 			trans.projection = mState.window.getProjection();
+		}
 		mTransformUBO->updateData(&trans);
 		LightSet::LightSetStruct lights = mState.lights.getStruct();
 		mLightsUBO->updateData(&lights);

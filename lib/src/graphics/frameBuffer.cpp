@@ -6,8 +6,11 @@
 using namespace JaroViewer;
 
 FrameBuffer::FrameBuffer(const FrameBufferArgs& args) {
-	mWidth  = args.width;
-	mHeight = args.height;
+	mWidth                = args.width;
+	mHeight               = args.height;
+	mReadableColor        = args.readableColor;        // save these
+	mReadableDepthStencil = args.readableDepthStencil; // save these
+	mFormatType           = args.formatType;
 
 	genBuffer();
 	bind();
@@ -48,11 +51,33 @@ void FrameBuffer::clear(float r, float g, float b, float a) const {
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, read);
 }
 
+void FrameBuffer::resize(uint width, uint height) {
+	mWidth  = width;
+	mHeight = height;
+
+	// Delete existing attachments
+	if (mColorTexture) glDeleteTextures(1, &mColorTexture);
+	if (mDepthStencilTexture) glDeleteTextures(1, &mDepthStencilTexture);
+	if (mColorRBO) glDeleteRenderbuffers(1, &mColorRBO);
+	if (mDepthStencilRBO) glDeleteRenderbuffers(1, &mDepthStencilRBO);
+	if (mID) glDeleteFramebuffers(1, &mID);
+
+	mColorTexture = mDepthStencilTexture = 0;
+	mColorRBO = mDepthStencilRBO = mID = 0;
+
+	// Recreate with new dimensions
+	genBuffer();
+	bind();
+	createStorage(mReadableColor, &mColorTexture, &mColorRBO, GL_COLOR_ATTACHMENT0, mFormatType);
+	createStorage(mReadableDepthStencil, &mDepthStencilTexture, &mDepthStencilRBO, GL_DEPTH_STENCIL_ATTACHMENT, GL_DEPTH24_STENCIL8);
+	unbind();
+}
+
 /**
  * Returns the color buffer as a texture id
  * @return The id of the texture with all the data
  */
-unsigned int FrameBuffer::getColor() const {
+uint FrameBuffer::getColor() const {
 	if (mColorTexture && mID != 0) return mColorTexture;
 	std::cout << "ERROR::FRAMEBUFFER::TRYING_TO_READ_RENDER_BUFFER_COLOR";
 	return 0;
@@ -62,7 +87,7 @@ unsigned int FrameBuffer::getColor() const {
  * Returns the depth stencil buffer as a texture id
  * @return The id of the texture with all the data
  */
-unsigned int FrameBuffer::getDepthStencil() const {
+uint FrameBuffer::getDepthStencil() const {
 	if (mDepthStencilTexture && mID != 0) return mDepthStencilTexture;
 	std::cout << "ERROR::FRAMEBUFFER::TRYING_TO_READ_RENDER_BUFFER_DEPTH_STENCIL";
 	return 0;
@@ -74,7 +99,7 @@ void FrameBuffer::genBuffer() { glGenFramebuffers(1, &mID); }
  * Create an empty texture
  * @param formatType The format for the texture
  */
-unsigned int FrameBuffer::genTexure(GLenum formatType) {
+uint FrameBuffer::genTexure(GLenum formatType) {
 	GLenum format;
 	GLenum type;
 
@@ -92,7 +117,7 @@ unsigned int FrameBuffer::genTexure(GLenum formatType) {
 		return 0;
 	}
 
-	unsigned int texture;
+	uint texture;
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
 
@@ -112,8 +137,8 @@ unsigned int FrameBuffer::genTexure(GLenum formatType) {
  * @param formatType The format for the render buffer
  * @pre formatType == GL_RGB || formatType == GL_DEPTH24_STENCIL8
  */
-unsigned int FrameBuffer::genRenderBuffer(GLenum formatType) {
-	unsigned int buffer;
+uint FrameBuffer::genRenderBuffer(GLenum formatType) {
+	uint buffer;
 	glGenRenderbuffers(1, &buffer);
 	glBindRenderbuffer(GL_RENDERBUFFER, buffer);
 	glRenderbufferStorage(GL_RENDERBUFFER, formatType, mWidth, mHeight);
@@ -125,8 +150,8 @@ unsigned int FrameBuffer::genRenderBuffer(GLenum formatType) {
  * @param usage The usage of the texture
  * @return The id of the new texture that was bound to the framebuffer
  */
-unsigned int FrameBuffer::bindTexture(GLenum usage, GLenum formatType) {
-	unsigned int texture = genTexure(formatType);
+uint FrameBuffer::bindTexture(GLenum usage, GLenum formatType) {
+	uint texture = genTexure(formatType);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, usage, GL_TEXTURE_2D, texture, 0);
 	return texture;
 }
@@ -137,8 +162,8 @@ unsigned int FrameBuffer::bindTexture(GLenum usage, GLenum formatType) {
  * @return The render buffer id
  * @pre usage == GL_COLOR_ATTACHMENT{num} || usage == GL_DEPTH_STENCIL_ATTACHMENT
  */
-unsigned int FrameBuffer::bindRenderBuffer(GLenum usage) {
-	unsigned int buffer = (usage == GL_DEPTH_STENCIL_ATTACHMENT) ?
+uint FrameBuffer::bindRenderBuffer(GLenum usage) {
+	uint buffer = (usage == GL_DEPTH_STENCIL_ATTACHMENT) ?
 	  genRenderBuffer(GL_DEPTH24_STENCIL8) :
 	  genRenderBuffer(GL_RGB);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, usage, GL_RENDERBUFFER, buffer);
@@ -152,13 +177,7 @@ unsigned int FrameBuffer::bindRenderBuffer(GLenum usage) {
  * @param renderStorage A pointer to the place to store the renderbuffer if not readble
  * @param usage If it is used as color attachment or depth stencil
  */
-void FrameBuffer::createStorage(
-  bool readable,
-  unsigned int* textureStorage,
-  unsigned int* renderStorage,
-  GLenum usage,
-  GLenum formatType
-) {
+void FrameBuffer::createStorage(bool readable, uint* textureStorage, uint* renderStorage, GLenum usage, GLenum formatType) {
 	if (readable)
 		*textureStorage = bindTexture(usage, formatType);
 	else
