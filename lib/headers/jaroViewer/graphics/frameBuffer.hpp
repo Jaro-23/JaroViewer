@@ -8,6 +8,7 @@ namespace JaroViewer {
 		int height;
 		bool readableColor;
 		bool readableDepthStencil;
+		GLenum formatType;
 	};
 
 	class FrameBuffer {
@@ -27,9 +28,9 @@ namespace JaroViewer {
 		void genBuffer();
 		unsigned int genTexure(GLenum formatType);
 		unsigned int genRenderBuffer(GLenum formatType);
-		unsigned int bindTexture(GLenum usage);
+		unsigned int bindTexture(GLenum usage, GLenum formatType);
 		unsigned int bindRenderBuffer(GLenum usage);
-		void createStorage(bool readable, unsigned int* texureStorage, unsigned int* renderStorage, GLenum usage);
+		void createStorage(bool readable, unsigned int* textureStorage, unsigned int* renderStorage, GLenum usage, GLenum formatType);
 
 		unsigned int mID;
 		unsigned int mColorTexture;

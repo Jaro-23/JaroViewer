@@ -11,8 +11,10 @@ FrameBuffer::FrameBuffer(const FrameBufferArgs& args) {
 
 	genBuffer();
 	bind();
-	createStorage(args.readableColor, &mColorTexture, &mColorRBO, GL_COLOR_ATTACHMENT0);
-	createStorage(args.readableDepthStencil, &mDepthStencilTexture, &mDepthStencilRBO, GL_DEPTH_STENCIL_ATTACHMENT);
+	createStorage(
+	  args.readableColor, &mColorTexture, &mColorRBO, GL_COLOR_ATTACHMENT0, args.formatType
+	);
+	createStorage(args.readableDepthStencil, &mDepthStencilTexture, &mDepthStencilRBO, GL_DEPTH_STENCIL_ATTACHMENT, GL_DEPTH24_STENCIL8);
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		std::cout << "[FrameBuffer] Error: Buffer is not complete" << std::endl;
 	unbind();
@@ -71,18 +73,37 @@ void FrameBuffer::genBuffer() { glGenFramebuffers(1, &mID); }
 /**
  * Create an empty texture
  * @param formatType The format for the texture
- * @pre formatType == GL_RGB || formatType == GL_DEPTH24_STENCIL8
  */
 unsigned int FrameBuffer::genTexure(GLenum formatType) {
-	GLenum usage = (formatType == GL_RGB) ? GL_RGB : GL_DEPTH_STENCIL;
-	GLenum variableType = (formatType == GL_RGB) ? GL_UNSIGNED_BYTE : GL_UNSIGNED_INT_24_8;
+	GLenum format;
+	GLenum type;
+
+	if (formatType == GL_RGB) {
+		format = GL_RGB;
+		type   = GL_UNSIGNED_BYTE;
+	} else if (formatType == GL_DEPTH24_STENCIL8) {
+		format = GL_DEPTH_STENCIL;
+		type   = GL_UNSIGNED_INT_24_8;
+	} else if (formatType == GL_R32UI) {
+		format = GL_RED_INTEGER;
+		type   = GL_UNSIGNED_INT;
+	} else {
+		std::cout << "Unsupported texture format!" << std::endl;
+		return 0;
+	}
 
 	unsigned int texture;
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexImage2D(GL_TEXTURE_2D, 0, formatType, mWidth, mHeight, 0, usage, variableType, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, formatType, mWidth, mHeight, 0, format, type, NULL);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
 	return texture;
 }
 
@@ -103,12 +124,9 @@ unsigned int FrameBuffer::genRenderBuffer(GLenum formatType) {
  * Creates a texture and attaches it to the framebuffer
  * @param usage The usage of the texture
  * @return The id of the new texture that was bound to the framebuffer
- * @pre usage == GL_COLOR_ATTACHMENT{NUM} || usage == GL_DEPTH_STENCIL_ATTACHMENT
  */
-unsigned int FrameBuffer::bindTexture(GLenum usage) {
-	unsigned int texture = (usage == GL_DEPTH_STENCIL_ATTACHMENT) ?
-	  genTexure(GL_DEPTH24_STENCIL8) :
-	  genTexure(GL_RGB);
+unsigned int FrameBuffer::bindTexture(GLenum usage, GLenum formatType) {
+	unsigned int texture = genTexure(formatType);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, usage, GL_TEXTURE_2D, texture, 0);
 	return texture;
 }
@@ -134,9 +152,15 @@ unsigned int FrameBuffer::bindRenderBuffer(GLenum usage) {
  * @param renderStorage A pointer to the place to store the renderbuffer if not readble
  * @param usage If it is used as color attachment or depth stencil
  */
-void FrameBuffer::createStorage(bool readable, unsigned int* texureStorage, unsigned int* renderStorage, GLenum usage) {
+void FrameBuffer::createStorage(
+  bool readable,
+  unsigned int* textureStorage,
+  unsigned int* renderStorage,
+  GLenum usage,
+  GLenum formatType
+) {
 	if (readable)
-		*texureStorage = bindTexture(usage);
+		*textureStorage = bindTexture(usage, formatType);
 	else
 		*renderStorage = bindRenderBuffer(usage);
 }

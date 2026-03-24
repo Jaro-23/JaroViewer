@@ -21,7 +21,7 @@ const std::string vertexCode = shaderVersion +
  * @param fragmentFile The path to the fragment shader for the postprocessor
  */
 PostProcessor::PostProcessor(Window* window, const std::string fragmentFile)
-  : mFrameBuffer({window->getSize().width, window->getSize().height, true, false}) {
+  : mFrameBuffer({window->getSize().width, window->getSize().height, true, false, GL_RGB}) {
 	std::string buff;
 	Tools::readFile(fragmentFile, &buff);
 	mShader = std::make_unique<Shader>(ShaderCode{vertexCode, "", buff});
