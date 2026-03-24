@@ -64,6 +64,7 @@ namespace JaroViewer {
 		Object createObject(const std::string& model);
 
 		void renderObjects(bool usingPostProcessor, const glm::vec3& viewPos);
+		void renderRegions(glm::vec4 viewPos);
 
 	private:
 		void updateModifierTex(const ModifierStack& stack, const std::string& model, uint instanceIdent);

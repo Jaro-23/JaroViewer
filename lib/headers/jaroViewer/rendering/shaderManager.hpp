@@ -4,6 +4,8 @@
 #include <map>
 
 namespace JaroViewer {
+	enum PredefinedShader { WHITE = 0, REGION = 1, BASIC = 2 };
+
 	class ShaderManager {
 	public:
 		ShaderManager();

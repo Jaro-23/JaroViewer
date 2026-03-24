@@ -1,6 +1,7 @@
 #include "jaroViewer/scene/objectManager.hpp"
 #include "jaroViewer/core/tools.hpp"
 #include "jaroViewer/rendering/gpuVector.hpp"
+#include "jaroViewer/rendering/shaderManager.hpp"
 #include "jaroViewer/scene/object.hpp"
 
 #include <cstddef>
@@ -138,6 +139,46 @@ void ObjectManager::renderObjects(bool usingPostProcessor, const glm::vec3& view
 			else
 				glDrawArraysInstanced(GL_TRIANGLES, 0, mesh.count, data.size());
 		}
+	}
+}
+
+void ObjectManager::renderRegions(glm::vec4 viewPos) {
+	int base = 0;
+	for (auto& model : mModels) {
+		ModelState& state = model.second;
+
+		std::vector<InstanceData> data;
+		for (auto& instance : state.instances) {
+			if (!instance.active || !instance.render) continue;
+			data.push_back(
+			  {instance.model, Tools::getNormalModelMatrix(instance.model),
+			   instance.modifierStart, instance.modifierCount}
+			);
+		}
+
+		for (Mesh& mesh : state.meshes) {
+			glBindVertexArray(mesh.vao);
+
+			mShaderManager.activateShader(PredefinedShader::REGION);
+			Shader* shader = mShaderManager.getShader(PredefinedShader::REGION);
+			shader->setInt("modifierData", 0);
+			state.modifierData.load(0);
+
+			glBindBuffer(GL_ARRAY_BUFFER, mesh.instanceVBO);
+			glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(InstanceData), data.data(), GL_DYNAMIC_DRAW);
+
+			shader->setVec3("minPoint", mesh.minPoint);
+			shader->setVec3("maxPoint", mesh.maxPoint);
+			shader->setVec3("viewPos", viewPos);
+			shader->setInt("baseID", base);
+			if (state.useIndices)
+				glDrawElementsInstanced(
+				  GL_TRIANGLES, mesh.count, GL_UNSIGNED_INT, 0, data.size()
+				);
+			else
+				glDrawArraysInstanced(GL_TRIANGLES, 0, mesh.count, data.size());
+		}
+		base += state.instances.size();
 	}
 }
 

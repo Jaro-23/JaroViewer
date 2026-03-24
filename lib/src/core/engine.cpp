@@ -1,6 +1,9 @@
 #include "jaroViewer/core/engine.hpp"
+#include "GLFW/glfw3.h"
 #include "jaroViewer/core/timer.hpp"
+#include "jaroViewer/core/window.hpp"
 #include "jaroViewer/graphics/cubemap.hpp"
+#include "jaroViewer/graphics/frameBuffer.hpp"
 #include "jaroViewer/lighting/lightSet.hpp"
 
 #include <memory>
@@ -39,7 +42,9 @@ EngineState Engine::argsToState(const EngineArgs& args) {
 	return state;
 }
 
-Engine::Engine(const EngineArgs& args) : mState(argsToState(args)) {}
+Engine::Engine(const EngineArgs& args) : mState(argsToState(args)) {
+	mState.input.addMouseKey(GLFW_MOUSE_BUTTON_LEFT, InputHandler::KeyAction::PRESS, triggerClick(););
+}
 Engine::~Engine() { glfwTerminate(); }
 
 void Engine::start() {
@@ -51,6 +56,25 @@ void Engine::start() {
 }
 
 EngineState* Engine::getState() { return &mState; }
+
+void Engine::triggerClick(uint x, uint y) {
+	FrameBuffer buffer{
+	  {mState.window.getSize().width, mState.window.getSize().height, true, false, GL_R32UI}
+	};
+	buffer.bind();
+	buffer.clear(0, 0, 0, 0);
+	glDisable(GL_BLEND);
+	mState.objectManager
+	  .renderObjects(mState.postProcessor.has_value(), mState.camera.getPosition());
+	glEnable(GL_BLEND);
+
+	unsigned int id;
+	glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_UNSIGNED_INT, &id);
+	buffer.unbind();
+
+	// TODO: Do something with the id
+	std::cout << id << std::endl;
+}
 
 void Engine::render() {
 	Tranformation trans{mState.window.getProjection(), mState.camera.getView()};

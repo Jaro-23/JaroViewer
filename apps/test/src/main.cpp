@@ -1,3 +1,4 @@
+#include "jaroViewer/rendering/shaderManager.hpp"
 #include <jaroViewer/core/engine.hpp>
 #include <jaroViewer/geometry/basicShapes.hpp>
 #include <jaroViewer/graphics/materialManager.hpp>
@@ -21,9 +22,9 @@ int main(int argc, char* argv[]) {
 	MaterialManager* mm = om.getMaterialManager();
 	uint mat            = mm->createNew();
 	mm->addMaterial(mat, {"./apps/test/textures/crate.jpg", "./apps/test/textures/crate_specular.jpg", 32.0f});
-	om.registerModel("cube", cubeVertices, (uint)1, mat);
-	om.registerModel("backpack", "./apps/test/models/backpack/backpack.obj", (uint)1);
-	om.registerModel("light", cubeVertices, (uint)0, 0);
+	om.registerModel("cube", cubeVertices, PredefinedShader::BASIC, mat);
+	om.registerModel("backpack", "./apps/test/models/backpack/backpack.obj", PredefinedShader::BASIC);
+	om.registerModel("light", cubeVertices, PredefinedShader::WHITE, 0);
 
 	// Add the lights
 	Tools::LightColor lightColor{glm::vec3(0.05f), glm::vec3(0.55f), glm::vec3(1.00f)};

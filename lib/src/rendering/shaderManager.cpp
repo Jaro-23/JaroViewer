@@ -2,13 +2,13 @@
 #include "jaroViewer/modifiers/modifier.hpp"
 #include "jaroViewer/rendering/basicShaders.hpp"
 
-#include <iostream>
 #include <sstream>
 
 using namespace JaroViewer;
 
 ShaderManager::ShaderManager() : mPathToIdent(), mShaders(), mActiveShader(0) {
 	loadShader(ShaderCode{basicWhiteVertex, "", basicWhiteFragment});
+	loadShader(ShaderCode{Modifier::getVertexLibrary() + basicVertex, "", regionFragment});
 	loadShader(ShaderCode{Modifier::getVertexLibrary() + basicVertex, "", fragmentLibrary + basicFragment});
 	mShaders.at(0).use();
 }
