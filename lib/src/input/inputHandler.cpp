@@ -2,6 +2,7 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <iostream>
 
 using namespace JaroViewer;
 
@@ -31,7 +32,10 @@ void InputHandler::processInputs(float deltaTime) {
 		bool pressed   = (state.isKey) ?
 		    glfwGetKey(mWindow->cPtr(), keyIter->first) == GLFW_PRESS :
 		    glfwGetMouseButton(mWindow->cPtr(), keyIter->first) == GLFW_PRESS;
-		InputParams params{deltaTime, 0, 0}; // TODO: Get the mouse position
+		double xpos, ypos;
+		glfwGetCursorPos(mWindow->cPtr(), &xpos, &ypos);
+		InputParams params{deltaTime, false, (int)xpos, (int)ypos};
+		params.mouseInScreen = mWindow->insideScreen(params.mouseX, params.mouseY);
 		switch (state.action) {
 		case KeyAction::DOWN:
 			if (pressed) state.function(params);

@@ -215,10 +215,18 @@ namespace JaroViewer {
 	  "FragColor = getLightCorrectedColor(materials[0], TexCoord, posSet);\n"
 	  "}\n";
 
+	const std::string regionVertex = "flat out uint vInstanceID;\n"
+	                                 "void main() {\n"
+	                                 "vec3 modified = processModifiers(aPos);\n"
+	                                 "gl_Position   = transform(modified);\n"
+	                                 "vInstanceID = uint(gl_InstanceID);\n"
+	                                 "}\n";
+
 	const std::string regionFragment = shaderVersion +
+	  "flat in uint vInstanceID;\n"
 	  "out uint outID;\n"
 	  "uniform int baseID;\n"
 	  "void main() {\n"
-	  "outID = baseID;\n"
+	  "outID = uint(baseID) + vInstanceID;\n"
 	  "}\n";
 } // namespace JaroViewer

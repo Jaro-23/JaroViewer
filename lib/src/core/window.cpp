@@ -121,6 +121,10 @@ void Window::setMouseMode(GLenum mode) {
 
 void Window::makeActive() { glfwMakeContextCurrent(mWindow); }
 
+bool Window::insideScreen(int x, int y) const {
+	return (0 <= x && x <= mWidth && 0 <= y && y <= mHeight);
+}
+
 bool Window::shouldClose() const { return glfwWindowShouldClose(mWindow); }
 
 int Window::getMouseMode() const {

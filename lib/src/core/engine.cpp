@@ -4,8 +4,11 @@
 #include "jaroViewer/core/window.hpp"
 #include "jaroViewer/graphics/cubemap.hpp"
 #include "jaroViewer/graphics/frameBuffer.hpp"
+#include "jaroViewer/input/inputHandler.hpp"
 #include "jaroViewer/lighting/lightSet.hpp"
 
+#include <cassert>
+#include <iostream>
 #include <memory>
 #include <optional>
 
@@ -42,7 +45,11 @@ EngineState Engine::argsToState(const EngineArgs& args) {
 	return state;
 }
 
-Engine::Engine(const EngineArgs& args) : mState(argsToState(args)) {}
+Engine::Engine(const EngineArgs& args) : mState(argsToState(args)) {
+	mState.input.addMouseKey(GLFW_MOUSE_BUTTON_LEFT, InputHandler::KeyAction::PRESS, [this](InputParams params) {
+		this->triggerClick(params);
+	});
+}
 Engine::~Engine() { glfwTerminate(); }
 
 void Engine::start() {
@@ -55,23 +62,26 @@ void Engine::start() {
 
 EngineState* Engine::getState() { return &mState; }
 
-void Engine::triggerClick(uint x, uint y) {
+void Engine::triggerClick(InputParams params) {
+	if (!params.mouseInScreen) return;
+	auto size    = mState.window.getSize();
+	int flippedY = size.height - (int)params.mouseY - 1;
 	FrameBuffer buffer{
-	  {mState.window.getSize().width, mState.window.getSize().height, true, false, GL_R32UI}
+	  {mState.window.getSize().width, mState.window.getSize().height, true, true, GL_R32UI}
 	};
 	buffer.bind();
 	buffer.clear(0, 0, 0, 0);
 	glDisable(GL_BLEND);
-	mState.objectManager
-	  .renderObjects(mState.postProcessor.has_value(), mState.camera.getPosition());
+	mState.objectManager.renderRegions(mState.camera.getPosition());
 	glEnable(GL_BLEND);
 
 	unsigned int id;
-	glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_UNSIGNED_INT, &id);
+	glReadPixels(params.mouseX, flippedY, 1, 1, GL_RED_INTEGER, GL_UNSIGNED_INT, &id);
 	buffer.unbind();
 
-	// TODO: Do something with the id
-	std::cout << id << std::endl;
+	if (id == 0) return;
+	Object obj = mState.objectManager.getFromObjectId(id - 1);
+	assert(obj != nullptr);
 }
 
 void Engine::render() {

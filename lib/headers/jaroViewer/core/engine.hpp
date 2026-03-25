@@ -56,7 +56,7 @@ namespace JaroViewer {
 
 		void start();
 		EngineState* getState();
-		void triggerClick(uint x, uint y);
+		void triggerClick(InputParams params);
 
 	private:
 		struct Tranformation {

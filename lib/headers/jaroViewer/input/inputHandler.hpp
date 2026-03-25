@@ -9,7 +9,8 @@
 namespace JaroViewer {
 	struct InputParams {
 		float deltaTime;
-		uint mouseX, mouseY;
+		bool mouseInScreen;
+		int mouseX, mouseY;
 	};
 
 	class InputHandler {

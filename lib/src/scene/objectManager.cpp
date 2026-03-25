@@ -136,8 +136,8 @@ void ObjectManager::renderObjects(bool usingPostProcessor, const glm::vec3& view
 	}
 }
 
-void ObjectManager::renderRegions(glm::vec4 viewPos) {
-	int base = 0;
+void ObjectManager::renderRegions(const glm::vec3& viewPos) {
+	int base = 1;
 	for (auto& model : mModels) {
 		ModelState& state = model.second;
 
@@ -174,7 +174,7 @@ void ObjectManager::renderRegions(glm::vec4 viewPos) {
 			else
 				glDrawArraysInstanced(GL_TRIANGLES, 0, mesh.count, data.size());
 		}
-		base += state.instances.size();
+		base += data.size();
 	}
 }
 
@@ -206,6 +206,16 @@ void ObjectManager::updateModifierTex(const ModifierStack& stack, const std::str
 	}
 
 	state.modifierData.copy(stack.params, ins.modifierStart);
+}
+
+Object ObjectManager::getFromObjectId(uint id) const {
+	for (auto& model : mModels) {
+		for (auto& instance : model.second.instances) {
+			if (id == 0 && !instance.object.expired()) return instance.object.lock();
+			if (!instance.object.expired()) id--;
+		}
+	}
+	return nullptr;
 }
 
 Mesh ObjectManager::registerVerticesModel(const std::vector<float>& vertices, uint material) {
