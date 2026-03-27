@@ -56,7 +56,7 @@ namespace JaroViewer {
 
 		void start();
 		EngineState* getState();
-		void triggerClick(InputParams params);
+		void triggerClick(InputHandler::KeyAction action, InputParams params);
 
 		std::function<void(InputHandler::KeyAction action, Object obj)> mClickCallback;
 

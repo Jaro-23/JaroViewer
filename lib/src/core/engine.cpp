@@ -47,7 +47,10 @@ EngineState Engine::argsToState(const EngineArgs& args) {
 
 Engine::Engine(const EngineArgs& args) : mState(argsToState(args)) {
 	mState.input.addMouseKey(GLFW_MOUSE_BUTTON_LEFT, InputHandler::KeyAction::PRESS, [this](InputParams params) {
-		this->triggerClick(params);
+		this->triggerClick(InputHandler::KeyAction::PRESS, params);
+	});
+	mState.input.addMouseKey(GLFW_MOUSE_BUTTON_LEFT, InputHandler::KeyAction::RELEASE, [this](InputParams params) {
+		this->triggerClick(InputHandler::KeyAction::RELEASE, params);
 	});
 }
 Engine::~Engine() { glfwTerminate(); }
@@ -62,7 +65,7 @@ void Engine::start() {
 
 EngineState* Engine::getState() { return &mState; }
 
-void Engine::triggerClick(InputParams params) {
+void Engine::triggerClick(InputHandler::KeyAction action, InputParams params) {
 	if (!params.mouseInScreen) return;
 	auto size    = mState.window.getSize();
 	int flippedY = size.height - (int)params.mouseY - 1;
@@ -82,6 +85,7 @@ void Engine::triggerClick(InputParams params) {
 	if (id == 0) return;
 	Object obj = mState.objectManager.getFromObjectId(id - 1);
 	assert(obj != nullptr);
+	mClickCallback(action, obj);
 }
 
 void Engine::render() {
