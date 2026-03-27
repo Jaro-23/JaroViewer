@@ -58,6 +58,8 @@ namespace JaroViewer {
 		EngineState* getState();
 		void triggerClick(uint x, uint y);
 
+		std::function<void(InputHandler::KeyAction action, Object obj)> mClickCallback;
+
 	private:
 		struct Tranformation {
 			glm::mat4 projection;
