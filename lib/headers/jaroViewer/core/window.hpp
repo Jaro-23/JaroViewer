@@ -32,6 +32,7 @@ namespace JaroViewer {
 		void setShouldClose(bool close);
 		void setMouseMode(GLenum mode);
 		void makeActive();
+		bool insideScreen(int x, int y) const;
 
 		// getters
 		bool shouldClose() const;

@@ -6,7 +6,7 @@
 #include <glm/glm.hpp>
 
 namespace JaroViewer {
-	class PointLight : public Object {
+	class PointLight {
 	public:
 		struct PointLightStruct {
 			glm::vec3 position;
@@ -23,8 +23,10 @@ namespace JaroViewer {
 
 		void enable(bool enable);
 		PointLightStruct getStruct() const;
+		Object getObject();
 
 	private:
+		Object mObject;
 		Tools::LightColor mLightColor;
 		bool mEnable;
 

@@ -1,4 +1,5 @@
 #include "jaroViewer/scene/camera.hpp"
+#include "jaroViewer/input/inputHandler.hpp"
 
 #include <cmath>
 
@@ -10,7 +11,7 @@ Camera::Camera(glm::vec3 pos, glm::vec3 up) : mPos(pos), mUp(up) {
 
 void Camera::setFlashlight(const std::shared_ptr<Spotlight> flashlight) {
 	mFlashlight = flashlight;
-	mFlashlight->setTranslation(mPos);
+	mFlashlight->getObject()->setTranslation(mPos);
 	mFlashlight->setDirection(mFront);
 }
 
@@ -21,30 +22,30 @@ void Camera::toggleFlashlight() {
 void Camera::addControls(InputHandler& handler) {
 	// Basic movement
 	handler.addMouseMoveEvent(getMouseEvent());
-	handler.addKey(GLFW_KEY_W, InputHandler::KeyAction::DOWN, [this](float deltaTime) {
-		this->goForward(deltaTime);
+	handler.addKey(GLFW_KEY_W, InputHandler::KeyAction::DOWN, [this](InputParams params) {
+		this->goForward(params.deltaTime);
 	});
-	handler.addKey(GLFW_KEY_S, InputHandler::KeyAction::DOWN, [this](float deltaTime) {
-		this->goForward(-deltaTime);
+	handler.addKey(GLFW_KEY_S, InputHandler::KeyAction::DOWN, [this](InputParams params) {
+		this->goForward(-params.deltaTime);
 	});
-	handler.addKey(GLFW_KEY_A, InputHandler::KeyAction::DOWN, [this](float deltaTime) {
-		this->goRight(-deltaTime);
+	handler.addKey(GLFW_KEY_A, InputHandler::KeyAction::DOWN, [this](InputParams params) {
+		this->goRight(-params.deltaTime);
 	});
-	handler.addKey(GLFW_KEY_D, InputHandler::KeyAction::DOWN, [this](float deltaTime) {
-		this->goRight(deltaTime);
+	handler.addKey(GLFW_KEY_D, InputHandler::KeyAction::DOWN, [this](InputParams params) {
+		this->goRight(params.deltaTime);
 	});
 
 	// Flashlight
-	handler.addKey(GLFW_KEY_F, InputHandler::KeyAction::PRESS, [this](float) {
+	handler.addKey(GLFW_KEY_F, InputHandler::KeyAction::PRESS, [this](InputParams) {
 		this->toggleFlashlight();
 	});
 
 	// Set focus keys
-	handler.addKey(GLFW_KEY_ESCAPE, InputHandler::KeyAction::DOWN, [=](float) {
+	handler.addKey(GLFW_KEY_ESCAPE, InputHandler::KeyAction::DOWN, [=](InputParams) {
 		if (handler.getWindow()->getMouseMode() == GLFW_CURSOR_DISABLED)
 			handler.getWindow()->setMouseMode(GLFW_CURSOR_NORMAL);
 	});
-	handler.addKey(GLFW_KEY_C, InputHandler::KeyAction::PRESS, [=](float) {
+	handler.addKey(GLFW_KEY_C, InputHandler::KeyAction::PRESS, [=](InputParams) {
 		if (handler.getWindow()->getMouseMode() == GLFW_CURSOR_NORMAL)
 			handler.getWindow()->setMouseMode(GLFW_CURSOR_DISABLED);
 	});
@@ -52,12 +53,12 @@ void Camera::addControls(InputHandler& handler) {
 
 void Camera::goForward(float deltaTime) {
 	mPos += mFront * mSpeed * deltaTime;
-	if (mFlashlight) mFlashlight->setTranslation(mPos);
+	if (mFlashlight) mFlashlight->getObject()->setTranslation(mPos);
 }
 
 void Camera::goRight(float deltaTime) {
 	mPos += glm::normalize(glm::cross(mFront, mUp)) * mSpeed * deltaTime;
-	if (mFlashlight) mFlashlight->setTranslation(mPos);
+	if (mFlashlight) mFlashlight->getObject()->setTranslation(mPos);
 }
 
 void Camera::updateDirection(float yaw, float pitch) {

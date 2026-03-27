@@ -8,7 +8,7 @@ using namespace JaroViewer;
 
 ShaderManager::ShaderManager() : mPathToIdent(), mShaders(), mActiveShader(0) {
 	loadShader(ShaderCode{basicWhiteVertex, "", basicWhiteFragment});
-	loadShader(ShaderCode{Modifier::getVertexLibrary() + basicVertex, "", regionFragment});
+	loadShader(ShaderCode{Modifier::getVertexLibrary() + regionVertex, "", regionFragment});
 	loadShader(ShaderCode{Modifier::getVertexLibrary() + basicVertex, "", fragmentLibrary + basicFragment});
 	mShaders.at(0).use();
 }

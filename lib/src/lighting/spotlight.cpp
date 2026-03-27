@@ -12,7 +12,7 @@ Spotlight::Spotlight(
   float innerAngle,
   float outerAngle
 )
-  : Object{std::move(obj)},
+  : mObject{std::move(obj)},
     mLightColor{lightColor},
     mEnable{true},
     mDirection{direction},
@@ -27,7 +27,7 @@ bool Spotlight::getState() const { return mEnable; }
 
 Spotlight::SpotlightStruct Spotlight::getStruct() const {
 	return SpotlightStruct{
-	  mTranslation,
+	  mObject->getPosition(),
 	  mCutOff,
 	  mDirection,
 	  mOuterCutOff,
@@ -43,6 +43,8 @@ Spotlight::SpotlightStruct Spotlight::getStruct() const {
 	  0.0f
 	};
 }
+
+Object Spotlight::getObject() { return mObject; }
 
 void Spotlight::setDirection(const glm::vec3& direction) {
 	mDirection = direction;
