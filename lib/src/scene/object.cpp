@@ -1,4 +1,5 @@
 #include "jaroViewer/scene/object.hpp"
+#include "glm/ext/scalar_constants.hpp"
 #include "jaroViewer/core/eventSender.hpp"
 #include "jaroViewer/modifiers/modifier.hpp"
 
@@ -9,18 +10,15 @@ using namespace JaroViewer;
 
 RawObject::RawObject()
   : mTranslation(0.0f),
-    mAngleX(0.0f),
-    mAngleY(0.0f),
-    mAngleZ(0.0f),
+    mRotation(glm::identity<glm::quat>()),
     mScale(1.0f),
     mVisibility(true) {}
 
 RawObject::RawObject(RawObject&& other) noexcept
   : EventSender<RawObject, ObjectEvent>(std::move(other)),
+    mChildren(other.mChildren),
     mTranslation(other.mTranslation),
-    mAngleX(other.mAngleX),
-    mAngleY(other.mAngleY),
-    mAngleZ(other.mAngleZ),
+    mRotation(other.mRotation),
     mScale(other.mScale),
     mVisibility(other.mVisibility),
     mModifiers(std::move(other.mModifiers)) {}
@@ -28,10 +26,9 @@ RawObject::RawObject(RawObject&& other) noexcept
 RawObject& RawObject::operator=(RawObject&& other) noexcept {
 	if (this == &other) return *this;
 	EventSender<RawObject, ObjectEvent>::operator=(std::move(other));
+	mChildren    = other.mChildren;
 	mTranslation = other.mTranslation;
-	mAngleX      = other.mAngleX;
-	mAngleY      = other.mAngleY;
-	mAngleZ      = other.mAngleZ;
+	mRotation    = other.mRotation;
 	mScale       = other.mScale;
 	mVisibility  = other.mVisibility;
 	mModifiers   = std::move(other.mModifiers);
@@ -53,14 +50,25 @@ bool RawObject::getVisibility() const { return mVisibility; }
 glm::mat4 RawObject::getModelMatrix() const {
 	glm::mat4 model(1.0f);
 	model = glm::translate(model, mTranslation);
-	model = glm::rotate(model, mAngleX, glm::vec3(1.0f, 0.0f, 0.0f));
-	model = glm::rotate(model, mAngleY, glm::vec3(0.0f, 1.0f, 0.0f));
-	model = glm::rotate(model, mAngleZ, glm::vec3(0.0f, 0.0f, 1.0f));
+	model *= glm::mat4_cast(mRotation);
 	model = glm::scale(model, mScale);
 	return model;
 }
 
 glm::vec3 RawObject::getPosition() const { return mTranslation; }
+
+glm::vec3 RawObject::getEulerAngles() const {
+	return glm::eulerAngles(mRotation) * glm::pi<float>() / 180.f;
+}
+
+glm::quat RawObject::getQuaternion() const { return mRotation; }
+
+void RawObject::addChild(Object child) { mChildren.push_back(child); }
+
+void RawObject::removeChild(Object child) {
+	auto place = std::find(mChildren.begin(), mChildren.end(), child);
+	mChildren.erase(place);
+}
 
 /**
  * Adds a translation to the current translation
@@ -69,6 +77,7 @@ glm::vec3 RawObject::getPosition() const { return mTranslation; }
 void RawObject::addTranslation(const glm::vec3& translation) {
 	mTranslation += translation;
 	send(this, ObjectEvent::TRANSFORM);
+	for (auto& child : mChildren) child->addTranslation(translation);
 }
 
 /**
@@ -78,11 +87,14 @@ void RawObject::addTranslation(const glm::vec3& translation) {
  * @param angleZ The new angle offset around the Z-axis
  */
 void RawObject::addRotation(float angleX, float angleY, float angleZ) {
-	mAngleX += angleX;
-	mAngleY += angleY;
-	mAngleZ += angleZ;
-	normalizeAngles();
+	glm::quat delta = glm::quat(glm::radians(glm::vec3(angleX, angleY, angleZ)));
+
+	mRotation = glm::normalize(delta * mRotation);
 	send(this, ObjectEvent::TRANSFORM);
+
+	for (auto& child : mChildren) {
+		child->applyRotationRecursive(delta, mTranslation);
+	}
 }
 
 /**
@@ -90,26 +102,30 @@ void RawObject::addRotation(float angleX, float angleY, float angleZ) {
  * @param scale A vec3 with x component the x scaling, y-component the y scaling and z-component the z scaling
  */
 void RawObject::addScale(const glm::vec3& scale) {
-	mScale += scale;
+	mScale *= scale;
+
 	send(this, ObjectEvent::TRANSFORM);
+
+	for (auto& child : mChildren) {
+		child->applyScaleRecursive(scale, mTranslation);
+	}
 }
 
 /**
  * Adds a scaling offset to the current scale
  * @param scale A float value with which each scale value will be offset
  */
-void RawObject::addScale(float scale) {
-	mScale += glm::vec3(scale);
-	send(this, ObjectEvent::TRANSFORM);
-}
+void RawObject::addScale(float scale) { addScale(glm::vec3(scale)); }
 
 /**
  * Sets the component to a position
  * @param translation The new position
  */
 void RawObject::setTranslation(const glm::vec3& translation) {
-	mTranslation = translation;
+	glm::vec3 offset = translation - mTranslation;
+	mTranslation     = translation;
 	send(this, ObjectEvent::TRANSFORM);
+	for (auto& child : mChildren) child->addTranslation(offset);
 }
 
 /**
@@ -119,11 +135,16 @@ void RawObject::setTranslation(const glm::vec3& translation) {
  * @param angleZ The rotation around the Z-axis
  */
 void RawObject::setRotation(float angleX, float angleY, float angleZ) {
-	mAngleX = angleX;
-	mAngleY = angleY;
-	mAngleZ = angleZ;
-	normalizeAngles();
+	glm::quat newRot = glm::quat(glm::radians(glm::vec3(angleX, angleY, angleZ)));
+
+	glm::quat delta = newRot * glm::inverse(mRotation);
+	mRotation       = newRot;
+
 	send(this, ObjectEvent::TRANSFORM);
+
+	for (auto& child : mChildren) {
+		child->applyRotationRecursive(delta, mTranslation);
+	}
 }
 
 /**
@@ -131,18 +152,24 @@ void RawObject::setRotation(float angleX, float angleY, float angleZ) {
  * @param scale The new scale of each axis for the component
  */
 void RawObject::setScale(const glm::vec3& scale) {
+	glm::vec3 ratio = glm::vec3(
+	  mScale.x != 0.0f ? scale.x / mScale.x : 1.0f,
+	  mScale.y != 0.0f ? scale.y / mScale.y : 1.0f,
+	  mScale.z != 0.0f ? scale.z / mScale.z : 1.0f
+	);
 	mScale = scale;
 	send(this, ObjectEvent::TRANSFORM);
+
+	for (auto& child : mChildren) {
+		child->applyScaleRecursive(ratio, mTranslation);
+	}
 }
 
 /**
  * Sets a the scale values to one specific value
  * @param scale The new scale value for each axis
  */
-void RawObject::setScale(float scale) {
-	mScale = glm::vec3(scale);
-	send(this, ObjectEvent::TRANSFORM);
-}
+void RawObject::setScale(float scale) { setScale(glm::vec3(scale)); }
 
 void RawObject::addModifier(std::shared_ptr<Modifier> modifier) {
 	modifier->addListener([this](Modifier*, ModifierEvent event) {
@@ -162,17 +189,32 @@ ModifierStack RawObject::getStack() const {
 	return stack;
 }
 
-/**
- * Places the angles between 0 and 360 degree
- * @post mAngleX, mAngleY and mAngleZ are between 0 and 360
- */
-void RawObject::normalizeAngles() {
-	while (mAngleX < 0.0f) mAngleX += 360.0f;
-	while (mAngleX > 360.0f) mAngleX -= 360.0f;
+glm::mat4 RawObject::getRotationMatrix(const glm::quat& q) {
+	return glm::mat4_cast(q);
+}
 
-	while (mAngleY < 0.0f) mAngleY += 360.0f;
-	while (mAngleY > 360.0f) mAngleY -= 360.0f;
+void RawObject::applyRotationRecursive(const glm::quat& delta, const glm::vec3& pivot) {
+	glm::mat4 rotMat = glm::mat4_cast(delta);
 
-	while (mAngleZ < 0.0f) mAngleZ += 360.0f;
-	while (mAngleZ > 360.0f) mAngleZ -= 360.0f;
+	glm::vec3 dir = mTranslation - pivot;
+	dir           = glm::vec3(rotMat * glm::vec4(dir, 1.0f));
+	mTranslation  = pivot + dir;
+	mRotation     = glm::normalize(delta * mRotation);
+	send(this, ObjectEvent::TRANSFORM);
+
+	for (auto& child : mChildren) {
+		child->applyRotationRecursive(delta, pivot);
+	}
+}
+
+void RawObject::applyScaleRecursive(const glm::vec3& scale, const glm::vec3& pivot) {
+	glm::vec3 dir = mTranslation - pivot;
+	dir *= scale;
+	mTranslation = pivot + dir;
+	mScale *= scale;
+	send(this, ObjectEvent::TRANSFORM);
+
+	for (auto& child : mChildren) {
+		child->applyScaleRecursive(scale, pivot);
+	}
 }

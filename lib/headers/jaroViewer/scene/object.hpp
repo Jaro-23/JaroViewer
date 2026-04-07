@@ -2,7 +2,10 @@
 
 #include "glm/fwd.hpp"
 #include "jaroViewer/modifiers/modifier.hpp"
+
 #include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
+
 #include <memory>
 #include <sys/types.h>
 
@@ -14,6 +17,7 @@ namespace JaroViewer {
 
 	enum ObjectEvent { MODIFIER, DELETE, TRANSFORM, VISIBILITY };
 
+	using Object = std::shared_ptr<class RawObject>;
 	class RawObject : public EventSender<RawObject, ObjectEvent> {
 	public:
 		RawObject();
@@ -27,6 +31,13 @@ namespace JaroViewer {
 		bool getVisibility() const;
 		glm::mat4 getModelMatrix() const;
 		glm::vec3 getPosition() const;
+
+		glm::vec3 getEulerAngles() const;
+		glm::quat getQuaternion() const;
+
+		// Manage child objects
+		void addChild(Object child);
+		void removeChild(Object child);
 
 		// Addition transform
 		void addTranslation(const glm::vec3& translation);
@@ -45,11 +56,14 @@ namespace JaroViewer {
 		ModifierStack getStack() const;
 
 	protected:
-		void normalizeAngles();
+		glm::mat4 getRotationMatrix(const glm::quat& q);
+		void applyRotationRecursive(const glm::quat& delta, const glm::vec3& pivot);
+		void applyScaleRecursive(const glm::vec3& scale, const glm::vec3& pivot);
 
 		// Data
+		std::vector<Object> mChildren;
 		glm::vec3 mTranslation;
-		float mAngleX, mAngleY, mAngleZ;
+		glm::quat mRotation;
 		glm::vec3 mScale;
 		bool mVisibility;
 
@@ -57,5 +71,4 @@ namespace JaroViewer {
 		std::vector<std::shared_ptr<Modifier>> mModifiers;
 	};
 
-	using Object = std::shared_ptr<RawObject>;
 } // namespace JaroViewer

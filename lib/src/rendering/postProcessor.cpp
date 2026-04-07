@@ -33,8 +33,13 @@ PostProcessor::PostProcessor(Window* window, const std::string fragmentFile)
  */
 void PostProcessor::setupVao() {
 	std::vector<float> vertices{
-	  -1.0f, 1.0f, 0.0f, 1.0f, 1.0f,  -1.0f, 1.0f, 0.0f, 1.0f, 1.0f,  1.0f, 1.0f,
-	  -1.0f, 1.0f, 0.0f, 1.0f, -1.0f, -1.0f, 0.0f, 0.0f, 1.0f, -1.0f, 1.0f, 0.0f,
+	  -1.0f, 1.0f,  0.0f, 1.0f, // top-left
+	  1.0f,  1.0f,  1.0f, 1.0f, // top-right
+	  1.0f,  -1.0f, 1.0f, 0.0f, // bottom-right
+
+	  -1.0f, 1.0f,  0.0f, 1.0f, // top-left
+	  1.0f,  -1.0f, 1.0f, 0.0f, // bottom-right
+	  -1.0f, -1.0f, 0.0f, 0.0f, // bottom-left
 	};
 
 	glGenVertexArrays(1, &mVaoBuffer);
@@ -78,5 +83,6 @@ void PostProcessor::render() const {
 }
 
 void PostProcessor::resize(uint width, uint height) {
+	std::cout << "resizing" << std::endl;
 	mFrameBuffer.resize(width, height);
 }
