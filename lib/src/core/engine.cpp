@@ -8,7 +8,6 @@
 #include "jaroViewer/lighting/lightSet.hpp"
 
 #include <cassert>
-#include <iostream>
 #include <memory>
 #include <optional>
 
@@ -45,7 +44,11 @@ EngineState Engine::argsToState(const EngineArgs& args) {
 	return state;
 }
 
-Engine::Engine(const EngineArgs& args) : mState(argsToState(args)) {
+Engine::Engine(const EngineArgs& args)
+  : mClickCallback(
+      [](JaroViewer::InputHandler::KeyAction, std::shared_ptr<JaroViewer::RawObject>) {}
+    ),
+    mState(argsToState(args)) {
 	mState.input.addMouseKey(GLFW_MOUSE_BUTTON_LEFT, InputHandler::KeyAction::PRESS, [this](InputParams params) {
 		this->triggerClick(InputHandler::KeyAction::PRESS, params);
 	});
