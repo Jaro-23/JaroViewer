@@ -38,6 +38,10 @@ Window::Window(int major, int minor, int width, int height, const std::string& t
 	}
 
 	// Setup the viewport
+	int fbWidth, fbHeight;
+	glfwGetFramebufferSize(mWindow, &fbWidth, &fbHeight);
+	mWidth  = fbWidth;
+	mHeight = fbHeight;
 	glViewport(0, 0, mWidth, mHeight);
 	glEnable(GL_DEPTH_TEST);
 	if (samples > 0) glEnable(GL_MULTISAMPLE);
@@ -88,7 +92,7 @@ void Window::update() {
 
 bool Window::updateView() {
 	int width, height;
-	glfwGetWindowSize(mWindow, &width, &height);
+	glfwGetFramebufferSize(mWindow, &width, &height);
 	if (mWidth == width && mHeight == height) return false;
 
 	mWidth  = width;
