@@ -1,6 +1,5 @@
 #pragma once
 
-#include "glad/glad.h"
 #include <sys/types.h>
 
 namespace JaroViewer {
@@ -9,7 +8,7 @@ namespace JaroViewer {
 		int height;
 		bool readableColor;
 		bool readableDepthStencil;
-		GLenum formatType;
+		uint formatType;
 	};
 
 	class FrameBuffer {
@@ -28,11 +27,11 @@ namespace JaroViewer {
 
 	private:
 		void genBuffer();
-		uint genTexure(GLenum formatType);
-		uint genRenderBuffer(GLenum formatType);
-		uint bindTexture(GLenum usage, GLenum formatType);
-		uint bindRenderBuffer(GLenum usage);
-		void createStorage(bool readable, uint* textureStorage, uint* renderStorage, GLenum usage, GLenum formatType);
+		uint genTexure(uint formatType);
+		uint genRenderBuffer(uint formatType);
+		uint bindTexture(uint usage, uint formatType);
+		uint bindRenderBuffer(uint usage);
+		void createStorage(bool readable, uint* textureStorage, uint* renderStorage, uint usage, uint formatType);
 
 		uint mID;
 		uint mColorTexture;
@@ -44,6 +43,6 @@ namespace JaroViewer {
 		int mHeight;
 		bool mReadableColor;
 		bool mReadableDepthStencil;
-		GLenum mFormatType;
+		uint mFormatType;
 	};
 } // namespace JaroViewer

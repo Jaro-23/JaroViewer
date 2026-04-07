@@ -1,9 +1,6 @@
 #pragma once
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
-
 #include <string>
 
 namespace JaroViewer {
@@ -20,7 +17,7 @@ namespace JaroViewer {
 		void genTexture();
 		void setupParameters();
 		void loadImageToTexture(const char* filepath, bool flip);
-		GLenum getFileFormat(int numChannels) const;
+		uint getFileFormat(int numChannels) const;
 
 		unsigned int mTextureID;
 	};

@@ -48,7 +48,8 @@ Engine::Engine(const EngineArgs& args)
   : mClickCallback(
       [](JaroViewer::InputHandler::KeyAction, std::shared_ptr<JaroViewer::RawObject>) {}
     ),
-    mState(argsToState(args)) {
+    mState(argsToState(args)),
+    mUpdateFunc([](float) {}) {
 	mState.input.addMouseKey(GLFW_MOUSE_BUTTON_LEFT, InputHandler::KeyAction::PRESS, [this](InputParams params) {
 		this->triggerClick(InputHandler::KeyAction::PRESS, params);
 	});
@@ -91,10 +92,15 @@ void Engine::triggerClick(InputHandler::KeyAction action, InputParams params) {
 	mClickCallback(action, obj);
 }
 
+void Engine::setUpdateFunc(std::function<void(float delta)> func) {
+	mUpdateFunc = func;
+}
+
 void Engine::render() {
 	Tranformation trans{mState.window.getProjection(), mState.camera.getView()};
 	Timer timer{};
 	while (!mState.window.shouldClose()) {
+
 		// Update the UBOs
 		trans.view = mState.camera.getView();
 		if (mState.window.updateView()) {
@@ -107,8 +113,10 @@ void Engine::render() {
 		LightSet::LightSetStruct lights = mState.lights.getStruct();
 		mLightsUBO->updateData(&lights);
 
-		// Process the inputs
-		mState.input.processInputs(timer.getDeltaTime());
+		// Updates
+		float delta = timer.getDeltaTime();
+		mUpdateFunc(delta);
+		mState.input.processInputs(delta);
 
 		// Redraw the screen
 		mState.window.clear();

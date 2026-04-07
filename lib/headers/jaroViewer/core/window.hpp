@@ -1,11 +1,10 @@
 #pragma once
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
-
 #include <string>
 #include <sys/types.h>
+
+struct GLFWwindow;
 
 namespace JaroViewer {
 	struct Size {
@@ -30,7 +29,7 @@ namespace JaroViewer {
 		bool updateView();
 		void toggleFullscreen();
 		void setShouldClose(bool close);
-		void setMouseMode(GLenum mode);
+		void setMouseMode(uint mode);
 		void makeActive();
 		bool insideScreen(int x, int y) const;
 

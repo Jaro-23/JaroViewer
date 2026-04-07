@@ -1,9 +1,10 @@
 #include "jaroViewer/rendering/gpuVector.hpp"
-#include "jaroViewer/graphics/texture2D.hpp"
+
 #include <algorithm>
 #include <cassert>
 #include <cstring>
-#include <iostream>
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 
 using namespace JaroViewer;
 

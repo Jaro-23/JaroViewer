@@ -1,7 +1,5 @@
 #pragma once
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
 #include <sys/types.h>
 #include <vector>
 
@@ -20,11 +18,11 @@ namespace JaroViewer {
 
 	private:
 		void enlarge(float factor = 2.0);
-		void copy(GLuint fromBuffer, GLuint toBuffer);
-		void genDataTex(GLuint* tex, GLuint* tbo, size_t size);
+		void copy(uint fromBuffer, uint toBuffer);
+		void genDataTex(uint* tex, uint* tbo, size_t size);
 
 		size_t mCount;
-		GLuint mTexture;
-		GLuint mBuffer;
+		uint mTexture;
+		uint mBuffer;
 	};
 } // namespace JaroViewer

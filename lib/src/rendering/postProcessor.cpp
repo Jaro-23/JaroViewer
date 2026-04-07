@@ -2,6 +2,8 @@
 #include "jaroViewer/core/tools.hpp"
 #include "jaroViewer/rendering/basicShaders.hpp"
 
+#include <glad/glad.h>
+
 #include <memory>
 
 using namespace JaroViewer;
@@ -83,6 +85,5 @@ void PostProcessor::render() const {
 }
 
 void PostProcessor::resize(uint width, uint height) {
-	std::cout << "resizing" << std::endl;
 	mFrameBuffer.resize(width, height);
 }

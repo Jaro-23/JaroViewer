@@ -1,6 +1,8 @@
 #include "jaroViewer/rendering/shader.hpp"
 #include "jaroViewer/core/tools.hpp"
 
+#include <glad/glad.h>
+
 #include <cstdlib>
 #include <iostream>
 #include <ostream>

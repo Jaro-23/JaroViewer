@@ -1,5 +1,7 @@
 #include "jaroViewer/graphics/frameBuffer.hpp"
 
+#include <glad/glad.h>
+
 #include <iostream>
 #include <ostream>
 

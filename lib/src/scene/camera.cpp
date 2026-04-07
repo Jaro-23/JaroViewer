@@ -2,6 +2,8 @@
 #include "jaroViewer/input/inputHandler.hpp"
 
 #include <cmath>
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 
 using namespace JaroViewer;
 

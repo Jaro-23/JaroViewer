@@ -1,6 +1,5 @@
 #pragma once
 
-#include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -41,16 +40,13 @@ namespace JaroViewer {
 		void setMat4(const std::string& name, glm::mat4 mat) const;
 
 	private:
-		unsigned int createShaderFromFile(
-		  GLenum shaderType,
-		  const std::vector<std::string>* sources,
-		  const std::string& errorName
-		);
-		unsigned int createShaderFromString(GLenum shaderType, const char* code, const std::string& errorName);
+		unsigned int
+		  createShaderFromFile(uint shaderType, const std::vector<std::string>* sources, const std::string& errorName);
+		unsigned int createShaderFromString(uint shaderType, const char* code, const std::string& errorName);
 		void createProgram(unsigned int vertexID, unsigned int geometryID, unsigned int fragmentID);
 		void checkCompilingError(unsigned int shaderID, const std::string& shaderName) const;
 		void checkLinkingError(unsigned int programID) const;
-		GLint getLocation(const std::string& name) const;
+		int getLocation(const std::string& name) const;
 
 		unsigned int mProgramId;
 	};

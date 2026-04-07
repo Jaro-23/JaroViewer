@@ -9,10 +9,7 @@
 #include "jaroViewer/scene/camera.hpp"
 #include "jaroViewer/scene/objectManager.hpp"
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
-
 #include <optional>
 #include <string>
 
@@ -58,6 +55,8 @@ namespace JaroViewer {
 		EngineState* getState();
 		void triggerClick(InputHandler::KeyAction action, InputParams params);
 
+		void setUpdateFunc(std::function<void(float delta)> func);
+
 		std::function<void(InputHandler::KeyAction action, Object obj)> mClickCallback;
 
 	private:
@@ -71,5 +70,7 @@ namespace JaroViewer {
 		EngineState mState;
 		std::shared_ptr<UniformBuffer> mTransformUBO;
 		std::shared_ptr<UniformBuffer> mLightsUBO;
+
+		std::function<void(float delta)> mUpdateFunc;
 	};
 } // namespace JaroViewer

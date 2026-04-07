@@ -45,7 +45,7 @@ FetchContent_MakeAvailable(glfw assimp glm stb)
 file(GLOB_RECURSE SOURCES 
   "${PROJECT_SOURCE_DIR}/src/*.cpp"
 )
-add_library(${PROJECT_NAME} ${SOURCES})
+add_library(${PROJECT_NAME} SHARED ${SOURCES})
 target_sources(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/src/glad.c")
 set_source_files_properties("${PROJECT_SOURCE_DIR}/src/glad.c"
   PROPERTIES COMPILE_OPTIONS "-Wno-pedantic"

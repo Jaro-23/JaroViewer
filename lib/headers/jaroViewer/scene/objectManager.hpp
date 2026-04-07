@@ -6,10 +6,6 @@
 #include "jaroViewer/rendering/shaderManager.hpp"
 #include "jaroViewer/scene/object.hpp"
 
-#include <assimp/Importer.hpp>
-#include <assimp/postprocess.h>
-#include <assimp/scene.h>
-
 #include <map>
 #include <memory>
 #include <string>
@@ -17,7 +13,17 @@
 #include <variant>
 #include <vector>
 
+namespace Assimp {
+	class Importer;
+}
+struct aiNode;
+struct aiScene;
+struct aiMesh;
+struct aiMaterial;
+
 namespace JaroViewer {
+	enum class TextureType { DIFFUSE, SPECULAR, NORMAL, HEIGHT };
+
 	struct Instance {
 		std::weak_ptr<RawObject> object;
 		glm::mat4 model;
@@ -77,7 +83,7 @@ namespace JaroViewer {
 		void registerFileModel(const std::string& ident, const std::string& modelPath, uint shader);
 		void processNode(aiNode* node, const std::string& ident, const std::string& directory, const aiScene* scene);
 		Mesh processMesh(aiMesh* mesh, const std::string& directory, const aiScene* scene);
-		std::vector<std::string> loadMaterials(aiMaterial* mat, aiTextureType type);
+		std::vector<std::string> loadMaterials(aiMaterial* mat, TextureType type);
 
 		size_t getNextFreeSlot(const std::string& model) const;
 

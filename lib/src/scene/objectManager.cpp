@@ -4,6 +4,13 @@
 #include "jaroViewer/rendering/shaderManager.hpp"
 #include "jaroViewer/scene/object.hpp"
 
+#include <cassert>
+#include <glad/glad.h>
+
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
+
 #include <cstddef>
 #include <iostream>
 #include <limits>
@@ -377,8 +384,8 @@ Mesh ObjectManager::processMesh(aiMesh* mesh, const std::string& directory, cons
 	}
 
 	aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-	std::vector<std::string> diffuseStr = loadMaterials(material, aiTextureType_DIFFUSE);
-	std::vector<std::string> specularStr = loadMaterials(material, aiTextureType_SPECULAR);
+	std::vector<std::string> diffuseStr = loadMaterials(material, TextureType::DIFFUSE);
+	std::vector<std::string> specularStr = loadMaterials(material, TextureType::SPECULAR);
 	assert(diffuseStr.size() == specularStr.size());
 
 	materialIdent = mMaterialManager.createNew();
@@ -391,12 +398,23 @@ Mesh ObjectManager::processMesh(aiMesh* mesh, const std::string& directory, cons
 	return registerIndicesModel(vertices, indices, materialIdent);
 }
 
-std::vector<std::string> ObjectManager::loadMaterials(aiMaterial* mat, aiTextureType type) {
+static aiTextureType toAssimpType(TextureType type) {
+	switch (type) {
+	case TextureType::DIFFUSE: return aiTextureType_DIFFUSE;
+	case TextureType::SPECULAR: return aiTextureType_SPECULAR;
+	case TextureType::NORMAL: return aiTextureType_NORMALS;
+	case TextureType::HEIGHT: return aiTextureType_HEIGHT;
+	}
+	assert(false);
+}
+
+std::vector<std::string> ObjectManager::loadMaterials(aiMaterial* mat, TextureType type) {
+	aiTextureType assimpType = toAssimpType(type);
 	std::vector<std::string> texNames;
-	texNames.reserve(mat->GetTextureCount(type));
-	for (uint i = 0; i < mat->GetTextureCount(type); i++) {
+	texNames.reserve(mat->GetTextureCount(assimpType));
+	for (uint i = 0; i < mat->GetTextureCount(assimpType); i++) {
 		aiString str;
-		mat->GetTexture(type, i, &str);
+		mat->GetTexture(assimpType, i, &str);
 		texNames.push_back(str.C_Str());
 	}
 	return texNames;

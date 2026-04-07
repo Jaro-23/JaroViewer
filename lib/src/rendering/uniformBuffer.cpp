@@ -1,5 +1,8 @@
 #include "jaroViewer/rendering/uniformBuffer.hpp"
 
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+
 using namespace JaroViewer;
 
 UniformBuffer::UniformBuffer(uint position, uint size, GLenum usage) {

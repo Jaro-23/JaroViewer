@@ -105,7 +105,7 @@ void Texture2D::loadImageToTexture(const char* filepath, bool flip) {
 	stbi_image_free(imageData);
 }
 
-GLenum Texture2D::getFileFormat(int numChannels) const {
+uint Texture2D::getFileFormat(int numChannels) const {
 	switch (numChannels) {
 	case 1: return GL_RED;
 	case 3: return GL_RGB;

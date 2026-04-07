@@ -1,58 +1,21 @@
 #pragma once
 
-#include <fstream>
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
-
-#include <iostream>
-#include <sstream>
+#include <string>
 #include <vector>
 
 namespace JaroViewer {
 	class Tools {
 	public:
-		/**
-		 * Creates a buffer of the given type
-		 * @param data The data that will be placed in the buffer
-		 * @param bufferType The type of buffer that will be created
-		 * @param usage The usage of the buffer
-		 */
 		template<typename T, typename Allocator>
 		static unsigned int
-		  generateBuffer(const std::vector<T, Allocator>& data, GLenum bufferType, GLenum usage) {
-			unsigned int buffer;
-			glGenBuffers(1, &buffer);
-			glBindBuffer(bufferType, buffer);
-			glBufferData(bufferType, data.size() * sizeof(T), &data[0], usage);
-			return buffer;
-		}
+		  generateBuffer(const std::vector<T, Allocator>& data, unsigned int bufferType, unsigned int usage);
 
-		static glm::mat3 getNormalModelMatrix(const glm::mat4& model) {
-			return glm::mat3(glm::transpose(glm::inverse(model)));
-		};
+		static glm::mat3 getNormalModelMatrix(const glm::mat4& model);
+		static void readFile(const std::string& filePath, std::string* out);
 
-		/**
-		 * Reads a file into a std::string
-		 * @param filePath The path to the file
-		 * @param out The output where in content of the file will be placed in
-		 */
-		static void readFile(const std::string& filePath, std::string* out) {
-			std::ifstream fileStream;
-			fileStream.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-
-			try {
-				fileStream.open(filePath);
-				std::stringstream stringStream;
-				stringStream << fileStream.rdbuf();
-				fileStream.close();
-				*out = stringStream.str();
-			} catch (std::ifstream::failure&) {
-				std::cout << "[Tools] Error: Coudn't read " << filePath << std::endl;
-			}
-		}
-
-		template<class... Ts> struct Overloaded : Ts... {
+		template<class... Ts>
+		struct Overloaded : Ts... {
 			using Ts::operator()...;
 		};
 

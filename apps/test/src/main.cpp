@@ -1,5 +1,4 @@
 #include "jaroViewer/rendering/shaderManager.hpp"
-#include <iostream>
 #include <jaroViewer/core/engine.hpp>
 #include <jaroViewer/geometry/basicShapes.hpp>
 #include <jaroViewer/graphics/materialManager.hpp>
