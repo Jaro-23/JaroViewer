@@ -73,8 +73,8 @@ Object ObjectManager::createObject(const std::string& model) {
 		return nullptr;
 	}
 	ModelState& state  = mModels.at(model);
-	glm::vec3 minPoint = glm::vec3(std::numeric_limits<float>().lowest());
-	glm::vec3 maxPoint = glm::vec3(std::numeric_limits<float>().max());
+	glm::vec3 minPoint = glm::vec3(std::numeric_limits<float>().max());
+	glm::vec3 maxPoint = glm::vec3(std::numeric_limits<float>().lowest());
 	for (auto& mesh : state.meshes) {
 		minPoint = glm::min(minPoint, mesh.minPoint);
 		maxPoint = glm::max(maxPoint, mesh.maxPoint);
@@ -175,8 +175,6 @@ void ObjectManager::renderRegions(const glm::vec3& viewPos) {
 			glBindBuffer(GL_ARRAY_BUFFER, mesh.instanceVBO);
 			glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(InstanceData), data.data(), GL_DYNAMIC_DRAW);
 
-			shader->setVec3("minPoint", mesh.minPoint);
-			shader->setVec3("maxPoint", mesh.maxPoint);
 			shader->setVec3("viewPos", viewPos);
 			shader->setInt("baseID", base);
 			if (state.useIndices)
