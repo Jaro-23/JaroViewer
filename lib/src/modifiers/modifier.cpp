@@ -49,6 +49,12 @@ std::optional<uint> Modifier::registerModifier(const std::string& name, const st
 	return nextIdent++;
 }
 
+void Modifier::updateData(ObjectData inputData) {
+	mInputData  = inputData;
+	mOutputData = inputData;
+}
+ObjectData Modifier::getOutputData() const { return mOutputData; }
+
 std::map<std::string, Modifier::RegisterEntry>& Modifier::getModifiers() {
 	static std::map<std::string, RegisterEntry> instance;
 	return instance;

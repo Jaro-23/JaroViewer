@@ -20,11 +20,11 @@ namespace JaroViewer {
 	using Object = std::shared_ptr<class RawObject>;
 	class RawObject : public EventSender<RawObject, ObjectEvent> {
 	public:
-		RawObject();
+		RawObject(glm::vec3 minPoint, glm::vec3 maxPoint);
 		RawObject(const RawObject&)            = delete;
 		RawObject& operator=(const RawObject&) = delete;
 		RawObject(RawObject&& other) noexcept;
-		RawObject& operator=(RawObject&& other) noexcept;
+		// RawObject& operator=(RawObject&& other) noexcept;
 		~RawObject();
 
 		void setVisibility(bool visibility);
@@ -62,6 +62,9 @@ namespace JaroViewer {
 
 		// Data
 		std::vector<Object> mChildren;
+		const glm::vec3 mMinPoint;
+		const glm::vec3 mMaxPoint;
+
 		glm::vec3 mTranslation;
 		glm::quat mRotation;
 		glm::vec3 mScale;

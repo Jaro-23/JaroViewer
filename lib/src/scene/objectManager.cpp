@@ -64,7 +64,6 @@ void ObjectManager::registerModel(const std::string& ident, const std::string& m
 }
 
 Object ObjectManager::createObject(const std::string& model) {
-	Object obj = std::make_shared<RawObject>();
 
 	// Check if valid model and find the index to work with
 	if (!mModels.contains(model)) {
@@ -73,6 +72,14 @@ Object ObjectManager::createObject(const std::string& model) {
 		  << model << "\'" << std::endl;
 		return nullptr;
 	}
+	ModelState& state  = mModels.at(model);
+	glm::vec3 minPoint = glm::vec3(std::numeric_limits<float>().lowest());
+	glm::vec3 maxPoint = glm::vec3(std::numeric_limits<float>().max());
+	for (auto& mesh : state.meshes) {
+		minPoint = glm::min(minPoint, mesh.minPoint);
+		maxPoint = glm::max(maxPoint, mesh.maxPoint);
+	}
+	Object obj   = std::make_shared<RawObject>(minPoint, maxPoint);
 	size_t index = getNextFreeSlot(model);
 
 	// Create the instance
@@ -130,8 +137,6 @@ void ObjectManager::renderObjects(bool usingPostProcessor, const glm::vec3& view
 			glBindBuffer(GL_ARRAY_BUFFER, mesh.instanceVBO);
 			glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(InstanceData), data.data(), GL_DYNAMIC_DRAW);
 
-			shader->setVec3("minPoint", mesh.minPoint);
-			shader->setVec3("maxPoint", mesh.maxPoint);
 			shader->setVec3("viewPos", viewPos);
 			if (state.useIndices)
 				glDrawElementsInstanced(

@@ -8,8 +8,10 @@
 
 using namespace JaroViewer;
 
-RawObject::RawObject()
-  : mTranslation(0.0f),
+RawObject::RawObject(glm::vec3 minPoint, glm::vec3 maxPoint)
+  : mMinPoint(minPoint),
+    mMaxPoint(maxPoint),
+    mTranslation(0.0f),
     mRotation(glm::identity<glm::quat>()),
     mScale(1.0f),
     mVisibility(true) {}
@@ -17,23 +19,13 @@ RawObject::RawObject()
 RawObject::RawObject(RawObject&& other) noexcept
   : EventSender<RawObject, ObjectEvent>(std::move(other)),
     mChildren(other.mChildren),
+    mMinPoint(other.mMinPoint),
+    mMaxPoint(other.mMaxPoint),
     mTranslation(other.mTranslation),
     mRotation(other.mRotation),
     mScale(other.mScale),
     mVisibility(other.mVisibility),
     mModifiers(std::move(other.mModifiers)) {}
-
-RawObject& RawObject::operator=(RawObject&& other) noexcept {
-	if (this == &other) return *this;
-	EventSender<RawObject, ObjectEvent>::operator=(std::move(other));
-	mChildren    = other.mChildren;
-	mTranslation = other.mTranslation;
-	mRotation    = other.mRotation;
-	mScale       = other.mScale;
-	mVisibility  = other.mVisibility;
-	mModifiers   = std::move(other.mModifiers);
-	return *this;
-}
 
 RawObject::~RawObject() { send(this, ObjectEvent::DELETE); }
 
@@ -172,9 +164,23 @@ void RawObject::setScale(const glm::vec3& scale) {
 void RawObject::setScale(float scale) { setScale(glm::vec3(scale)); }
 
 void RawObject::addModifier(std::shared_ptr<Modifier> modifier) {
-	modifier->addListener([this](Modifier*, ModifierEvent event) {
+	size_t index = mModifiers.size();
+	modifier->addListener([this, index](Modifier*, ModifierEvent event) {
 		if (event == ModifierEvent::UPDATE) this->send(this, ObjectEvent::MODIFIER);
+		if (event == ModifierEvent::OUTPUT_CHANGE) {
+			for (size_t i = index; i < this->mModifiers.size(); ++i) {
+				if (i == 0)
+					this->mModifiers.at(i)->updateData({.minPoint = mMinPoint, .maxPoint = mMaxPoint});
+				else
+					this->mModifiers.at(i)->updateData(this->mModifiers.at(i - 1)->getOutputData());
+			}
+		}
 	});
+
+	if (index == 0)
+		modifier->updateData({.minPoint = mMinPoint, .maxPoint = mMaxPoint});
+	else
+		modifier->updateData(mModifiers.back()->getOutputData());
 
 	mModifiers.push_back(modifier);
 	modifier->send(modifier.get(), ModifierEvent::UPDATE);

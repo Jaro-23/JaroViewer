@@ -10,8 +10,6 @@ namespace JaroViewer {
 	  "mat4 projection;\n"
 	  "mat4 view;\n"
 	  "};\n"
-	  "uniform vec3 minPoint;\n"
-	  "uniform vec3 maxPoint;\n"
 	  "uniform samplerBuffer modifierData;\n"
 	  "layout (location = 0) in vec3 aPos;\n"
 	  "layout (location = 1) in vec3 aNormal;\n"
