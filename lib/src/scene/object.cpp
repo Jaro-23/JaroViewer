@@ -168,7 +168,7 @@ void RawObject::addModifier(std::shared_ptr<Modifier> modifier) {
 	modifier->addListener([this, index](Modifier*, ModifierEvent event) {
 		if (event == ModifierEvent::UPDATE) this->send(this, ObjectEvent::MODIFIER);
 		if (event == ModifierEvent::OUTPUT_CHANGE) {
-			for (size_t i = index; i < this->mModifiers.size(); ++i) {
+			for (size_t i = index + 1; i < this->mModifiers.size(); ++i) {
 				if (i == 0)
 					this->mModifiers.at(i)->updateData({.minPoint = mMinPoint, .maxPoint = mMaxPoint});
 				else
